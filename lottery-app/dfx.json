@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "LOTTERY_APP_backend": {
+      "main": "src/LOTTERY_APP_backend/main.mo",
+      "type": "motoko"
+    },
+    "LOTTERY_APP_frontend": {
+      "dependencies": [
+        "LOTTERY_APP_backend"
+      ],
+      "source": [
+        "src/LOTTERY_APP_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "LOTTERY_APP_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
