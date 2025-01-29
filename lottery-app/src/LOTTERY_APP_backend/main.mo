@@ -9,6 +9,9 @@ import Random "mo:base/Random";
 import Iter "mo:base/Iter";
 import Debug "mo:base/Debug";
 import Blob "mo:base/Blob";
+import IcpLedger "canister:icp_ledger_canister";
+import Nat64 "mo:base/Nat64";
+import Error "mo:base/Error";
 
 
 actor LotteryContract {
@@ -173,8 +176,8 @@ public shared(msg) func givePrize(recipientPublicKey: Text) : async Text {
   let recipientPrincipal = Principal.fromText(recipientPublicKey);
   let transferArgs : IcpLedger.TransferArgs = {
     memo = 0;
-    amount = { e8s = prizePool };
-    fee = { e8s = 10_000 };
+   amount = { e8s = Nat64.fromNat(prizePool) };  // Convert Nat to Nat64
+    fee = { e8s = Nat64.fromNat(10_000) };       // Convert fee to Nat64
     from_subaccount = null;
     to = Principal.toLedgerAccount(recipientPrincipal, null);
     created_at_time = null;
