@@ -1,4 +1,4 @@
-
+import IC "ic:aaaaa-aa";
 import Principal "mo:base/Principal";
 import Array "mo:base/Array";
 import Text "mo:base/Text";
@@ -8,6 +8,8 @@ import Random "mo:base/Random";
 // import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Debug "mo:base/Debug";
+import Blob "mo:base/Blob";
+
 
 actor LotteryContract {
   stable var lotteryOwner : Principal = Principal.fromText("aaaaa-aa");
@@ -22,10 +24,12 @@ actor LotteryContract {
 
   // Initialize the lottery
   public shared(msg) func init(
+
     _totalAvailableTickets: Nat,
     _ticketPrice: Nat,
     _entryFee: Nat
   ) : async () {
+    lotteryOwner:=msg.caller;
     if (msg.caller != lotteryOwner) {
     Debug.trap("Only the lottery owner can initialize");
   };
@@ -112,6 +116,7 @@ actor LotteryContract {
       };
     };
   };
+  
 
  
     
@@ -139,8 +144,57 @@ actor LotteryContract {
         };
       };
     };
-
   };
+ private func getRandomNumber(max : Nat) : async Nat {
+  let raw_rand = await IC.raw_rand();
+  let random_bytes = Blob.toArray(raw_rand);
+  if (random_bytes.size() > 0) {
+    let random_byte = random_bytes[0];
+    return Nat8.toNat(random_byte) % max;
+  } else {
+    return 0; // Fallback value if no random bytes are returned
+  }
+};
+public shared func guessWinner() : async Principal {
+  let winningIndex = await getRandomNumber(tickets.size());
+  let winningTicket = tickets[winningIndex];
+  let winner = Array.find<(Text, Principal)>(ticketOwners, func((id, _)) { id == winningTicket });
+  
+  switch (winner) {
+    case (?(_, winnerPrincipal)) { winnerPrincipal };
+    case (null) { Principal.fromText("") }; // This should never happen if ticketOwners is correctly maintained
+  }
+};
+public shared(msg) func givePrize(recipientPublicKey: Text) : async Text {
+  if (msg.caller != lotteryOwner) {
+    return "Only the lottery owner can distribute the prize";
+  };
+
+  let recipientPrincipal = Principal.fromText(recipientPublicKey);
+  let transferArgs : IcpLedger.TransferArgs = {
+    memo = 0;
+    amount = { e8s = prizePool };
+    fee = { e8s = 10_000 };
+    from_subaccount = null;
+    to = Principal.toLedgerAccount(recipientPrincipal, null);
+    created_at_time = null;
+  };
+
+  try {
+    let transferResult = await IcpLedger.transfer(transferArgs);
+    switch (transferResult) {
+      case (#Err(transferError)) {
+        return "Couldn't transfer funds: " # debug_show(transferError);
+      };
+      case (#Ok(blockIndex)) { 
+        prizePool := 0;
+        return "Prize of " # debug_show(transferArgs.amount) # " e8s ICP transferred successfully. Block index: " # debug_show(blockIndex);
+      };
+    };
+  } catch (error : Error) {
+    return "Reject message: " # Error.message(error);
+  };
+};
  
 }
 
