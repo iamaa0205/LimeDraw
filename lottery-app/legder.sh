@@ -89,13 +89,13 @@ dfx identity new --storage-mode=plaintext minting || true
 # dfx identity use minting
 
 echo "Creating and deploying canister..."
-dfx canister create context_contract
-dfx canister create ledger
-dfx canister create mock_external
-dfx canister create LOTTERY_APP_backend
+# dfx canister create context_contract
+dfx canister create icp_ledger_canister
+# dfx canister create mock_external
+# dfx canister create LOTTERY_APP_backend
 
 # Get the context ID
-CONTEXT_ID=$(dfx canister id context_contract)
+# CONTEXT_ID=$(dfx canister id context_contract)
 # Get the wallet ID and seed it
 WALLET_ID=$(dfx identity get-wallet)
 
@@ -103,13 +103,13 @@ WALLET_ID=$(dfx identity get-wallet)
 dfx ledger fabricate-cycles --canister $WALLET_ID --amount 200000
 
 # Transfer cycles from wallet to context contract
-dfx canister deposit-cycles 1000000000000000000 $CONTEXT_ID
+# dfx canister deposit-cycles 1000000000000000000 $CONTEXT_ID
 
-echo "Done! Cycles transferred to context contract: $CONTEXT_ID"
+# echo "Done! Cycles transferred to context contract: $CONTEXT_ID"
 
 # Get the IDs
-CONTEXT_ID=$(dfx canister id context_contract)
-LEDGER_ID=$(dfx canister id ledger)
+# CONTEXT_ID=$(dfx canister id context_contract)
+LEDGER_ID=$(dfx canister id icp_ledger_canister)
 
 # Prepare ledger initialization argument
 LEDGER_INIT_ARG="(variant { Init = record { 
@@ -132,37 +132,37 @@ LEDGER_INIT_ARG="(variant { Init = record {
 dfx build
 
 # First install the ledger canister
-dfx canister install ledger --mode=install --argument "$LEDGER_INIT_ARG"
+dfx canister install icp_ledger_canister --mode=install --argument "$LEDGER_INIT_ARG"
 
 # Get the ledger ID and install context contract with it
-LEDGER_ID=$(dfx canister id ledger)
-dfx canister install context_contract --mode=install --argument "(principal \"${LEDGER_ID}\")"
+LEDGER_ID=$(dfx canister id icp_ledger_canister)
+# dfx canister install context_contract --mode=install --argument "(principal \"${LEDGER_ID}\")"
 
 # Install mock external canister
-dfx canister install mock_external --mode=install --argument "(principal \"${LEDGER_ID}\")"
-MOCK_EXTERNAL_ID=$(dfx canister id mock_external)
+# dfx canister install mock_external --mode=install --argument "(principal \"${LEDGER_ID}\")"
+# MOCK_EXTERNAL_ID=$(dfx canister id mock_external)
 
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# # Get the directory where the script is located
+# SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Build path relative to the script location
-WASM_FILE="${SCRIPT_DIR}/context-proxy/calimero_context_proxy_icp.wasm"
+# # Build path relative to the script location
+# WASM_FILE="${SCRIPT_DIR}/context-proxy/calimero_context_proxy_icp.wasm"
 
-# Verify file exists
-if [ ! -f "$WASM_FILE" ]; then
-    echo "Error: WASM file not found at: $WASM_FILE"
-    exit 1
-fi
+# # Verify file exists
+# if [ ! -f "$WASM_FILE" ]; then
+#     echo "Error: WASM file not found at: $WASM_FILE"
+#     exit 1
+# fi
 
-# Then modify the script to use a consistent reading method
-WASM_CONTENTS=$(xxd -p "$WASM_FILE" | tr -d '\n' | sed 's/\(..\)/\\\1/g')
+# # Then modify the script to use a consistent reading method
+# WASM_CONTENTS=$(xxd -p "$WASM_FILE" | tr -d '\n' | sed 's/\(..\)/\\\1/g')
 
-# Execute the command using the temporary file
-dfx canister call context_contract set_proxy_code --argument-file <(
-  echo "(
-    blob \"${WASM_CONTENTS}\"
-  )"
-)
+# # Execute the command using the temporary file
+# dfx canister call context_contract set_proxy_code --argument-file <(
+#   echo "(
+#     blob \"${WASM_CONTENTS}\"
+#   )"
+# )
 
 # Print all relevant information at the end
 echo -e "\n=== Deployment Summary ==="

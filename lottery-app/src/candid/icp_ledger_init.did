@@ -1,9 +1,9 @@
 (variant {
   Init = record {
-    minting_account = "jswvl-ssjwu-ivkoa-o5mye-gq4t3-c2tog-vxx6z-u6qcm-iiejl-7o2c3-pae";
+    minting_account = "dsppv-axnbs-hc6mb-455aa-wp5oj-jdw3t-sw52e-7tdbx-ehiw5-navg7-3ae";
     initial_values = vec {
       record {
-        "cnjr7-6ygv2-oqb5y-ku5u6-4dt7w-3tuiv-zzwtd-vuvmz-xen4w-5jhe2-6qe
+        "ypjuq-2tfk3-voddk-sf7rk-ccfvc-lk7uu-rsnpf-kap7g-yq6em-e223l-7qe
 ";
         record {
           e8s = 10_000_000_000 : nat64;

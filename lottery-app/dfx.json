@@ -1,19 +1,15 @@
 {
   "canisters": {
-    "LOTTERY_APP_backend": {
-      "main": "src/LOTTERY_APP_backend/main.mo",
-      "type": "motoko"
-    },
     "icp_ledger_canister": {
       "type": "custom",
       "candid": "https://raw.githubusercontent.com/dfinity/ic/aba60ffbc46acfc8990bf4d5685c1360bd7026b9/rs/ledger_suite/icp/ledger.did",
-      "wasm": "https://download.dfinity.systems/ic/aba60ffbc46acfc8990bf4d5685c1360bd7026b9/canisters/ledger-canister.wasm.gz",
+      "wasm": "/home/cyanide/Desktop/Winfinity/lottery-app/icp_ledger.wasm.gz",
       "remote": {
         "id": {
           "ic": "ryjl3-tyaaa-aaaaa-aaaba-cai"
         }
       },
-       "init_arg" : "(variant { Init = record { minting_account = \"jswvl-ssjwu-ivkoa-o5mye-gq4t3-c2tog-vxx6z-u6qcm-iiejl-7o2c3-pae\"; initial_values = vec { record { \"cnjr7-6ygv2-oqb5y-ku5u6-4dt7w-3tuiv-zzwtd-vuvmz-xen4w-5jhe2-6qe\"; record { e8s = 10_000_000_000 : nat64; }; }; }; send_whitelist = vec {}; transfer_fee = opt record { e8s = 10_000 : nat64; }; token_symbol = opt \"LICP\"; token_name = opt \"Local ICP\"; } })"
+       "init_arg" : "(variant { Init = record { minting_account = \"dsppv-axnbs-hc6mb-455aa-wp5oj-jdw3t-sw52e-7tdbx-ehiw5-navg7-3ae\"; initial_values = vec { record { \"ypjuq-2tfk3-voddk-sf7rk-ccfvc-lk7uu-rsnpf-kap7g-yq6em-e223l-7qe\"; record { e8s = 10_000_000_000 : nat64; }; }; }; send_whitelist = vec {}; transfer_fee = opt record { e8s = 10_000 : nat64; }; token_symbol = opt \"LICP\"; token_name = opt \"Local ICP\"; } })"
   
     }
   
