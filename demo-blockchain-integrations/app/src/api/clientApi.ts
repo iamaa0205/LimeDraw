@@ -120,6 +120,29 @@ export interface CreateLotteryRequest {
 
 export interface CreateLotteryResponse {
 }
+export interface CreatePlayerRequest {
+  name: string;
+  calimero_public_key: string;
+}
+
+export interface CreatePlayerResponse {
+  success: boolean;
+  message: string;
+}
+export interface GetAllPlayersRequest {
+  // No parameters needed for this request
+}
+
+export interface GetAllPlayersResponse {
+  players: Player[];
+}
+
+export interface Player {
+  name: string;
+  calimero_public_key: string;
+  role: number; // 0 for regular player, other values for different roles
+}
+
 
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',
@@ -129,7 +152,9 @@ export enum ClientMethod {
   GET_CALIMERO_PUBLIC_KEY = 'store_public_key',
   CREATE_LOTTERY = 'create_lottery', 
   INCREMENT_COUNTER = 'increment_counter',  // New: Increment the counter
-  GET_COUNTER_VALUE = 'get_counter_value',
+  GET_COUNTER_VALUE = 'get_counter',
+  CREATE_PLAYER = 'create_player',
+  GET_ALL_PLAYERS = 'get_all_players',
 }
 
 export interface ClientApi {

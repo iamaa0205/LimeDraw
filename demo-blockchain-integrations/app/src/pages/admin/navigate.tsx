@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react"
 import styled, { createGlobalStyle, keyframes, css } from "styled-components"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, User, Clock, Ticket, DollarSign, Users } from "lucide-react"
+import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -730,13 +731,30 @@ export default function CryptoLottery() {
     // Implement search logic here
   }
 
-  const handleGetStartedSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("User Name:", userName)
-    console.log("Calimero Public Key:", calimeroPublicKey)
-    setIsGetStartedPopupOpen(false)
-    setCurrentView("dashboard")
-  }
+  const handleGetStartedSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    try {
+      const response = await new LogicApiDataSource().createPlayer({
+        name: userName,
+        calimero_public_key: calimeroPublicKey,
+      });
+  
+      if (response.error) {
+        console.error("Error creating player:", response.error);
+        return;
+      }
+  
+      console.log("Player created successfully:", response);
+  
+      // Close the popup and navigate to the dashboard after successful player creation
+      setIsGetStartedPopupOpen(false);
+      setCurrentView("dashboard");
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  };
+  
 
   const filteredLotteries = existingLotteries.filter(
     (lottery) =>

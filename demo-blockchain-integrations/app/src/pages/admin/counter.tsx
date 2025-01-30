@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource";
 
+// Assuming Player is defined like this
+interface Player {
+  id: string;
+  name: string;
+  // Add any other properties that a Player object might have
+}
+
+interface GetAllPlayersResponse {
+  players: Player[];
+}
+
 const CounterComponent: React.FC = () => {
   const [counter, setCounter] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [incrementing, setIncrementing] = useState<boolean>(false);
+  const [players, setPlayers] = useState<Player[]>([]); // State for players
 
   // Fetch counter value on mount
   useEffect(() => {
@@ -29,12 +41,26 @@ const CounterComponent: React.FC = () => {
     try {
       const response = await new LogicApiDataSource().incrementCounter();
       if (response?.data) {
-        console.log("updated succesfully") // Update only when backend returns new value
+        console.log("Updated successfully"); // Update only when backend returns new value
       }
     } catch (error) {
       console.error("Failed to increment counter:", error);
     }
     setIncrementing(false);
+  };
+
+  const fetchAllPlayers = async () => {
+    setLoading(true);
+    try {
+      const response = await new LogicApiDataSource().getAllPlayers();
+      console.log(response,"new ")
+      if (response?.data) {
+        setPlayers(response.data.players); // Assuming API returns { players: Player[] }
+      }
+    } catch (error) {
+      console.error("Failed to fetch players:", error);
+    }
+    setLoading(false);
   };
 
   return (
@@ -52,6 +78,23 @@ const CounterComponent: React.FC = () => {
       >
         {loading ? "Fetching..." : "Show Counter"}
       </button>
+      <button
+        style={{ ...styles.button, background: "#28a745" }}
+        onClick={fetchAllPlayers}
+        disabled={loading}
+      >
+        {loading ? "Fetching..." : "Show All Players"}
+      </button>
+      {players.length > 0 && (
+        <div style={styles.playersList}>
+          <h3>Players:</h3>
+          <ul>
+            {players.map((player, index) => (
+              <li key={index}>{player.name}</li> // Display player's name
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
@@ -88,6 +131,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     transition: "0.3s",
     width: "200px",
     textAlign: "center",
+  },
+  playersList: {
+    marginTop: "1rem",
+    padding: "1rem",
+    background: "#e9ecef",
+    borderRadius: "8px",
+    width: "100%",
+    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
   },
 };
 

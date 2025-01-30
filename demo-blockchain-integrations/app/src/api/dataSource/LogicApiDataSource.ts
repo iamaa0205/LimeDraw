@@ -26,7 +26,12 @@ import {
   GetCounterValueRequest,
   GetCounterValueResponse,
   IncrementCounterRequest,
-  IncrementCounterResponse
+  IncrementCounterResponse,
+  CreatePlayerRequest,
+  CreatePlayerResponse,
+  GetAllPlayersRequest,
+  GetAllPlayersResponse,
+  Player,
 } from '../clientApi';
 import { getContextId, getNodeUrl } from '../../utils/node';
 import {
@@ -115,6 +120,75 @@ export class LogicApiDataSource implements ClientApi {
       error: null,
     };
   }
+  async createPlayer(
+    request: CreatePlayerRequest,
+  ): ApiResponse<CreatePlayerResponse> {
+    const { jwtObject, config, error } = getConfigAndJwt();
+    if (error) {
+      return { error };
+    }
+  
+    const params: RpcQueryParams<typeof request> = {
+      contextId: jwtObject?.context_id ?? getContextId(),
+      method: ClientMethod.CREATE_PLAYER,
+      argsJson: {
+        name: request.name || "Anonymous Player", // Default name
+        calimero_public_key: request.calimero_public_key || "default-key",
+      },
+      executorPublicKey: jwtObject.executor_public_key,
+    };
+  
+    console.log('RPC params:', params);
+  
+    const response = await getJsonRpcClient().execute<
+      typeof request,
+      CreatePlayerResponse
+    >(params, config);
+  
+    console.log('Raw response:', response);
+  
+    if (response?.error) {
+      console.error('RPC error:', response.error);
+      return await this.handleError(response.error, {}, this.createPlayer);
+    }
+  
+    return {
+      data: response.result.output as CreatePlayerResponse,
+      error: null,
+    };
+  }
+  async getAllPlayers(): ApiResponse<GetAllPlayersResponse> {
+    const { jwtObject, config, error } = getConfigAndJwt();
+    if (error) {
+      return { error };
+    }
+  
+    const params: RpcQueryParams<{}>= {
+      contextId: jwtObject?.context_id ?? getContextId(),
+      method: ClientMethod.GET_ALL_PLAYERS,
+      argsJson: {}, // No arguments needed
+      executorPublicKey: jwtObject.executor_public_key,
+    };
+  
+    console.log('RPC params:', params);
+  
+    const response = await getJsonRpcClient().execute<null, GetAllPlayersResponse>(params, config);
+  
+    console.log('Raw response:', response);
+  
+    if (response?.error) {
+      console.error('RPC error:', response.error);
+      return await this.handleError(response.error, {}, this.getAllPlayers);
+    }
+  
+    return {
+      data: response.result.output as GetAllPlayersResponse,
+      error: null,
+    };
+  }
+  
+  
+  
   async incrementCounter(): ApiResponse<IncrementCounterResponse> {
     const { jwtObject, config, error } = getConfigAndJwt();
     if (error) {
