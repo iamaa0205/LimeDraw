@@ -618,6 +618,9 @@ export default function CryptoLottery() {
   const [notifications, setNotifications] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isWalletPopupOpen, setIsWalletPopupOpen] = useState(false)
+  const [isGetStartedPopupOpen, setIsGetStartedPopupOpen] = useState(false)
+  const [userName, setUserName] = useState("")
+  const [calimeroPublicKey, setCalimeroPublicKey] = useState("") // Added state for Calimero Public Key
 
   useEffect(() => {
     if (currentView === "lotteryDetails" && selectedLottery) {
@@ -727,6 +730,14 @@ export default function CryptoLottery() {
     // Implement search logic here
   }
 
+  const handleGetStartedSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log("User Name:", userName)
+    console.log("Calimero Public Key:", calimeroPublicKey)
+    setIsGetStartedPopupOpen(false)
+    setCurrentView("dashboard")
+  }
+
   const filteredLotteries = existingLotteries.filter(
     (lottery) =>
       lottery.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -769,7 +780,7 @@ export default function CryptoLottery() {
               <Button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setCurrentView("dashboard")}
+                onClick={() => setIsGetStartedPopupOpen(true)}
               >
                 Get Started
               </Button>
@@ -917,7 +928,7 @@ export default function CryptoLottery() {
               <CreatorInfo>
                 <CreatorAvatar>
                   <User size={24} />
-                </CreatorAvatar>
+                </CreatorAvatar>{" "}
                 <CreatorAddress>{selectedLottery.owner}</CreatorAddress>
               </CreatorInfo>
             </LotteryHeader>
@@ -1113,6 +1124,42 @@ export default function CryptoLottery() {
                   </WalletButton>
                 ))}
               </WalletList>
+            </PopupContent>
+          </PopupOverlay>
+        )}
+        {isGetStartedPopupOpen && (
+          <PopupOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsGetStartedPopupOpen(false)}
+          >
+            <PopupContent
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+            >
+              <PopupTitle>Get Started</PopupTitle>
+              <Form onSubmit={handleGetStartedSubmit}>
+                <Input
+                  type="text"
+                  placeholder="Your Name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                />
+                <Input
+                  type="text"
+                  placeholder="Calimero Public Key"
+                  value={calimeroPublicKey}
+                  onChange={(e) => setCalimeroPublicKey(e.target.value)}
+                  required
+                />
+                <Button type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  Submit
+                </Button>
+              </Form>
             </PopupContent>
           </PopupOverlay>
         )}

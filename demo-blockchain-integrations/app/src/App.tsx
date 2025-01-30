@@ -6,6 +6,7 @@ import Authenticate from './pages/login/Authenticate';
 import { AccessTokenWrapper } from '@calimero-is-near/calimero-p2p-sdk';
 import { getNodeUrl } from './utils/node';
 import CryptoLottery from './pages/admin/navigate';
+import CounterComponent from './pages/admin/counter';
 export default function App() {
   return (
     <AccessTokenWrapper getNodeUrl={getNodeUrl}>
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/auth" element={<Authenticate />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/navigate" element={<CryptoLottery />} />
+          <Route path="/counter" element={<CounterComponent />} />
         </Routes>
       </BrowserRouter>
     </AccessTokenWrapper>

@@ -19,6 +19,14 @@ import {
   GetProposalMessagesResponse,
   SendProposalMessageRequest,
   SendProposalMessageResponse,
+  GetCalimeroPublicKeyRequest,
+  GetCalimeroPublicKeyResponse,
+  CreateLotteryRequest,
+  CreateLotteryResponse,
+  GetCounterValueRequest,
+  GetCounterValueResponse,
+  IncrementCounterRequest,
+  IncrementCounterResponse
 } from '../clientApi';
 import { getContextId, getNodeUrl } from '../../utils/node';
 import {
@@ -65,6 +73,112 @@ export function getConfigAndJwt() {
 }
 
 export class LogicApiDataSource implements ClientApi {
+
+  async createlottery(
+    request: CreateLotteryRequest,
+  ): ApiResponse<CreateLotteryResponse> {
+    const { jwtObject, config, error } = getConfigAndJwt();
+    if (error) {
+      return { error };
+    }
+
+    const params: RpcQueryParams<typeof request> = {
+      contextId: jwtObject?.context_id ?? getContextId(),
+      method: ClientMethod.CREATE_LOTTERY,
+      argsJson: {
+        name: request.name || "Untitled Lottery", // Ensure default values
+        description: request.description || "Anonymous Lottery", 
+        ticket_price: Number(request.ticket_price) || 1,
+        ticket_count: Number(request.ticket_count) || 1,
+        prize_pool: Number(request.prize_pool) || 1,
+        calimero_public_key: request.calimero_public_key || "default-key",
+    },
+      executorPublicKey: jwtObject.executor_public_key,
+    };
+
+    console.log('RPC params:', params);
+
+    const response = await getJsonRpcClient().execute<
+      typeof request,
+      CreateLotteryRequest
+    >(params, config);
+
+    console.log('Raw response:', response);
+
+    if (response?.error) {
+      console.error('RPC error:', response.error);
+      return await this.handleError(response.error, {}, this.createAction);
+    }
+
+    return {
+      data: response.result.output as CreateLotteryResponse,
+      error: null,
+    };
+  }
+  async incrementCounter(): ApiResponse<IncrementCounterResponse> {
+    const { jwtObject, config, error } = getConfigAndJwt();
+    if (error) {
+      return { error };
+    }
+  
+    const params: RpcQueryParams<{}> = {
+      contextId: jwtObject?.context_id ?? getContextId(),
+      method: ClientMethod.INCREMENT_COUNTER,
+      argsJson: {}, // No arguments needed
+      executorPublicKey: jwtObject.executor_public_key,
+    };
+  
+    console.log('RPC params:', params);
+  
+    const response = await getJsonRpcClient().execute<{}, IncrementCounterResponse>(params, config);
+  
+    console.log('Raw response:', response);
+  
+    if (response?.error) {
+      console.error('RPC error:', response.error);
+      return await this.handleError(response.error, {}, this.incrementCounter);
+    }
+  
+    return {
+      data: response.result.output as IncrementCounterResponse,
+      error: null,
+    };
+  }
+  
+  async getCounterValue(): ApiResponse<GetCounterValueResponse> {
+    const { jwtObject, config, error } = getConfigAndJwt();
+    if (error) {
+      return { error };
+    }
+  
+    const params: RpcQueryParams<{}> = {
+      contextId: jwtObject?.context_id ?? getContextId(),
+      method: ClientMethod.GET_COUNTER_VALUE,
+      argsJson: {}, // No arguments needed
+      executorPublicKey: jwtObject.executor_public_key,
+    };
+  
+    console.log('RPC params:', params);
+  
+    const response = await getJsonRpcClient().execute<{}, GetCounterValueResponse>(params, config);
+  
+    console.log('Raw response:', response);
+  
+    if (response?.error) {
+      console.error('RPC error:', response.error);
+      return await this.handleError(response.error, {}, this.getCounterValue);
+    }
+  
+    return {
+      data: response.result.output as GetCounterValueResponse,
+      error: null,
+    };
+  }
+  
+
+
+  
+
   async createProposal(
     request: CreateProposalRequest,
   ): ApiResponse<CreateProposalResponse> {

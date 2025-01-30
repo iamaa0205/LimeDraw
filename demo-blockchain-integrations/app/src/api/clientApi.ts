@@ -80,13 +80,56 @@ export interface ApproveProposalRequest {
   proposal_id: string;
 }
 
+export interface GetCalimeroPublicKeyRequest {
+  proposal_id: string;
+}
+
+export interface GetCalimeroPublicKeyResponse {
+  proposal_id: string;
+}
+
 export interface ApproveProposalResponse {}
+// Request interface for incrementing the counter
+export interface IncrementCounterRequest {}
+
+// Response interface for incrementing the counter
+export interface IncrementCounterResponse {
+  success: boolean;
+  new_value: number;
+}
+
+// Request interface for getting the counter value
+export interface GetCounterValueRequest {}
+
+// Response interface for getting the counter value
+export interface GetCounterValueResponse {
+  value: number;
+}
+
+
+
+
+export interface CreateLotteryRequest {
+  name: String;
+  description: String;
+  ticket_price: Number;  // using string to represent u128 (BigInt in JS)
+  ticket_count: Number;  // using string to represent u128 (BigInt in JS)
+  prize_pool: Number;  // using string to represent u128 (BigInt in JS)
+  calimero_public_key: String;
+}
+
+export interface CreateLotteryResponse {
+}
 
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',
   SEND_PROPOSAL_MESSAGE = 'send_proposal_messages',
   CREATE_PROPOSAL = 'create_new_proposal',
   APPROVE_PROPOSAL = 'approve_proposal',
+  GET_CALIMERO_PUBLIC_KEY = 'store_public_key',
+  CREATE_LOTTERY = 'create_lottery', 
+  INCREMENT_COUNTER = 'increment_counter',  // New: Increment the counter
+  GET_COUNTER_VALUE = 'get_counter_value',
 }
 
 export interface ClientApi {
@@ -104,4 +147,5 @@ export interface ClientApi {
     request: ApproveProposalRequest,
   ): ApiResponse<ApproveProposalResponse>;
   deleteProposal(proposalId: string): ApiResponse<void>;
+
 }
