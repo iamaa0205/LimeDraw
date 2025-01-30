@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-NODE_NAME="test1"
-SERVER_PORT=4001
-SWARM_PORT=5001
+NODE_NAME="node1"
+SERVER_PORT=2427
+SWARM_PORT=2527
 
 # Kill any existing merod processes
 if pgrep -f merod > /dev/null; then
@@ -53,6 +53,7 @@ WASM_PATH="./res/$sanitized_name.wasm"
 echo "WASM build complete!"
 
 # Start the node initialization and run in background
+./../../icp-devnet/deploy_devnet_fresh.sh
 echo "Initializing node..."
 merod --node-name $NODE_NAME init --server-port $SERVER_PORT --swarm-port $SWARM_PORT >/dev/null 2>&1 &
 sleep 1
@@ -73,7 +74,7 @@ fi
 
 # Create context and capture both ID and public key
 echo "Creating context..."
-CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $APP_ID)
+CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $APP_ID --protocol icp)
 CONTEXT_ID=$(echo "$CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
 MEMBER_PUBLIC_KEY=$(echo "$CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
 sleep 5
@@ -90,6 +91,8 @@ echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
 echo "APP_ID=$APP_ID" >> node_vars.env
 echo "CONTEXT_ID=$CONTEXT_ID" >> node_vars.env
 echo "MEMBER_PUBLIC_KEY=$MEMBER_PUBLIC_KEY" >> node_vars.env
+echo "APP_ID=$APP_ID" >> node_vars.env
+
 
 # Print summary
 echo "==============================================="
