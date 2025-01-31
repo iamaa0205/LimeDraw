@@ -17,6 +17,7 @@ export interface GetProposalMessagesResponse {
   messages: Message[];
 }
 
+
 export interface SendProposalMessageRequest {
   // proposalId: String;
   proposal_id: String;
@@ -25,6 +26,29 @@ export interface SendProposalMessageRequest {
 
 export interface SendProposalMessageResponse {}
 
+
+
+export interface CreateMessageRoomRequest {
+  id: string;
+  text: string;
+}
+
+export interface CreateMessageRoomResponse {
+  success: boolean;
+  message: string;
+}
+export interface AddHostRequest {
+  calimero_public_key?: string;
+  name: string;
+}
+
+export interface AddHostResponse {
+  success: boolean;
+  message: string;
+}
+
+
+
 export enum ProposalActionType {
   ExternalFunctionCall = 'ExternalFunctionCall',
   Transfer = 'Transfer',
@@ -32,6 +56,8 @@ export enum ProposalActionType {
   SetActiveProposalsLimit = 'SetActiveProposalsLimit',
   SetContextValue = 'SetContextValue',
   DeleteProposal = 'DeleteProposal',
+  
+  
 }
 
 export type FormActionType =
@@ -81,12 +107,28 @@ export interface ApproveProposalRequest {
 }
 
 export interface ApproveProposalResponse {}
+export interface GetMessageRoomsRequest {
+  // If you need to filter messages, you can add optional parameters here
+}
+export interface GetMessageRoomsResponse {
+  success: boolean;
+  messageRooms: MessageRoom[];
+}
+
+export interface MessageRoom {
+  id: string;
+  text: string;
+}
+
 
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',
   SEND_PROPOSAL_MESSAGE = 'send_proposal_messages',
   CREATE_PROPOSAL = 'create_new_proposal',
   APPROVE_PROPOSAL = 'approve_proposal',
+  ADD_HOST='add_host',
+  AddMessage='create_message_room',
+  GetMessage='get_all_message_rooms',
 }
 
 export interface ClientApi {

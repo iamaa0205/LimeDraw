@@ -10,6 +10,8 @@ use calimero_storage::collections::{UnorderedMap, Vector};
 #[borsh(crate = "calimero_sdk::borsh")]
 pub struct AppState {
     messages: UnorderedMap<ProposalId, Vector<Message>>,
+    messageRoomMessages: Vec<MessageRoom>,
+    hosts:Vec<Host>,
 }
 
 #[derive(
@@ -25,7 +27,31 @@ pub struct Message {
     created_at: String,
 }
 
+
+
+#[derive(
+    Clone, Debug, PartialEq, PartialOrd, BorshSerialize, BorshDeserialize, Serialize, Deserialize,
+)]
+#[borsh(crate = "calimero_sdk::borsh")]
+#[serde(crate = "calimero_sdk::serde")]
+pub struct MessageRoom {
+    id:String,
+    text:String,
+
+}
+#[derive(
+    Clone, Debug, PartialEq, PartialOrd, BorshSerialize, BorshDeserialize, Serialize, Deserialize,
+)]
+#[borsh(crate = "calimero_sdk::borsh")]
+#[serde(crate = "calimero_sdk::serde")]
+pub struct Host{
+    calimero_public_key:String,
+    name:String,
+}
+
 #[app::event]
+
+
 pub enum Event {
     ProposalCreated { id: ProposalId },
     ApprovedProposal { id: ProposalId },
@@ -44,8 +70,47 @@ impl AppState {
     pub fn init() -> AppState {
         AppState {
             messages: UnorderedMap::new(),
+            messageRoom: MessageRoom{
+                id: "".to_string(),
+                text:"".to_string(),
+               
+            },
+            host:Host{
+                calimero_public_key:"".to_string(),
+                name:"".to_string,
+            }
+            messageRoomMessages: Vec::new(),
+            hosts:Vec::new(),
         }
     }
+
+
+
+    pub fn create_message_room(&mut self, id: String, text: String) {
+        let new_room = MessageRoom { id, text };
+        self.messageRoomMessages.push(new_room);
+    }
+
+
+    pub fn get_all_message_rooms(&self) -> Vec<MessageRoom> {
+        self.messageRoomMessages.clone()
+    }
+
+
+    pub fn add_host(&mut self, calimero_public_key: String, name: String) {
+        let new_host = Host {
+            calimero_public_key,
+            name,
+        };
+    
+        self.hosts.push(new_host);
+    }
+    
+
+
+   
+    
+
 
     pub fn create_new_proposal(
         &mut self,
