@@ -271,9 +271,8 @@ export class LogicApiDataSource implements ClientApi {
     const params: RpcQueryParams<typeof request> = {
       contextId: jwtObject?.context_id ?? getContextId(),
       method: ClientMethod.CREATE_PROPOSAL,
-      argsJson: {
-        request: request,
-      },
+      argsJson: {request:request},
+      
       executorPublicKey: jwtObject.executor_public_key,
     };
 

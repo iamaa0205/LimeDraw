@@ -47,7 +47,7 @@ pub struct Counter {
 pub struct Player {
     name: String,
     calimero_public_key: String,
-    role: u32,
+    role: u32, 
 }
 
 #[derive(

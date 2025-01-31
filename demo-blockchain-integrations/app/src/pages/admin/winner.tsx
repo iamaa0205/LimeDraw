@@ -152,6 +152,7 @@ const Winner: React.FC = () => {
     const request: CreateProposalRequest = {
         action_type: "Transfer",
         params: {
+           
             receiver_id: icpPublicKey, // Receiver is the input public key
             amount: "100", // Default amount is 100 ICP
         }

@@ -6,7 +6,7 @@ import styled, { createGlobalStyle, keyframes, css } from "styled-components"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, User, Clock, Ticket, DollarSign, Users } from "lucide-react"
 import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
-
+import xyz from "./logo.png"
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
@@ -1104,8 +1104,8 @@ export default function CryptoLottery() {
       <AppContainer>
         <Header>
           <Logo onClick={() => setCurrentView("dashboard")}>
-            <LogoImg src="/logo.png" alt="Crypto Lottery Logo" />
-            <AppName>Crypto Lottery</AppName>
+            <img src={xyz}  height="60px" width="60px" alt="Crypto Lottery Logo" />
+            <AppName>Winfinity</AppName>
           </Logo>
           <div style={{ display: "flex", alignItems: "center" }}>
             {!walletConnected ? (
