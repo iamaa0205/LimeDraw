@@ -15,7 +15,7 @@ pub struct AppState {
     lottery_state: LotteryState,
     ticket_owner: UnorderedMap<u32, String>,
     calimero_public_key_onwer: UnorderedMap<String, Player>,
-    counter:Counter,
+    counter: Counter,
 }
 
 #[derive(
@@ -35,8 +35,8 @@ pub struct Message {
 )]
 #[borsh(crate = "calimero_sdk::borsh")]
 #[serde(crate = "calimero_sdk::serde")]
-pub struct Counter{
-    value:u32,
+pub struct Counter {
+    value: u32,
 }
 
 #[derive(
@@ -86,7 +86,7 @@ impl AppState {
         AppState {
             messages: UnorderedMap::new(),
             players: Vec::new(),
-            lottery_state : LotteryState {
+            lottery_state: LotteryState {
                 name: "".to_string(),
                 description: "".to_string(),
                 ticket_price: 0,
@@ -98,13 +98,62 @@ impl AppState {
             },
             ticket_owner: UnorderedMap::new(),
             calimero_public_key_onwer: UnorderedMap::new(),
-            counter: Counter { value: 0 }, 
+            counter: Counter { value: 0 },
         }
     }
     pub fn increment_counter(&mut self) {
         self.counter.value += 1;
         env::log(&format!("Counter incremented: {}", self.counter.value));
     }
+    pub fn get_counter(&self) -> Result<u32, Error> {
+        env::log(&format!(
+            "📤 Returning counter value: {}",
+            self.counter.value
+        ));
+        Ok(self.counter.value)
+    }
+    pub fn create_player(&mut self, calimero_public_key: String, name: String) -> Result<(), Error> {
+        // Debug log to check function call
+        env::log(&format!(
+            "📥 Creating new player: name={}, calimero_public_key={}",
+            name, calimero_public_key
+        ));
+    
+        // Check if the public key is already associated with a player
+        if self.calimero_public_key_onwer.get(&calimero_public_key)?.is_some() {
+            env::log("❌ Error: Player with this Calimero public key already exists");
+            return Err(Error::msg("Player with this Calimero public key already exists"));
+        }
+    
+        // Create a new player with default role (assuming 0 is the default for a player)
+        let new_player = Player {
+            name: name.clone(),
+            calimero_public_key: calimero_public_key.clone(),
+            role: 0, // Default role
+        };
+    
+        // Add player to the players array
+        self.players.push(new_player.clone());
+    
+        // Add player to calimero_public_key_onwer map
+        self.calimero_public_key_onwer.insert(calimero_public_key, new_player)?;
+    
+        env::log("✅ Player successfully created!");
+        Ok(())
+    }
+    pub fn get_all_players(&self) -> Result<Vec<Player>, Error> {
+        env::log("📤 Fetching all players");
+    
+        // Check if there are any players
+        if self.players.is_empty() {
+            env::log("ℹ️ No players found.");
+            return Ok(vec![]);
+        }
+    
+        Ok(self.players.clone()) // Return a clone of the players array
+    }
+    
+    
     pub fn create_lottery(
         &mut self,
         name: String,
@@ -119,7 +168,7 @@ impl AppState {
             "📥 create_lottery called with: name={}, description={}, ticket_price={}, ticket_count={}, prize_pool={}, calimero_public_key={}",
             name, description, ticket_price, ticket_count, prize_pool, calimero_public_key
         ));
-    
+
         // Validate parameters
         if name.is_empty() {
             env::log("❌ Error: Lottery name is empty");
@@ -127,9 +176,11 @@ impl AppState {
         }
         if ticket_price == 0 || ticket_count == 0 || prize_pool == 0 {
             env::log("❌ Error: Zero values are not allowed");
-            return Err(Error::msg("Ticket price, count, and prize pool must be greater than 0"));
+            return Err(Error::msg(
+                "Ticket price, count, and prize pool must be greater than 0",
+            ));
         }
-    
+
         // Assign values
         self.lottery_state = LotteryState {
             name,
@@ -141,17 +192,10 @@ impl AppState {
             owner: None,
             winner: None,
         };
-    
+
         env::log("✅ Lottery successfully created!");
         Ok(())
     }
-    
-    
-    
-    
-    
-    
-    
 
     pub fn create_new_proposal(
         &mut self,
