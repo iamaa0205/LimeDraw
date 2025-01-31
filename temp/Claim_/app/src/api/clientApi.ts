@@ -72,8 +72,6 @@ export interface CreateProposalRequest {
   };
 }
 
-
-
 export interface CreateProposalResponse {
   proposal_id: String;
 }
@@ -82,99 +80,13 @@ export interface ApproveProposalRequest {
   proposal_id: string;
 }
 
-export interface GetCalimeroPublicKeyRequest {
-  proposal_id: string;
-}
-
-export interface GetCalimeroPublicKeyResponse {
-  proposal_id: string;
-}
-
 export interface ApproveProposalResponse {}
-// Request interface for incrementing the counter
-export interface IncrementCounterRequest {}
-
-// Response interface for incrementing the counter
-export interface IncrementCounterResponse {
-  success: boolean;
-  new_value: number;
-}
-
-// Request interface for getting the counter value
-export interface GetCounterValueRequest {}
-
-// Response interface for getting the counter value
-export interface GetCounterValueResponse {
-  value: number;
-}
-
-
-
-
-
-export interface CreatePlayerRequest {
-  name: string;
-  calimero_public_key: string;
-}
-
-export interface CreatePlayerResponse {
-  success: boolean;
-  message: string;
-}
-export interface GetAllPlayersRequest {
-  // No parameters needed for this request
-}
-
-export interface GetAllPlayersResponse {
-  players: Player[];
-}
-
-export interface Player {
-  name: string;
-  calimero_public_key: string;
-  role: number; // 0 for regular player, other values for different roles
-}
-
-
-export interface CreateLotteryRequest {
-  name: string;
-  description: string;
-  ticket_price: Number;  // Using string for large numbers (to avoid precision issues)
-  ticket_count: Number;  // Same as above
-  prize_pool: Number;    // Same as above
-  calimero_public_key?: string;
-}
-
-
-export interface CreateLotteryResponse {
-  success: boolean;
-  message: string;
-  lottery: LotteryState | null;
-}
-
-export interface LotteryState {
-  name: string;
-  description: string;
-  ticket_price: string;
-  ticket_count: string;
-  remaining_tickets: string;
-  prize_pool: string;
-  owner: Player | null;
-  winner: Player | null;
-}
-
 
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',
   SEND_PROPOSAL_MESSAGE = 'send_proposal_messages',
   CREATE_PROPOSAL = 'create_new_proposal',
   APPROVE_PROPOSAL = 'approve_proposal',
-  GET_CALIMERO_PUBLIC_KEY = 'store_public_key', 
-  INCREMENT_COUNTER = 'increment_counter',  // New: Increment the counter
-  GET_COUNTER_VALUE = 'get_counter',
-  CREATE_PLAYER = 'create_player',
-  GET_ALL_PLAYERS = 'get_all_players',
-  CREATE_LOTTERY = 'create_lottery',
 }
 
 export interface ClientApi {
@@ -192,5 +104,4 @@ export interface ClientApi {
     request: ApproveProposalRequest,
   ): ApiResponse<ApproveProposalResponse>;
   deleteProposal(proposalId: string): ApiResponse<void>;
-
 }

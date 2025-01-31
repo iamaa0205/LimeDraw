@@ -10,6 +10,7 @@
       "wasm": "https://download.dfinity.systems/ic/aba60ffbc46acfc8990bf4d5685c1360bd7026b9/canisters/ledger-canister.wasm.gz",
       "remote": {
         "id": {
+          "local" : "bd3sg-teaaa-aaaaa-qaaba-cai",
           "ic": "ryjl3-tyaaa-aaaaa-aaaba-cai"
         }
       },

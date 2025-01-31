@@ -579,10 +579,10 @@ export default function CryptoLottery() {
   const [createLotteryForm, setCreateLotteryForm] = useState({
     name: "",
     description: "",
-    ticketPrice: "",
-    totalTickets: "",
+    ticketPrice: 0,
+    totalTickets: 0,
     winnerAnnouncementDate: "",
-    prizePool: "",
+    prizePool: 0,
   })
   const [existingLotteries, setExistingLotteries] = useState([
     {
@@ -702,11 +702,33 @@ export default function CryptoLottery() {
     [setIsWalletPopupOpen, onButtonPress],
   ) // Added dependencies to useCallback
 
-  const handleCreateLottery = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Creating lottery:", createLotteryForm)
-    setCurrentView("hostDashboard")
-  }
+  const handleCreateLottery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Creating lottery:", createLotteryForm);
+
+    // Call createLottery async function
+    const request = {
+      name: createLotteryForm.name,
+      description: createLotteryForm.description,
+      ticket_price: createLotteryForm.ticketPrice,
+      ticket_count: createLotteryForm.totalTickets,
+      prize_pool: createLotteryForm.prizePool,
+    };
+
+    try {
+      const response = await new LogicApiDataSource().createLottery(request);
+
+      if (response?.error) {
+        console.error('Error creating lottery:', response.error);
+        return;
+      }
+
+      console.log('Lottery created successfully:', response.data);
+      setCurrentView("hostDashboard"); // Set your dashboard view after success
+    } catch (error) {
+      console.error("Unexpected error while creating lottery:", error);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
