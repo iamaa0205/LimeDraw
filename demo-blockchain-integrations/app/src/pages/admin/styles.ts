@@ -1,3 +1,16 @@
+"use client"
+
+
+import { useState, useEffect, useCallback } from "react"
+import styled, { createGlobalStyle, keyframes, css } from "styled-components"
+import { motion, AnimatePresence } from "framer-motion"
+import { Search, User, Clock, Ticket, DollarSign, Users } from "lucide-react"
+import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
+import xyz from "./logo.png"
+
+
+
+
 export const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;

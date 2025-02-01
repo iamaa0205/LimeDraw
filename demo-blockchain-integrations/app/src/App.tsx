@@ -8,7 +8,23 @@ import { getNodeUrl } from './utils/node';
 import CryptoLottery from './pages/admin/navigate';
 import CounterComponent from './pages/admin/counter';
 import Winner from './pages/admin/winner';
+import { useEffect } from 'react';
 export default function App() {
+
+
+  useEffect(() => {
+    // Check if the URL matches the base path
+    if (window.location.pathname === "/demo-blockchain-integrations/") {
+      // Only set "landing" if no view is already stored
+      
+        localStorage.setItem("currentView", "landing");
+      
+    }
+  }, []);
+  
+
+
+
   return (
     <AccessTokenWrapper getNodeUrl={getNodeUrl}>
       <BrowserRouter basename="/demo-blockchain-integrations/">

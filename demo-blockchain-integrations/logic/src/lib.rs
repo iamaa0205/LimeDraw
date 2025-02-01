@@ -226,6 +226,28 @@ impl AppState {
         Ok(())
     }
 
+    pub fn get_player_by_public_key(
+        &self,
+        calimero_public_key: String,
+    ) -> Result<Option<Player>, Error> {
+        env::log(&format!(
+            "📤 Fetching player with Calimero public key: {}",
+            calimero_public_key
+        ));
+    
+        // Retrieve the player from the unordered map
+        let player = self.calimero_public_key_onwer.get(&calimero_public_key)?;
+    
+        if player.is_none() {
+            env::log("ℹ️ No player found with the provided Calimero public key.");
+        } else {
+            env::log("✅ Player found.");
+        }
+    
+        Ok(player)
+    }
+    
+
     pub fn create_new_proposal(
         &mut self,
         request: CreateProposalRequest,

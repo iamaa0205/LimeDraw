@@ -170,6 +170,16 @@ export interface GetLotteryResponse {
   success: boolean;
   lottery: LotteryState | null;
 }
+export interface GetPlayerRequest {
+  calimeroPublicKey: string;
+}
+export interface GetPlayerResponse {
+  success: boolean;
+  player: Player | null;
+}
+
+
+
 
 
 export enum ClientMethod {
@@ -184,6 +194,7 @@ export enum ClientMethod {
   GET_ALL_PLAYERS = 'get_all_players',
   CREATE_LOTTERY = 'create_lottery',
   GET_LOTTERY = 'get_lottery',
+  GET_PLAYER = 'get_player_by_public_key'
 
 }
 

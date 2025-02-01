@@ -7,7 +7,19 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Search, User, Clock, Ticket, DollarSign, Users } from "lucide-react"
 import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
 import xyz from "./logo.png"
-import {GlobalStyle} from './styles'
+import { GlobalStyle, glowingEffect, pulsingEffect, AppContainer, Header, Logo, LogoImg, AppName, 
+  Button, MainContent, Title, Description, FeaturesList, FeatureCard, 
+  FeatureIcon, FeatureTitle, FeatureDescription, ButtonContainer, Form
+, Input, TextArea, LotteryList, LotteryCard, Footer, SearchBar, SearchInput,
+SearchButton, PopupOverlay, PopupContent, PopupTitle, WalletList, WalletButton, 
+LotteryDetailsContainer, LotteryHeader, LotteryName, LotteryDescription, 
+CreatorInfo, CreatorAvatar, CreatorAddress,CountdownContainer, 
+CountdownTimer, CountdownLabel, DetailsGrid, DetailCard, DetailIcon, 
+DetailLabel, DetailValue, MembersSection, MembersGrid, MemberAvatar, 
+TotalMembers, BuyTicketsSection, BuyTicketsForm, TicketInput, BuyButton, 
+TotalCost, HostDashboardContainer, LotteryInfo, InfoItem,  StatisticsGrid, 
+StatCard, MembersList, MemberItem, NotificationWindow, fadeInUp, pageTransition, 
+StatusContainer, StatusDot, StatusText} from './styles'
 
 
 
@@ -28,7 +40,9 @@ const WalletStatus: React.FC<WalletStatusProps> = ({ connected }) => {
 }
 
 export default function CryptoLottery() {
-  const [currentView, setCurrentView] = useState("hostDashboard")
+  const [currentView, setCurrentView] = useState(() => {
+    return localStorage.getItem("currentView") || "landing"; // Get from localStorage or set default
+  });
   const [walletConnected, setWalletConnected] = useState(false)
   const [createLotteryForm, setCreateLotteryForm] = useState({
     name: "",
@@ -51,30 +65,19 @@ export default function CryptoLottery() {
   const [lotteryDetails, getLottery] = useState(null)
   const [players, setPlayers] = useState<any>([])
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (currentView === "lotteryDetails" && getLottery) {
-      const interval = setInterval(() => {
-        const now = new Date().getTime()
-        // const endTime = new Date(getLottery.winnerAnnouncementDate).getTime()
-        // const timeLeft = endTime - now
-
-        // if (timeLeft < 0) {
-        //   clearInterval(interval)
-        //   setCountdown("Winner Announced!")
-        // } else {
-        //   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
-        //   const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        //   const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
-        //   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
-
-        //   setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`)
-        // }
-      }, 1000)
-
-      return () => clearInterval(interval)
+  const fetchLottery = async () => {
+    try {
+      const response = await new LogicApiDataSource().getLottery();
+      if (response?.data) {
+       
+        setLottery(response?.data)
+        console.log("dhdhdh",lottery)
+      }
+    } catch (error) {
+      console.error("Failed to fetch lottery:", error);
     }
-  }, [currentView, getLottery])
+  };
+
 
   useEffect(() => {
     if (currentView === "hostDashboard") {
@@ -107,21 +110,14 @@ export default function CryptoLottery() {
       fetchPlayers();
     }
   }, [currentView]);
+  useEffect(()=>{
+    fetchLottery()
+
+  },[])
   
   useEffect(() => {
     if (currentView === "lotteryDetails") {
-      const fetchLottery = async () => {
-        try {
-          const response = await new LogicApiDataSource().getLottery();
-          if (response?.data) {
-           
-            setLottery(response?.data)
-            console.log("dhdhdh",lottery)
-          }
-        } catch (error) {
-          console.error("Failed to fetch lottery:", error);
-        }
-      };
+     
       const fetchPlayers=async ()=>{
          try {
               const response = await new LogicApiDataSource().getAllPlayers();
@@ -204,7 +200,8 @@ export default function CryptoLottery() {
       }
 
       console.log('Lottery created successfully:', response.data);
-      setCurrentView("hostDashboard"); // Set your dashboard view after success
+      setCurrentView("hostDashboard"); 
+      localStorage.setItem("currentView","hostDashboard")// Set your dashboard view after success
     } catch (error) {
       console.error("Unexpected error while creating lottery:", error);
     }
@@ -253,8 +250,28 @@ export default function CryptoLottery() {
         alert("Please connect wallet");
       }
       else{
-        setCurrentView("dashboard");
+        console.log(lottery.owner,"lottery")
+        if(!lottery.owner){
+         
+          setCurrentView("dashboard");
+          localStorage.setItem("currentView","dashboard")
+  
 
+        }
+        else{
+          try {
+            const response = await new LogicApiDataSource().getPlayerByPublicKey();
+            console.log(response, "playerrr ");
+            // if (response?.data) {
+            //   setPlayers(response?.data); // Assuming API returns { players: Player[] }
+            // }
+          } catch (error) {
+            console.error("Failed to fetch players:", error);
+          }
+          
+  
+        }
+       
       }
      
     } catch (error) {
@@ -317,21 +334,31 @@ export default function CryptoLottery() {
               win big. The power of blockchain ensures fairness and transparency in every game.
             </Description>
             <ButtonContainer>
-              <Button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setCurrentView("createLottery")}
-              >
-                Create a Lottery
-              </Button>
-              <Button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setCurrentView("lotteryDetails")}
-              >
-                Join Lottery
-              </Button>
-            </ButtonContainer>
+  {lottery === null ? (
+    <Button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => {
+        setCurrentView("createLottery");
+        localStorage.setItem("currentView", "createLottery");
+      }}
+    >
+      Create a Lottery
+    </Button>
+  ) : (
+    <Button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => {
+        setCurrentView("lotteryDetails");
+        localStorage.setItem("currentView", "lotteryDetails");
+      }}
+    >
+      Join Lottery
+    </Button>
+  )}
+</ButtonContainer>
+
           </motion.div>
         )
       case "createLottery":
@@ -483,10 +510,14 @@ export default function CryptoLottery() {
       <GlobalStyle />
       <AppContainer>
         <Header>
-          <Logo onClick={() => setCurrentView("dashboard")}>
-            <img src={xyz}  height="60px" width="60px" alt="Crypto Lottery Logo" />
-            <AppName>Winfinity</AppName>
+        <Logo onClick={() => {
+              setCurrentView("dashboard");
+              localStorage.setItem("currentView", "dashboard");
+          }}>
+              <img src={xyz} height="60px" width="60px" alt="Crypto Lottery Logo" />
+              <AppName>Winfinity</AppName>
           </Logo>
+
           <div style={{ display: "flex", alignItems: "center" }}>
             {!walletConnected ? (
               <Button
@@ -504,6 +535,7 @@ export default function CryptoLottery() {
                 onClick={() => {
                   setWalletConnected(false)
                   setCurrentView("landing")
+                  localStorage.setItem("currentView", "landing");
                 }}
               >
                 Disconnect Wallet

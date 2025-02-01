@@ -35,6 +35,8 @@ import {
   GetLotteryRequest,
   GetLotteryResponse,
   Player,
+  GetPlayerRequest,
+  GetPlayerResponse
 } from '../clientApi';
 import { getContextId, getNodeUrl } from '../../utils/node';
 import {
@@ -225,6 +227,38 @@ export class LogicApiDataSource implements ClientApi {
   
     return {
       data: response.result.output as GetAllPlayersResponse,
+      error: null,
+    };
+  }
+  
+
+
+  async getPlayerByPublicKey(): ApiResponse<GetPlayerResponse> {
+    const { jwtObject, config, error } = getConfigAndJwt();
+    if (error) {
+      return { error };
+    }
+  
+    const params: RpcQueryParams<{ calimero_public_key: string }> = {
+      contextId: jwtObject?.context_id ?? getContextId(),
+      method: ClientMethod.GET_PLAYER,
+      argsJson: { calimero_public_key:jwtObject.executor_public_key  }, // Passing the public key as an argument
+      executorPublicKey: jwtObject.executor_public_key,
+    };
+  
+    console.log('RPC params:', params);
+  
+    const response = await getJsonRpcClient().execute<null, GetPlayerResponse>(params, config);
+  
+    console.log('Raw response:', response);
+  
+    if (response?.error) {
+      console.error('RPC error:', response.error);
+      return await this.handleError(response.error, {}, this.getPlayerByPublicKey);
+    }
+  
+    return {
+      data: response.result.output as GetPlayerResponse,
       error: null,
     };
   }
