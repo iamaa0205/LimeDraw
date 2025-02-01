@@ -622,6 +622,8 @@ export default function CryptoLottery() {
   const [isGetStartedPopupOpen, setIsGetStartedPopupOpen] = useState(false)
   const [userName, setUserName] = useState("")
   const [calimeroPublicKey, setCalimeroPublicKey] = useState("") // Added state for Calimero Public Key
+  const [lotteryDetails, getLottery] = useState(null)
+  const [players, setPlayers] = useState([])
 
   useEffect(() => {
     if (currentView === "lotteryDetails" && selectedLottery) {
@@ -1051,55 +1053,38 @@ export default function CryptoLottery() {
             </BuyTicketsSection>
           </LotteryDetailsContainer>
         )
-      case "hostDashboard":
-        return (
-          <HostDashboardContainer
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Title>Host Dashboard</Title>
-            <LotteryInfo>
-              <h2>{createLotteryForm.name}</h2>
-              <p>{createLotteryForm.description}</p>
-              <InfoItem>Ticket Price: ${createLotteryForm.ticketPrice}</InfoItem>
-              <InfoItem>Total Tickets: {createLotteryForm.totalTickets}</InfoItem>
-              <InfoItem>
-                Winner Announcement Date: {new Date(createLotteryForm.winnerAnnouncementDate).toLocaleString()}
-              </InfoItem>
-              <InfoItem>Prize Pool: ${createLotteryForm.prizePool}</InfoItem>
-            </LotteryInfo>
-            <StatisticsGrid>
-              <StatCard>
-                <h3>Total Members</h3>
-                <p>42</p>
-              </StatCard>
-              <StatCard>
-                <h3>Entry Fees Collected</h3>
-                <p>$2,100</p>
-              </StatCard>
-              <StatCard>
-                <h3>Tickets Remaining</h3>
-                <p>580</p>
-              </StatCard>
-            </StatisticsGrid>
-            <h3>Members</h3>
-            <MembersList>
-              <MemberItem>User 0x9876...4321</MemberItem>
-              <MemberItem>User 0xabcd...efgh</MemberItem>
-              <MemberItem>User 0x1111...2222</MemberItem>
-            </MembersList>
-            <h3>Recent Activity</h3>
-            <NotificationWindow>
-              {notifications.map((notification, index) => (
-                <p key={index}>
-                  <strong>{notification.timestamp}</strong>: {notification.message}
-                </p>
-              ))}
-            </NotificationWindow>
-          </HostDashboardContainer>
-        )
+        case "hostDashboard":
+          return (
+            <HostDashboardContainer
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Title>Host Dashboard</Title>
+              {lotteryDetails && (
+                <LotteryInfo>
+                  <h2>{lotteryDetails.name}</h2>
+                  <p>{lotteryDetails.description}</p>
+                  <InfoItem>Ticket Price: ${lotteryDetails.ticketPrice}</InfoItem>
+                  <InfoItem>Total Tickets: {lotteryDetails.totalTickets}</InfoItem>
+                  <InfoItem>Tickets Remaining: {lotteryDetails.remainingTickets}</InfoItem>
+                </LotteryInfo>
+                )}
+                <StatisticsGrid>
+                  <StatCard>
+                    <h3>Total Members</h3>
+                    <p>{players.length}</p>
+                  </StatCard>
+                </StatisticsGrid>
+                <h3>Members</h3>
+                <MembersList>
+                  {players.map((player, index) => (
+                    <MemberItem key={index}>{player.name}</MemberItem>
+                  ))}
+                </MembersList>
+              </HostDashboardContainer>
+            )
       default:
         return null
     }
