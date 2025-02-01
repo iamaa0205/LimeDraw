@@ -209,47 +209,6 @@ actor LotteryContract {
   };
 
   // Give A random number
-  // private func randomNumberGenerator(key : Text) : async Nat {
-  //   var found = false;
-  //   var result : Nat = 0;
-  //   let innerMapOpt = availableTicket.get(key);
-  //   let innerMap : HashMap.HashMap<Nat, Bool> = switch (innerMapOpt) {
-  //     case (?map) map;
-  //     case (null) throw Error.reject("Key not found in availableTicket map");
-  //   };
-
-  //   while (not found) {
-  //     // Generate random number
-  //     let blob = await Random.blob();
-  //     seed := Random.rangeFrom(32, blob);
-  //     let maxValue : Nat = switch (await getNoTicket(key)) {
-  //       case (null) {
-  //         throw Error.reject("No tickets available for the given key");
-  //       };
-  //       case (?val) val;
-  //     };
-  //     let randomNumber = (seed % maxValue) + 1;
-
-  //     switch (innerMap.get(randomNumber)) {
-  //       case (?value) {
-  //         if (not value) {
-  //           found := true;
-  //           result := randomNumber;
-  //           innerMap.put(randomNumber, true);
-  //           availableTicket.put(key, innerMap);
-  //         } else {
-  //           Debug.print("Generated " # Nat.toText(randomNumber) # ", but it was true. Trying again.");
-  //         };
-  //       };
-  //       case (null) {
-  //         Debug.print("Generated " # Nat.toText(randomNumber) # ", but it wasn't in the map. Trying again.");
-  //       };
-  //     };
-  //   };
-
-  //   return result;
-  // };
-
   private func randomNumberGenerator(key : Text) : async Nat {
     var result : Nat = 0;
     let blob = await Random.blob();
@@ -264,8 +223,8 @@ actor LotteryContract {
     // let innerMapOpt1 = availableTicket.get(key);
     // let innerMap : HashMap.HashMap<Nat, Bool> = switch (innerMapOpt1) {
     //   case (?map){
-    //     innerMap.put(randomNumber,true);
-    //     availableTicket.put(key,innerMap);
+    //     map.put(randomNumber,true);
+    //     availableTicket.put(key,map);
     //   } ;
     //   case (null) throw Error.reject("Key not found in availableTicket map");
     // };
