@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Search, User, Clock, Ticket, DollarSign, Users } from "lucide-react"
 import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
 import xyz from "./logo.png"
+
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
@@ -574,7 +575,7 @@ const WalletStatus: React.FC<WalletStatusProps> = ({ connected }) => {
 }
 
 export default function CryptoLottery() {
-  const [currentView, setCurrentView] = useState("landing")
+  const [currentView, setCurrentView] = useState("hostDashboard")
   const [walletConnected, setWalletConnected] = useState(false)
   const [createLotteryForm, setCreateLotteryForm] = useState({
     name: "",
@@ -584,35 +585,7 @@ export default function CryptoLottery() {
     winnerAnnouncementDate: "",
     prizePool: 0,
   })
-  const [existingLotteries, setExistingLotteries] = useState([
-    {
-      id: "1",
-      name: "Mega Millions",
-      description: "Win big with Mega Millions!",
-      ticketPrice: "5",
-      owner: "0x1234...5678",
-      prizePool: "1000000",
-      remainingTickets: "1000",
-    },
-    {
-      id: "2",
-      name: "PowerBall",
-      description: "The power is in your hands!",
-      ticketPrice: "3",
-      owner: "0xabcd...efgh",
-      prizePool: "500000",
-      remainingTickets: "500",
-    },
-    {
-      id: "3",
-      name: "EuroJackpot",
-      description: "Europe's favorite lottery",
-      ticketPrice: "4",
-      owner: "0x9876...5432",
-      prizePool: "750000",
-      remainingTickets: "750",
-    },
-  ])
+  const [lottery,setLottery]=useState<any>(null);
   const [selectedLottery, setSelectedLottery] = useState(null)
   const [countdown, setCountdown] = useState("")
   const [ticketsToBuy, setTicketsToBuy] = useState(1)
@@ -623,45 +596,96 @@ export default function CryptoLottery() {
   const [userName, setUserName] = useState("")
   const [calimeroPublicKey, setCalimeroPublicKey] = useState("") // Added state for Calimero Public Key
   const [lotteryDetails, getLottery] = useState(null)
-  const [players, setPlayers] = useState([])
+  const [players, setPlayers] = useState<any>([])
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (currentView === "lotteryDetails" && selectedLottery) {
+    if (currentView === "lotteryDetails" && getLottery) {
       const interval = setInterval(() => {
         const now = new Date().getTime()
-        const endTime = new Date(selectedLottery.winnerAnnouncementDate).getTime()
-        const timeLeft = endTime - now
+        // const endTime = new Date(getLottery.winnerAnnouncementDate).getTime()
+        // const timeLeft = endTime - now
 
-        if (timeLeft < 0) {
-          clearInterval(interval)
-          setCountdown("Winner Announced!")
-        } else {
-          const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
-          const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
-          const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
+        // if (timeLeft < 0) {
+        //   clearInterval(interval)
+        //   setCountdown("Winner Announced!")
+        // } else {
+        //   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+        //   const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        //   const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+        //   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
 
-          setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`)
-        }
+        //   setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`)
+        // }
       }, 1000)
 
       return () => clearInterval(interval)
     }
-  }, [currentView, selectedLottery])
+  }, [currentView, getLottery])
 
   useEffect(() => {
     if (currentView === "hostDashboard") {
-      const interval = setInterval(() => {
-        const newNotification = {
-          message: `User 0x${Math.random().toString(16).substr(2, 8)} purchased ${Math.floor(Math.random() * 10) + 1} tickets`,
-          timestamp: new Date().toLocaleTimeString(),
+      const fetchLottery = async () => {
+        try {
+          const response = await new LogicApiDataSource().getLottery();
+          if (response?.data) {
+           
+            setLottery(response?.data)
+            console.log("dhdhdh",lottery)
+          }
+        } catch (error) {
+          console.error("Failed to fetch lottery:", error);
         }
-        setNotifications((prev) => [newNotification, ...prev.slice(0, 9)])
-      }, 5000)
+      };
+      const fetchPlayers=async ()=>{
+         try {
+              const response = await new LogicApiDataSource().getAllPlayers();
+              console.log(response, "new ");
+              if (response?.data) {
+                setPlayers(response?.data); // Assuming API returns { players: Player[] }
+              }
+            } catch (error) {
+              console.error("Failed to fetch players:", error);
+            }
 
-      return () => clearInterval(interval)
+      }
+  
+      fetchLottery();
+      fetchPlayers();
     }
-  }, [currentView])
+  }, [currentView]);
+  
+  useEffect(() => {
+    if (currentView === "lotteryDetails") {
+      const fetchLottery = async () => {
+        try {
+          const response = await new LogicApiDataSource().getLottery();
+          if (response?.data) {
+           
+            setLottery(response?.data)
+            console.log("dhdhdh",lottery)
+          }
+        } catch (error) {
+          console.error("Failed to fetch lottery:", error);
+        }
+      };
+      const fetchPlayers=async ()=>{
+         try {
+              const response = await new LogicApiDataSource().getAllPlayers();
+              console.log(response, "new ");
+              if (response?.data) {
+                setPlayers(response?.data); // Assuming API returns { players: Player[] }
+              }
+            } catch (error) {
+              console.error("Failed to fetch players:", error);
+            }
+
+      }
+  
+      fetchLottery();
+      fetchPlayers();
+    }
+  }, [currentView]);
 
   const onButtonPress = async (el: { target: HTMLElement }) => {
     el.target.disabled = true
@@ -716,6 +740,7 @@ export default function CryptoLottery() {
       ticket_count: createLotteryForm.totalTickets,
       prize_pool: createLotteryForm.prizePool,
     };
+    setLottery(request)
 
     try {
       const response = await new LogicApiDataSource().createLottery(request);
@@ -738,9 +763,7 @@ export default function CryptoLottery() {
   }
 
   const handleJoinLottery = (lotteryId: string) => {
-    const lottery = existingLotteries.find((l) => l.id === lotteryId)
-    setSelectedLottery(lottery)
-    setCurrentView("lotteryDetails")
+   
   }
 
   const handleBuyTickets = (e: React.FormEvent) => {
@@ -787,11 +810,7 @@ export default function CryptoLottery() {
   };
   
 
-  const filteredLotteries = existingLotteries.filter(
-    (lottery) =>
-      lottery.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lottery.description.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  
 
   const renderView = () => {
     switch (currentView) {
@@ -855,9 +874,9 @@ export default function CryptoLottery() {
               <Button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setCurrentView("joinLottery")}
+                onClick={() => setCurrentView("lotteryDetails")}
               >
-                Join an Existing Lottery
+                Join Lottery
               </Button>
             </ButtonContainer>
           </motion.div>
@@ -919,50 +938,7 @@ export default function CryptoLottery() {
             </Form>
           </motion.div>
         )
-      case "joinLottery":
-        return (
-          <motion.div initial="hidden" animate="visible" exit="hidden" variants={fadeInUp} transition={pageTransition}>
-            <Title>Join an Exciting Lottery</Title>
-            <SearchBar>
-              <SearchInput
-                type="text"
-                placeholder="Search lotteries..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <SearchButton onClick={handleSearch}>
-                <Search size={20} />
-              </SearchButton>
-            </SearchBar>
-            <LotteryList>fz
-              {filteredLotteries.map((lottery, index) => (
-                <LotteryCard
-                  key={index}
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeInUp}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                >
-                  <div>
-                    <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{lottery.name}</h3>
-                    <p style={{ fontSize: "1rem", color: "#cccccc", marginBottom: "1rem" }}>{lottery.description}</p>
-                    <p style={{ fontSize: "1.2rem", color: "#4a90e2" }}>Ticket Price: ${lottery.ticketPrice}</p>
-                    <p>Owner: {lottery.owner}</p>
-                    <p>Remaining Tickets: {lottery.remainingTickets}</p>
-                  </div>
-                  <Button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleJoinLottery(lottery.id)}
-                    style={{ marginTop: "1rem" }}
-                  >
-                    Join Now
-                  </Button>
-                </LotteryCard>
-              ))}
-            </LotteryList>
-          </motion.div>
-        )
+      
       case "lotteryDetails":
         return (
           <LotteryDetailsContainer
@@ -971,69 +947,28 @@ export default function CryptoLottery() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
           >
-            <LotteryHeader>
-              <LotteryName>{selectedLottery.name}</LotteryName>
-              <LotteryDescription>{selectedLottery.description}</LotteryDescription>
-              <CreatorInfo>
-                <CreatorAvatar>
-                  <User size={24} />
-                </CreatorAvatar>{" "}
-                <CreatorAddress>{selectedLottery.owner}</CreatorAddress>
-              </CreatorInfo>
-            </LotteryHeader>
-
-            <CountdownContainer>
-              <CountdownTimer urgent={countdown.includes("h") && Number.parseInt(countdown.split("h")[0]) < 24}>
-                {countdown}
-              </CountdownTimer>
-              <CountdownLabel>Time Remaining</CountdownLabel>
-            </CountdownContainer>
-
-            <DetailsGrid>
-              <DetailCard whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <DetailIcon>
-                  <Ticket />
-                </DetailIcon>
-                <DetailLabel>Ticket Price</DetailLabel>
-                <DetailValue>${selectedLottery.ticketPrice}</DetailValue>
-              </DetailCard>
-              <DetailCard whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <DetailIcon>
-                  <DollarSign />
-                </DetailIcon>
-                <DetailLabel>Prize Pool</DetailLabel>
-                <DetailValue>${selectedLottery.prizePool}</DetailValue>
-              </DetailCard>
-              <DetailCard whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <DetailIcon>
-                  <Ticket />
-                </DetailIcon>
-                <DetailLabel>Remaining Tickets</DetailLabel>
-                <DetailValue>{selectedLottery.remainingTickets}</DetailValue>
-              </DetailCard>
-              <DetailCard whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <DetailIcon>
-                  <Clock />
-                </DetailIcon>
-                <DetailLabel>Winner Announcement</DetailLabel>
-                <DetailValue>{new Date(selectedLottery.winnerAnnouncementDate).toLocaleDateString()}</DetailValue>
-              </DetailCard>
-            </DetailsGrid>
-
-            <MembersSection>
-              <h2>Members</h2>
-              <MembersGrid>
-                {[...Array(10)].map((_, index) => (
-                  <MemberAvatar key={index}>
-                    <User size={24} />
-                  </MemberAvatar>
-                ))}
-              </MembersGrid>
-              <TotalMembers>
-                <Users size={16} style={{ marginRight: "0.5rem" }} />
-                Total Participants: 42
-              </TotalMembers>
-            </MembersSection>
+            <Title>Lottery Dashboard</Title>
+              {lottery && (
+                <LotteryInfo>
+                  <h2>{lottery.name}</h2>
+                  <p>{lottery.description}</p>
+                  <InfoItem>Ticket Price: ${lottery.ticket_price}</InfoItem>
+                  <InfoItem>Total Tickets: {lottery.ticket_count}</InfoItem>
+                  <InfoItem>Tickets Remaining: {lottery.remaining_tickets}</InfoItem>
+                </LotteryInfo>
+                )}
+                <StatisticsGrid>
+                  <StatCard>
+                    <h3>Total Members</h3>
+                    <p>{players.length}</p>
+                  </StatCard>
+                </StatisticsGrid>
+                <h3>Members</h3>
+                <MembersList>
+                  {players.map((player, index) => (
+                    <MemberItem key={index}>{player.name}</MemberItem>
+                  ))}
+                </MembersList>
 
             <BuyTicketsSection>
               <h2>Buy Tickets</h2>
@@ -1049,7 +984,7 @@ export default function CryptoLottery() {
                   Buy Tickets
                 </BuyButton>
               </BuyTicketsForm>
-              <TotalCost>Total Cost: ${(Number(selectedLottery.ticketPrice) * ticketsToBuy).toFixed(2)}</TotalCost>
+              {lottery && (<TotalCost>Total Cost: ${(Number(lottery.ticketPrice) * ticketsToBuy).toFixed(2)}</TotalCost> )}
             </BuyTicketsSection>
           </LotteryDetailsContainer>
         )
@@ -1062,13 +997,13 @@ export default function CryptoLottery() {
               transition={{ duration: 0.5 }}
             >
               <Title>Host Dashboard</Title>
-              {lotteryDetails && (
+              {lottery && (
                 <LotteryInfo>
-                  <h2>{lotteryDetails.name}</h2>
-                  <p>{lotteryDetails.description}</p>
-                  <InfoItem>Ticket Price: ${lotteryDetails.ticketPrice}</InfoItem>
-                  <InfoItem>Total Tickets: {lotteryDetails.totalTickets}</InfoItem>
-                  <InfoItem>Tickets Remaining: {lotteryDetails.remainingTickets}</InfoItem>
+                  <h2>{lottery.name}</h2>
+                  <p>{lottery.description}</p>
+                  <InfoItem>Ticket Price: ${lottery.ticket_price}</InfoItem>
+                  <InfoItem>Total Tickets: {lottery.ticket_count}</InfoItem>
+                  <InfoItem>Tickets Remaining: {lottery.remaining_tickets}</InfoItem>
                 </LotteryInfo>
                 )}
                 <StatisticsGrid>
