@@ -217,7 +217,7 @@ actor LotteryContract {
           Debug.print("Count is greater than or equal to array size");
           [];
         } else {
-          Array.tabulate<Nat>(size - count, func(i) { array[i + count] });
+          Array.tabulate<Nat>(size - count, func(i) { Int.abs(array[i + count]) });
         };
       };
     };
