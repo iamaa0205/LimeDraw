@@ -92,7 +92,7 @@ echo "Creating and deploying canister..."
 # dfx canister create context_contract
 dfx canister create icp_ledger_canister
 # dfx canister create mock_external
-# dfx canister create LOTTERY_APP_backend
+dfx canister create LOTTERY_APP_backend
 
 # Get the context ID
 # CONTEXT_ID=$(dfx canister id context_contract)
@@ -142,6 +142,11 @@ LEDGER_ID=$(dfx canister id icp_ledger_canister)
 # dfx canister install mock_external --mode=install --argument "(principal \"${LEDGER_ID}\")"
 # MOCK_EXTERNAL_ID=$(dfx canister id mock_external)
 
+# Install the backend canister
+dfx canister install LOTTERY_APP_backend --mode=install --argument "(principal \"{$LEDGER_ID}\")"
+BACKEND_CANISTER=$(dfx canister id LOTTERY_APP_backend)
+BACKEND_URL=$(dfx canister url LOTTERY_APP_backend)
+
 # # Get the directory where the script is located
 # SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -166,9 +171,11 @@ LEDGER_ID=$(dfx canister id icp_ledger_canister)
 
 # Print all relevant information at the end
 echo -e "\n=== Deployment Summary ==="
-echo "Context Contract ID: ${CONTEXT_ID}"
+# echo "Context Contract ID: ${CONTEXT_ID}"
 echo "Ledger Contract ID: ${LEDGER_ID}"
-echo "Demo External Contract ID: ${MOCK_EXTERNAL_ID}"
+echo "Backend Canister Contract ID: ${BACKEND_CANISTER}"
+echo "Url for Backend Canister: ${BACKEND_URL}"
+# echo "Demo External Contract ID: ${MOCK_EXTERNAL_ID}"
 echo -e "\nAccount Information:"
 echo "Minting Account: ${MINTING_ACCOUNT}"
 echo "Initial Account: ${INITIAL_ACCOUNT}"

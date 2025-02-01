@@ -1,7 +1,7 @@
 {
   "canisters": {
     "LOTTERY_APP_backend": {
-      "main": "src/LOTTERY_APP_backend/main.mo",
+      "main": "src/LOTTERY_APP_backend/backend.mo",
       "type": "motoko"
     },
     "icp_ledger_canister": {

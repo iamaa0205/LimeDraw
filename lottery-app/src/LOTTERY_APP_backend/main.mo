@@ -1,5 +1,7 @@
 import IC "ic:aaaaa-aa";
 import Principal "mo:base/Principal";
+import HashMap "mo:base/HashMap";
+import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Text "mo:base/Text";
 import Nat "mo:base/Nat";
