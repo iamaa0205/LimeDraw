@@ -32,6 +32,8 @@ import {
   CreatePlayerResponse,
   GetAllPlayersRequest,
   GetAllPlayersResponse,
+  GetLotteryRequest,
+  GetLotteryResponse,
   Player,
 } from '../clientApi';
 import { getContextId, getNodeUrl } from '../../utils/node';
@@ -93,7 +95,7 @@ export class LogicApiDataSource implements ClientApi {
       method: ClientMethod.CREATE_LOTTERY,
       argsJson: {
         name: request.name || "Untitled Lottery", // Ensure default values
-        description: request.description || "Anonymous Lottery", 
+        description: request.description || "hehehehehehe", 
         ticket_price: Number(request.ticket_price) || 1,
         ticket_count: Number(request.ticket_count) || 1,
         prize_pool: Number(request.prize_pool) || 1,
@@ -122,7 +124,39 @@ export class LogicApiDataSource implements ClientApi {
     };
   }
 
+  async getLottery(
+  ): ApiResponse<GetLotteryResponse> {
+    const { jwtObject, config, error } = getConfigAndJwt();
+    if (error) {
+      return { error };
+    }
 
+    const params: RpcQueryParams<typeof request> = {
+      contextId: jwtObject?.context_id ?? getContextId(),
+      method: ClientMethod.GET_LOTTERY,
+      argsJson: {},
+      executorPublicKey: jwtObject.executor_public_key,
+    };
+
+    console.log('RPC params:', params);
+
+    const response = await getJsonRpcClient().execute<
+      typeof request,
+      GetLotteryResponse
+    >(params, config);
+
+    console.log('Raw response:', response);
+
+    if (response?.error) {
+      console.error('RPC error:', response.error);
+      return await this.handleError(response.error, request, this.getLottery);
+    }
+
+    return {
+      data: response.result.output as GetLotteryResponse,
+      error: null,
+    };
+  }
 
 
   async createPlayer(
@@ -138,7 +172,7 @@ export class LogicApiDataSource implements ClientApi {
       method: ClientMethod.CREATE_PLAYER,
       argsJson: {
         name: request.name || "Anonymous Player", // Default name
-        calimero_public_key: request.calimero_public_key || "default-key",
+        calimero_public_key: jwtObject.executor_public_key || "default-key",
       },
       executorPublicKey: jwtObject.executor_public_key,
     };
@@ -162,6 +196,9 @@ export class LogicApiDataSource implements ClientApi {
       error: null,
     };
   }
+
+
+
   async getAllPlayers(): ApiResponse<GetAllPlayersResponse> {
     const { jwtObject, config, error } = getConfigAndJwt();
     if (error) {

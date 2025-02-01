@@ -670,7 +670,7 @@ export default function CryptoLottery() {
       if (hasAllowed) {
         console.log("Plug wallet is connected")
         setWalletConnected(true)
-        setCurrentView("dashboard")
+        // setCurrentView("dashboard")
       } else {
         console.log("Plug wallet connection was refused")
       }
@@ -695,7 +695,7 @@ export default function CryptoLottery() {
       } else {
         console.log(`Connecting ${wallet}...`)
         setWalletConnected(true)
-        setCurrentView("dashboard")
+       
       }
       setIsWalletPopupOpen(false)
     },
@@ -759,11 +759,11 @@ export default function CryptoLottery() {
     try {
       const response = await new LogicApiDataSource().createPlayer({
         name: userName,
-        calimero_public_key: calimeroPublicKey,
       });
   
       if (response.error) {
         console.error("Error creating player:", response.error);
+        alert("Please enter with correct name.")
         return;
       }
   
@@ -771,7 +771,14 @@ export default function CryptoLottery() {
   
       // Close the popup and navigate to the dashboard after successful player creation
       setIsGetStartedPopupOpen(false);
-      setCurrentView("dashboard");
+      if(walletConnected===false){
+        alert("Please connect wallet");
+      }
+      else{
+        setCurrentView("dashboard");
+
+      }
+     
     } catch (error) {
       console.error("Unexpected error:", error);
     }
@@ -925,7 +932,7 @@ export default function CryptoLottery() {
                 <Search size={20} />
               </SearchButton>
             </SearchBar>
-            <LotteryList>
+            <LotteryList>fz
               {filteredLotteries.map((lottery, index) => (
                 <LotteryCard
                   key={index}
@@ -1153,7 +1160,7 @@ export default function CryptoLottery() {
             >
               <PopupTitle>Connect Your Wallet</PopupTitle>
               <WalletList>
-                {["Plug", "MetaMask", "WalletConnect", "Coinbase Wallet", "Trust Wallet"].map((wallet) => (
+                {["Plug"].map((wallet) => (
                   <WalletButton
                     key={wallet}
                     onClick={() => handleConnectWallet(wallet)}
@@ -1187,13 +1194,6 @@ export default function CryptoLottery() {
                   placeholder="Your Name"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  required
-                />
-                <Input
-                  type="text"
-                  placeholder="Calimero Public Key"
-                  value={calimeroPublicKey}
-                  onChange={(e) => setCalimeroPublicKey(e.target.value)}
                   required
                 />
                 <Button type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

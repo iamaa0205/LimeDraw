@@ -17,6 +17,7 @@ const CounterComponent: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [incrementing, setIncrementing] = useState<boolean>(false);
   const [players, setPlayers] = useState<Player[]>([]); // State for players
+  const [lottery, setLottery] = useState<string | null>(null); // State for lottery result
 
   // Fetch counter value on mount
   useEffect(() => {
@@ -53,12 +54,26 @@ const CounterComponent: React.FC = () => {
     setLoading(true);
     try {
       const response = await new LogicApiDataSource().getAllPlayers();
-      console.log(response,"new ")
+      console.log(response, "new ");
       if (response?.data) {
         setPlayers(response.data.players); // Assuming API returns { players: Player[] }
       }
     } catch (error) {
       console.error("Failed to fetch players:", error);
+    }
+    setLoading(false);
+  };
+
+  const getLottery = async () => {
+    setLoading(true);
+    try {
+      const response = await new LogicApiDataSource().getLottery();
+      if (response?.data) {
+        console.log(response.data)
+       
+      }
+    } catch (error) {
+      console.error("Failed to fetch lottery:", error);
     }
     setLoading(false);
   };
@@ -85,6 +100,13 @@ const CounterComponent: React.FC = () => {
       >
         {loading ? "Fetching..." : "Show All Players"}
       </button>
+      <button
+        style={{ ...styles.button, background: "#ffc107", color: "#333" }}
+        onClick={getLottery}
+        disabled={loading}
+      >
+        {loading ? "Fetching..." : "Get Lottery"}
+      </button>
       {players.length > 0 && (
         <div style={styles.playersList}>
           <h3>Players:</h3>
@@ -93,6 +115,12 @@ const CounterComponent: React.FC = () => {
               <li key={index}>{player.name}</li> // Display player's name
             ))}
           </ul>
+        </div>
+      )}
+      {lottery && (
+        <div style={styles.lotteryResult}>
+          <h3>Lottery Result:</h3>
+          <p>{lottery}</p>
         </div>
       )}
     </div>
@@ -139,6 +167,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "8px",
     width: "100%",
     boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+  },
+  lotteryResult: {
+    marginTop: "1rem",
+    padding: "1rem",
+    background: "#ffeeba",
+    borderRadius: "8px",
+    width: "100%",
+    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    textAlign: "center",
   },
 };
 

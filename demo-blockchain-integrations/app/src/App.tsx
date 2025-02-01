@@ -19,6 +19,7 @@ export default function App() {
           <Route path="/navigate" element={<CryptoLottery />} />
           <Route path="/counter" element={<CounterComponent />} />
           <Route path="/winner" element={<Winner />}/>
+          
         </Routes>
       </BrowserRouter>
     </AccessTokenWrapper>

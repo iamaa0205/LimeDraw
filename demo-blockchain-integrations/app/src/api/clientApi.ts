@@ -114,7 +114,7 @@ export interface GetCounterValueResponse {
 
 export interface CreatePlayerRequest {
   name: string;
-  calimero_public_key: string;
+  calimero_public_key?: string;
 }
 
 export interface CreatePlayerResponse {
@@ -163,6 +163,14 @@ export interface LotteryState {
   winner: Player | null;
 }
 
+export interface GetLotteryRequest {
+}
+
+export interface GetLotteryResponse {
+  success: boolean;
+  lottery: LotteryState | null;
+}
+
 
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',
@@ -175,6 +183,8 @@ export enum ClientMethod {
   CREATE_PLAYER = 'create_player',
   GET_ALL_PLAYERS = 'get_all_players',
   CREATE_LOTTERY = 'create_lottery',
+  GET_LOTTERY = 'get_lottery',
+
 }
 
 export interface ClientApi {

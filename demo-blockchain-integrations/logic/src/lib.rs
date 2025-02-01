@@ -47,7 +47,7 @@ pub struct Counter {
 pub struct Player {
     name: String,
     calimero_public_key: String,
-    role: u32, 
+    role: u32,
 }
 
 #[derive(
@@ -112,49 +112,66 @@ impl AppState {
         ));
         Ok(self.counter.value)
     }
-    pub fn create_player(&mut self, calimero_public_key: String, name: String) -> Result<(), Error> {
+
+    pub fn create_player(
+        &mut self,
+        name: String,
+        calimero_public_key: String,
+    ) -> Result<(), Error> {
         // Debug log to check function call
         env::log(&format!(
             "📥 Creating new player: name={}, calimero_public_key={}",
             name, calimero_public_key
         ));
-    
+
         // Check if the public key is already associated with a player
-        if self.calimero_public_key_onwer.get(&calimero_public_key)?.is_some() {
-            env::log("❌ Error: Player with this Calimero public key already exists");
-            return Err(Error::msg("Player with this Calimero public key already exists"));
+        if let Some(existing_player) = self.calimero_public_key_onwer.get(&calimero_public_key)? {
+            if existing_player.name == name {
+                env::log("ℹ️ Player with the same Calimero public key and name already exists. Returning.");
+                return Ok(());
+            } else {
+                env::log("❌ Error: Player with this Calimero public key already exists but with a different name");
+                return Err(Error::msg(
+                    "Player with this Calimero public key already exists but with a different name",
+                ));
+            }
         }
-    
+
         // Create a new player with default role (assuming 0 is the default for a player)
         let new_player = Player {
             name: name.clone(),
             calimero_public_key: calimero_public_key.clone(),
             role: 0, // Default role
         };
-    
+
         // Add player to the players array
         self.players.push(new_player.clone());
-    
+
         // Add player to calimero_public_key_onwer map
-        self.calimero_public_key_onwer.insert(calimero_public_key, new_player)?;
-    
+        self.calimero_public_key_onwer
+            .insert(calimero_public_key, new_player)?;
+
         env::log("✅ Player successfully created!");
         Ok(())
     }
+
     pub fn get_all_players(&self) -> Result<Vec<Player>, Error> {
         env::log("📤 Fetching all players");
-    
+
         // Check if there are any players
         if self.players.is_empty() {
             env::log("ℹ️ No players found.");
             return Ok(vec![]);
         }
-    
+
         Ok(self.players.clone()) // Return a clone of the players array
     }
 
+    pub fn get_lottery(&self) -> Result<LotteryState, Error> {
+        env::log("📤 Fetching current lottery state");
+        Ok(self.lottery_state.clone())
+    }
 
-    
     pub fn create_lottery(
         &mut self,
         name: String,
@@ -169,17 +186,27 @@ impl AppState {
             "📥 Creating a new lottery: name={}, description={}, ticket_price={}, ticket_count={}, prize_pool={}",
             name, description, ticket_price, ticket_count, prize_pool
         ));
-    
+
         // Check if the player exists in the map using the Calimero public key
         let player = self.calimero_public_key_onwer.get(&calimero_public_key)?;
         if player.is_none() {
             env::log("❌ Error: No player found with the provided Calimero public key");
-            return Err(Error::msg("No player found with the provided Calimero public key"));
+            return Err(Error::msg(
+                "No player found with the provided Calimero public key",
+            ));
+        }
+
+        // Get the player from the map
+        let mut player = player.unwrap();
+        player.role = 1;
+
+        if let Some(existing_player) = self.players.iter_mut().find(|p| p.calimero_public_key == calimero_public_key) {
+            existing_player.role = 1;
         }
     
-        // Get the player from the map
-        let player = player.unwrap();
-    
+        // Update the player in the map as well
+        self.calimero_public_key_onwer.insert(calimero_public_key, player.clone())?;
+
         // Create the new lottery with the provided parameters
         let new_lottery = LotteryState {
             name,
@@ -188,19 +215,16 @@ impl AppState {
             ticket_count,
             remaining_tickets: ticket_count,
             prize_pool,
-            owner: Some(player),  // Assign the owner
-            winner: None,  // Set the winner to None initially
+            owner: Some(player), // Assign the owner
+            winner: None,        // Set the winner to None initially
         };
-    
+
         // Assign the new lottery to the state (you may want to store this lottery)
         self.lottery_state = new_lottery;
-    
+
         env::log("✅ Lottery successfully created!");
         Ok(())
     }
-    
-    
-
 
     pub fn create_new_proposal(
         &mut self,
