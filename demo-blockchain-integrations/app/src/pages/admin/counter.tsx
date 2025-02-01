@@ -54,7 +54,7 @@ const CounterComponent: React.FC = () => {
     setLoading(true);
     try {
       const response = await new LogicApiDataSource().getAllPlayers();
-      console.log(response, "new ");
+      console.log(response.data, "new ");
       if (response?.data) {
         setPlayers(response.data.players); // Assuming API returns { players: Player[] }
       }
