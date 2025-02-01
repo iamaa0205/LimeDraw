@@ -1,9 +1,9 @@
-import IC "ic:aaaaa-aa";
+// import IC "ic:aaaaa-aa";
 import Principal "mo:base/Principal";
 import HashMap "mo:base/HashMap";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
-import Text "mo:base/Text";
+// import Text "mo:base/Text";
 import Nat "mo:base/Nat";
 import Nat8 "mo:base/Nat8";
 import Random "mo:base/Random";
@@ -11,7 +11,7 @@ import Random "mo:base/Random";
 import Iter "mo:base/Iter";
 import Debug "mo:base/Debug";
 import Blob "mo:base/Blob";
-import IcpLedger "canister:icp_ledger_canister";
+// import IcpLedger "canister:icp_ledger_canister";
 import Nat64 "mo:base/Nat64";
 import Error "mo:base/Error";
 

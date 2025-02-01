@@ -5,7 +5,6 @@ import Nat "mo:base/Nat";
 import Nat32 "mo:base/Nat32";
 import Nat64 "mo:base/Nat64";
 import Hash "mo:base/Hash";
-// import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
 import Debug "mo:base/Debug";
 import Random "mo:base/Random";
@@ -13,7 +12,7 @@ import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 // import Prelude "mo:base/Prelude";
 // import Int "mo:base/Int";
-
+// import Blob "mo:base/Blob";
 // import Canister "mo:basec/Canister";
 
 actor LotteryContract {
@@ -327,25 +326,6 @@ actor LotteryContract {
   public query func getPrincipal(key : Text) : async ?Principal {
     contextToPrincipalMap.get(key);
   };
-
-  // Get the remaining numbers
-  //   public func getRemainingNumbers(key : Text, count : Nat) : async [Nat] {
-  //     switch (availableTicket.get(key)) {
-  //       case (null) {
-  //         Debug.print("Key not found in map");
-  //         [];
-  //       };
-  //       case (?array) {
-  //         let size = array.size();
-  //         if (count >= size) {
-  //           Debug.print("Count is greater than or equal to array size");
-  //           [];
-  //         } else {
-  //           Array.tabulate<Nat>(size - count, func(i) { Int.abs(array[i + count]) });
-  //         };
-  //       };
-  //     };
-  //   };
 };
 
 // ihrv7-sbtxl-yt4ak-y4mk4-xl7es-o2gw6-6dmhu-7ojwp-gxjvx-y3wkj-oqe
