@@ -5,14 +5,14 @@ import Nat "mo:base/Nat";
 import Nat32 "mo:base/Nat32";
 import Nat64 "mo:base/Nat64";
 import Hash "mo:base/Hash";
-import Blob "mo:base/Blob";
+// import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
 import Debug "mo:base/Debug";
 import Random "mo:base/Random";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
-import Prelude "mo:base/Prelude";
-import Int "mo:base/Int";
+// import Prelude "mo:base/Prelude";
+// import Int "mo:base/Int";
 
 // import Canister "mo:basec/Canister";
 
@@ -32,10 +32,15 @@ actor LotteryContract {
   let availableTicket : HashMap.HashMap<Text, HashMap.HashMap<Nat, Bool>> = HashMap.HashMap<Text, HashMap.HashMap<Nat, Bool>>(16, Text.equal, Text.hash);
   // Mapping to store the available no of tickets rn
   let availableNoTicket : HashMap.HashMap<Text, Nat> = HashMap.HashMap<Text, Nat>(16, Text.equal, Text.hash);
+  // Tickets Array for a lottery which is shuffled based on randomness
+  let ticketsAvailable : HashMap.HashMap<Text, [var Nat]> = HashMap.HashMap<Text, [var Nat]>(16, Text.equal, Text.hash);
   // Mapping from ContextId1 to calimeroPubKey to ticketNumber
   let contextToPubKeyToTicket : HashMap.HashMap<Text, HashMap.HashMap<Text, Nat>> = HashMap.HashMap<Text, HashMap.HashMap<Text, Nat>>(16, Text.equal, Text.hash);
   // private var publicKey : Blob = Blob.fromArray([]);
   let contextToPrincipalMap : HashMap.HashMap<Text, Principal> = HashMap.HashMap<Text, Principal>(16, Text.equal, Text.hash);
+  // Store the Winner Here
+  let storeWinner : HashMap.HashMap<Text, Nat> = HashMap.HashMap<Text, Nat>(16, Text.equal, Text.hash);
+  // let Winner
   // private var publicKey : Principal = Principal.fromText("2vxsx-fae");
   var seed : Nat = 0;
 
@@ -56,11 +61,12 @@ actor LotteryContract {
   public func addLottery(num : Nat, t1 : Text, t2 : Text, _pubKey : Text) : async () {
     switch (Context1to2.get(t1)) {
       case (null) {
-        let res1 = await set1to2(t1, t2);
-        let res2 = await set2to1(t2, t1);
-        // maybe initialize the winner as false
-        let res4 = await setNoTicket(t1, num);
-        let res5 = await setContextToPrincipal(t1, Principal.fromText(_pubKey));
+        let _ = await set1to2(t1, t2);
+        let _ = await set2to1(t2, t1);
+        WinnerMap.put(t1, false);
+        let _ = await setNoTicket(t1, num);
+        let _ = await setContextToPrincipal(t1, Principal.fromText(_pubKey));
+        availableNoTicket.put(t1, num);
         // publicKey := Principal.fromText(_pubKey);
         let innerMap = HashMap.HashMap<Nat, Bool>(num, Nat.equal, customNatHash);
 
@@ -69,10 +75,12 @@ actor LotteryContract {
         };
 
         availableTicket.put(t1, innerMap);
-        // let availableNumbers = Array.tabulate<Nat>(num, func(i) { i + 1 });
-        // availableTicket.put(t1, availableNumbers);
+        let array = Array.tabulateVar<Nat>(num, func(i) { i + 1 });
+        ticketsAvailable.put(t1, array);
       };
-      case (?val) {
+      // let availableNumbers = Array.tabulate<Nat>(num, func(i) { i + 1 });
+      // availableTicket.put(t1, availableNumbers);
+      case (?_) {
         throw Error.reject("Lottery Already Initialized!");
       };
     };
@@ -105,10 +113,10 @@ actor LotteryContract {
       // Handle the error
       Debug.print("Error: " # Error.message(error));
     };
-    let num = await randomNumberGenerator(key);
+    let num = await randomNumberGenerator2(key);
     WinnerMap.put(key, true);
+    storeWinner.put(key, num);
     return ?num;
-
   };
 
   // Function to set the context id to a principal
@@ -140,8 +148,8 @@ actor LotteryContract {
       Debug.print("Error: " # Error.message(error));
     };
     var innerKey : Nat = await randomNumberGenerator(contextId);
-    let res = await setTicketNoToPub(contextId, innerKey, key);
-    let res1 = await setcontextToPubKeyToTicket(contextId, key, innerKey);
+    let _ = await setTicketNoToPub(contextId, innerKey, key);
+    let _ = await setcontextToPubKeyToTicket(contextId, key, innerKey);
   };
 
   // Set the Ticket Number alloted to the Calimero-Pub-Key wrt to a ContextId
@@ -175,7 +183,7 @@ actor LotteryContract {
   };
 
   // Function to check the equality of the proxy contract
-  public shared (msg) func checkPublicKey(callerkey : Principal, key : Text) : async () {
+  public func checkPublicKey(callerkey : Principal, key : Text) : async () {
     // let callerPrincipal : Principal = msg.caller;
     // let derivedPrincipal = Principal.fromBlob(publicKey);
     var publicKey : Principal = switch (await getPrincipal(key)) {
@@ -190,7 +198,7 @@ actor LotteryContract {
     };
 
     if (not Principal.equal(callerkey, publicKey)) {
-      throw Error.reject("Caller's principal does not match the stored public key" #Principal.toText(callerkey));
+      throw Error.reject("Caller's principal does not match the stored public key " #Principal.toText(callerkey));
     };
     // If we reach here, the principals match
   };
@@ -201,49 +209,122 @@ actor LotteryContract {
   };
 
   // Give A random number
+  // private func randomNumberGenerator(key : Text) : async Nat {
+  //   var found = false;
+  //   var result : Nat = 0;
+  //   let innerMapOpt = availableTicket.get(key);
+  //   let innerMap : HashMap.HashMap<Nat, Bool> = switch (innerMapOpt) {
+  //     case (?map) map;
+  //     case (null) throw Error.reject("Key not found in availableTicket map");
+  //   };
+
+  //   while (not found) {
+  //     // Generate random number
+  //     let blob = await Random.blob();
+  //     seed := Random.rangeFrom(32, blob);
+  //     let maxValue : Nat = switch (await getNoTicket(key)) {
+  //       case (null) {
+  //         throw Error.reject("No tickets available for the given key");
+  //       };
+  //       case (?val) val;
+  //     };
+  //     let randomNumber = (seed % maxValue) + 1;
+
+  //     switch (innerMap.get(randomNumber)) {
+  //       case (?value) {
+  //         if (not value) {
+  //           found := true;
+  //           result := randomNumber;
+  //           innerMap.put(randomNumber, true);
+  //           availableTicket.put(key, innerMap);
+  //         } else {
+  //           Debug.print("Generated " # Nat.toText(randomNumber) # ", but it was true. Trying again.");
+  //         };
+  //       };
+  //       case (null) {
+  //         Debug.print("Generated " # Nat.toText(randomNumber) # ", but it wasn't in the map. Trying again.");
+  //       };
+  //     };
+  //   };
+
+  //   return result;
+  // };
+
   private func randomNumberGenerator(key : Text) : async Nat {
-    var found = false;
     var result : Nat = 0;
-    let innerMapOpt = availableTicket.get(key);
-    let innerMap : HashMap.HashMap<Nat, Bool> = switch (innerMapOpt) {
-      case (?map) map;
-      case (null) throw Error.reject("Key not found in availableTicket map");
-    };
-
-    while (not found) {
-      // Generate random number
-      let blob = await Random.blob();
-      seed := Random.rangeFrom(32, blob);
-      let maxValue : Nat = switch (await getNoTicket(key)) {
-        case (null) {
-          throw Error.reject("No tickets available for the given key");
-        };
-        case (?val) val;
+    let blob = await Random.blob();
+    seed := Random.rangeFrom(32, blob);
+    let maxValue : Nat = switch (availableNoTicket.get(key)) {
+      case (null) {
+        throw Error.reject("No tickets available for the given key");
       };
-      let randomNumber = (seed % maxValue) + 1;
+      case (?val) val;
+    };
+    let randomNumber = (seed % maxValue);
+    // let innerMapOpt1 = availableTicket.get(key);
+    // let innerMap : HashMap.HashMap<Nat, Bool> = switch (innerMapOpt1) {
+    //   case (?map){
+    //     innerMap.put(randomNumber,true);
+    //     availableTicket.put(key,innerMap);
+    //   } ;
+    //   case (null) throw Error.reject("Key not found in availableTicket map");
+    // };
 
-      switch (innerMap.get(randomNumber)) {
-        case (?value) {
-          if (not value) {
-            found := true;
-            result := randomNumber;
-            innerMap.put(randomNumber, true);
-            availableTicket.put(key, innerMap);
-          } else {
-            Debug.print("Generated " # Nat.toText(randomNumber) # ", but it was true. Trying again.");
+    let innerMapOpt = ticketsAvailable.get(key);
+    switch (innerMapOpt) {
+      case (?array) {
+        result := switch (array[randomNumber]) {
+          case (val) {
+            val;
           };
         };
-        case (null) {
-          Debug.print("Generated " # Nat.toText(randomNumber) # ", but it wasn't in the map. Trying again.");
-        };
+        let temp = array[maxValue - 1];
+        array[maxValue - 1] := array[randomNumber];
+        array[randomNumber] := temp;
+      };
+      case (null) {
+        Debug.print("Error");
       };
     };
 
+    availableNoTicket.put(key, maxValue - 1);
     return result;
   };
-  //   return 1;
 
-  // private
+  private func randomNumberGenerator2(key : Text) : async Nat {
+    var result : Nat = 0;
+    let blob = await Random.blob();
+    seed := Random.rangeFrom(32, blob);
+    let maxValue : Nat = switch (availableNoTicket.get(key)) {
+      case (null) {
+        throw Error.reject("No tickets available for the given key");
+      };
+      case (?val) val;
+    };
+    let total : Nat = switch (noTicket.get(key)) {
+      case (null) {
+        throw Error.reject("No tickets available for the given key");
+      };
+      case (?val) val;
+    };
+
+    let randomNumber = maxValue + (seed % (total - maxValue));
+
+    let innerMapOpt = ticketsAvailable.get(key);
+    switch (innerMapOpt) {
+      case (?array) {
+        result := switch (array[randomNumber]) {
+          case (val) {
+            val;
+          };
+        };
+      };
+      case (null) {
+        Debug.print("Error");
+      };
+    };
+    return result;
+  };
 
   // Getter function to get the ContextId1 corresponding to ContextId2
   public query func get2to1(k : Text) : async ?Text {
