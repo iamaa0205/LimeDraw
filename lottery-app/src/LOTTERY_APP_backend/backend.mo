@@ -25,8 +25,8 @@ actor LotteryContract {
   let outerMap : HashMap.HashMap<Text, HashMap.HashMap<Nat, Text>> = HashMap.HashMap<Text, HashMap.HashMap<Nat, Text>>(16, Text.equal, Text.hash);
   // Mapping to store the Number of tickets wrt a ContextId
   let noTicket : HashMap.HashMap<Text, Nat> = HashMap.HashMap<Text, Nat>(16, Text.equal, Text.hash);
-  //Mapping to store the available tickets
-  let availableTicket : HashMap.HashMap<Text, [Int]> = HashMap.HashMap<Text, [Int]>(16, Text.equal, Text.hash);
+  // Mapping to store the available tickets
+  let availableTicket : HashMap.HashMap<Text, HashMap.HashMap<Nat, Bool>> = HashMap.HashMap<Text, HashMap.HashMap<Nat, Bool>>(16, Text.equal, Text.hash);
   private var publicKey : Blob = Blob.fromArray([]);
   var seed : Nat = 0;
 
@@ -41,8 +41,15 @@ actor LotteryContract {
         // maybe initialize the winner as false
         let res4 = await setNoTicket(t1, num);
         publicKey := _pubKey;
-        let availableNumbers = Array.tabulate<Nat>(num, func(i) { i + 1 });
-        availableTicket.put(t1, availableNumbers);
+        let innerMap = HashMap.HashMap<Nat, Bool>(num, Nat.equal, Hash.hash);
+
+        for (i in Iter.range(1, num)) {
+          innerMap.put(i, false);
+        };
+
+        availableTicket.put(t1, innerMap);
+        // let availableNumbers = Array.tabulate<Nat>(num, func(i) { i + 1 });
+        // availableTicket.put(t1, availableNumbers);
       };
       case (?val) {
         throw Error.reject("Lottery Already Initialized!");
@@ -138,41 +145,39 @@ actor LotteryContract {
 
   // Give A random number
   private func randomNumberGenerator(key : Text) : async Nat {
-    var availableNumbers : [var Int] = switch (availableTicket.get(key)) {
-      case (null) {
-        throw Error.reject("Key not found in availableTicket");
+    var found = false;
+    var result : Nat = 0;
+    let innerMapOpt = availableTicket.get(key);
+    let innerMap : HashMap.HashMap<Nat, Bool> = switch (innerMapOpt) {
+      case (?map) map;
+      case (null) throw Error.reject("Key not found in availableTicket map");
+    };
+
+    while (not found) {
+      // Generate random number
+      let blob = await Random.blob();
+      seed := Random.rangeFrom(32, blob);
+      let maxValue = Random.rangeFrom(69, blob);
+      let randomNumber = (seed % maxValue) + 1;
+
+      switch (innerMap.get(randomNumber)) {
+        case (?value) {
+          if (not value) {
+            found := true;
+            result := randomNumber;
+            innerMap.put(randomNumber, true);
+            availableTicket.put(key, innerMap);
+          } else {
+            Debug.print("Generated " # Nat.toText(randomNumber) # ", but it was true. Trying again.");
+          };
+        };
+        case (null) {
+          Debug.print("Generated " # Nat.toText(randomNumber) # ", but it wasn't in the map. Trying again.");
+        };
       };
-      case (?value) {
-        Array.init<Int>(value.size(), func(i : Nat) : Int { value[i] });
-      };
-    };
-    var size : Int = availableNumbers.size();
-    if (size == 0) {
-      throw Error.reject("No available numbers");
     };
 
-    // Generate a random index
-    let blob = await Random.blob();
-    let seed = Random.rangeFrom(32, blob);
-    let randomIndex = seed % size;
-
-    // Get the number at the random index
-    let selectedNumber = availableNumbers[Int.abs(randomIndex)];
-
-    // Remove the number by shifting all subsequent elements
-    for (i in Iter.range(Int.abs(randomIndex), size - 2)) {
-      availableNumbers[i] := availableNumbers[i + 1];
-    };
-
-    // Shrink the array
-    let tempNumbers = Array.init<Int>(Int.abs(size) - 1, 0);
-    for (i in Iter.range(0, size - 2)) {
-      tempNumbers[i] := availableNumbers[i];
-    };
-    availableTicket.put(key, tempNumbers);
-    Debug.print("Selected number: " # debug_show (selectedNumber));
-
-    return Int.abs(selectedNumber);
+    return result;
   };
   //   return 1;
 
@@ -205,21 +210,21 @@ actor LotteryContract {
   };
 
   // Get the remaining numbers
-  public func getRemainingNumbers(key : Text, count : Nat) : async [Nat] {
-    switch (availableTicket.get(key)) {
-      case (null) {
-        Debug.print("Key not found in map");
-        [];
-      };
-      case (?array) {
-        let size = array.size();
-        if (count >= size) {
-          Debug.print("Count is greater than or equal to array size");
-          [];
-        } else {
-          Array.tabulate<Nat>(size - count, func(i) { Int.abs(array[i + count]) });
-        };
-      };
-    };
-  };
+  //   public func getRemainingNumbers(key : Text, count : Nat) : async [Nat] {
+  //     switch (availableTicket.get(key)) {
+  //       case (null) {
+  //         Debug.print("Key not found in map");
+  //         [];
+  //       };
+  //       case (?array) {
+  //         let size = array.size();
+  //         if (count >= size) {
+  //           Debug.print("Count is greater than or equal to array size");
+  //           [];
+  //         } else {
+  //           Array.tabulate<Nat>(size - count, func(i) { Int.abs(array[i + count]) });
+  //         };
+  //       };
+  //     };
+  //   };
 };

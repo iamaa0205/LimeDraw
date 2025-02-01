@@ -2,6 +2,9 @@
   "LOTTERY_APP_backend": {
     "local": "bd3sg-teaaa-aaaaa-qaaba-cai"
   },
+  "__Candid_UI": {
+    "local": "be2us-64aaa-aaaaa-qaabq-cai"
+  },
   "icp_ledger_canister": {
     "local": "bkyz2-fmaaa-aaaaa-qaaaq-cai"
   }

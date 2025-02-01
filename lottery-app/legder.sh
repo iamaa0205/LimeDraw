@@ -143,7 +143,7 @@ LEDGER_ID=$(dfx canister id icp_ledger_canister)
 # MOCK_EXTERNAL_ID=$(dfx canister id mock_external)
 
 # Install the backend canister
-dfx canister install LOTTERY_APP_backend --mode=install --argument "(principal \"{$LEDGER_ID}\")"
+dfx canister install LOTTERY_APP_backend --mode=install
 BACKEND_CANISTER=$(dfx canister id LOTTERY_APP_backend)
 BACKEND_URL=$(dfx canister url LOTTERY_APP_backend)
 
