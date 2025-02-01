@@ -2,6 +2,8 @@ import HashMap "mo:base/HashMap";
 import Text "mo:base/Text";
 import Error "mo:base/Error";
 import Nat "mo:base/Nat";
+import Nat32 "mo:base/Nat32";
+import Nat64 "mo:base/Nat64";
 import Hash "mo:base/Hash";
 import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
@@ -11,6 +13,7 @@ import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Prelude "mo:base/Prelude";
 import Int "mo:base/Int";
+
 // import Canister "mo:basec/Canister";
 
 actor LotteryContract {
@@ -27,21 +30,39 @@ actor LotteryContract {
   let noTicket : HashMap.HashMap<Text, Nat> = HashMap.HashMap<Text, Nat>(16, Text.equal, Text.hash);
   // Mapping to store the available tickets
   let availableTicket : HashMap.HashMap<Text, HashMap.HashMap<Nat, Bool>> = HashMap.HashMap<Text, HashMap.HashMap<Nat, Bool>>(16, Text.equal, Text.hash);
-  private var publicKey : Blob = Blob.fromArray([]);
+  // Mapping to store the available no of tickets rn
+  let availableNoTicket : HashMap.HashMap<Text, Nat> = HashMap.HashMap<Text, Nat>(16, Text.equal, Text.hash);
+  // Mapping from ContextId1 to calimeroPubKey to ticketNumber
+  let contextToPubKeyToTicket : HashMap.HashMap<Text, HashMap.HashMap<Text, Nat>> = HashMap.HashMap<Text, HashMap.HashMap<Text, Nat>>(16, Text.equal, Text.hash);
+  // private var publicKey : Blob = Blob.fromArray([]);
+  let contextToPrincipalMap : HashMap.HashMap<Text, Principal> = HashMap.HashMap<Text, Principal>(16, Text.equal, Text.hash);
+  // private var publicKey : Principal = Principal.fromText("2vxsx-fae");
   var seed : Nat = 0;
 
   // init function called to initialize the state of the Lottery Manager Contract
   public func init() : async () {};
 
-  public func addLottery(num : Nat, t1 : Text, t2 : Text, _pubKey : Blob) : async () {
+  func customNatHash(n : Nat) : Nat32 {
+    var x = n;
+    var h : Nat64 = 0; // Use Nat64 for intermediate calculations
+    while (x > 0) {
+      h := h +% Nat64.fromNat(x % 256);
+      h := h *% 2862933555777941757;
+      x := x / 256;
+    };
+    Nat32.fromNat(Nat64.toNat(h % 0x100000000)) // Convert back to Nat32
+  };
+
+  public func addLottery(num : Nat, t1 : Text, t2 : Text, _pubKey : Text) : async () {
     switch (Context1to2.get(t1)) {
       case (null) {
         let res1 = await set1to2(t1, t2);
         let res2 = await set2to1(t2, t1);
         // maybe initialize the winner as false
         let res4 = await setNoTicket(t1, num);
-        publicKey := _pubKey;
-        let innerMap = HashMap.HashMap<Nat, Bool>(num, Nat.equal, Hash.hash);
+        let res5 = await setContextToPrincipal(t1, Principal.fromText(_pubKey));
+        // publicKey := Principal.fromText(_pubKey);
+        let innerMap = HashMap.HashMap<Nat, Bool>(num, Nat.equal, customNatHash);
 
         for (i in Iter.range(1, num)) {
           innerMap.put(i, false);
@@ -74,20 +95,29 @@ actor LotteryContract {
   };
 
   // Set if the Winner has already been declared
-  public func setWinnerDeclared(key : Text) : async () {
+  public shared (msg) func setWinnerDeclared(key : Text) : async (?Nat) {
     // Check for equality of the proxy contract to allot the random number
+    let callerkey : Principal = msg.caller;
     try {
-      await checkPublicKey();
+      await checkPublicKey(callerkey, key);
       // Public key matches
     } catch (error) {
       // Handle the error
       Debug.print("Error: " # Error.message(error));
     };
+    let num = await randomNumberGenerator(key);
     WinnerMap.put(key, true);
+    return ?num;
+
+  };
+
+  // Function to set the context id to a principal
+  private func setContextToPrincipal(key : Text, value : Principal) : async () {
+    contextToPrincipalMap.put(key, value);
   };
 
   // Function to Buy tickets
-  public func buyTicket(contextId : Text, key : Text) : async () {
+  public shared (msg) func buyTicket(contextId : Text, key : Text) : async () {
     // Check if the lottery is active
     switch (WinnerMap.get(contextId)) {
       case (null) {
@@ -101,8 +131,9 @@ actor LotteryContract {
     };
 
     // Check for equality of the proxy contract to allot the random number
+    let callerkey : Principal = msg.caller;
     try {
-      await checkPublicKey();
+      await checkPublicKey(callerkey, contextId);
       // Public key matches
     } catch (error) {
       // Handle the error
@@ -110,6 +141,7 @@ actor LotteryContract {
     };
     var innerKey : Nat = await randomNumberGenerator(contextId);
     let res = await setTicketNoToPub(contextId, innerKey, key);
+    let res1 = await setcontextToPubKeyToTicket(contextId, key, innerKey);
   };
 
   // Set the Ticket Number alloted to the Calimero-Pub-Key wrt to a ContextId
@@ -127,13 +159,38 @@ actor LotteryContract {
     };
   };
 
-  // Function to check the equality of the proxy contract
-  public shared (msg) func checkPublicKey() : async () {
-    let callerPrincipal = msg.caller;
-    let derivedPrincipal = Principal.fromBlob(publicKey);
+  //
+  public func setcontextToPubKeyToTicket(outerKey : Text, innerKey : Text, value : Nat) : async () {
+    switch (contextToPubKeyToTicket.get(outerKey)) {
+      case (null) {
+        let innerMap = HashMap.HashMap<Text, Nat>(16, Text.equal, Text.hash);
+        innerMap.put(innerKey, value);
+        contextToPubKeyToTicket.put(outerKey, innerMap);
+      };
+      case (?innerMap) {
+        innerMap.put(innerKey, value);
+        contextToPubKeyToTicket.put(outerKey, innerMap); // Ensure it's updated after the change
+      };
+    };
+  };
 
-    if (callerPrincipal != derivedPrincipal) {
-      throw Error.reject("Caller's principal does not match the stored public key");
+  // Function to check the equality of the proxy contract
+  public shared (msg) func checkPublicKey(callerkey : Principal, key : Text) : async () {
+    // let callerPrincipal : Principal = msg.caller;
+    // let derivedPrincipal = Principal.fromBlob(publicKey);
+    var publicKey : Principal = switch (await getPrincipal(key)) {
+      case (null) {
+        // Handle the case where the key is null, maybe assign a default value or throw an error
+        throw Error.reject("Principal not found");
+      };
+      case (?val) {
+        // Assign the value from the result to publicKey
+        val; // This will automatically return the principal (val) from the case
+      };
+    };
+
+    if (not Principal.equal(callerkey, publicKey)) {
+      throw Error.reject("Caller's principal does not match the stored public key" #Principal.toText(callerkey));
     };
     // If we reach here, the principals match
   };
@@ -157,7 +214,12 @@ actor LotteryContract {
       // Generate random number
       let blob = await Random.blob();
       seed := Random.rangeFrom(32, blob);
-      let maxValue = Random.rangeFrom(69, blob);
+      let maxValue : Nat = switch (await getNoTicket(key)) {
+        case (null) {
+          throw Error.reject("No tickets available for the given key");
+        };
+        case (?val) val;
+      };
       let randomNumber = (seed % maxValue) + 1;
 
       switch (innerMap.get(randomNumber)) {
@@ -180,6 +242,8 @@ actor LotteryContract {
     return result;
   };
   //   return 1;
+
+  // private
 
   // Getter function to get the ContextId1 corresponding to ContextId2
   public query func get2to1(k : Text) : async ?Text {
@@ -209,6 +273,21 @@ actor LotteryContract {
     return noTicket.get(k);
   };
 
+  // public query func getPublicKey() : async Principal {
+  //   return publicKey;
+  // };
+
+  public query func getcontextToPubKeyToTicket(outerKey : Text, innerKey : Text) : async ?Nat {
+    switch (contextToPubKeyToTicket.get(outerKey)) {
+      case (null) { null };
+      case (?innerMap) { innerMap.get(innerKey) };
+    };
+  };
+
+  public query func getPrincipal(key : Text) : async ?Principal {
+    contextToPrincipalMap.get(key);
+  };
+
   // Get the remaining numbers
   //   public func getRemainingNumbers(key : Text, count : Nat) : async [Nat] {
   //     switch (availableTicket.get(key)) {
@@ -228,3 +307,5 @@ actor LotteryContract {
   //     };
   //   };
 };
+
+// ihrv7-sbtxl-yt4ak-y4mk4-xl7es-o2gw6-6dmhu-7ojwp-gxjvx-y3wkj-oqe
