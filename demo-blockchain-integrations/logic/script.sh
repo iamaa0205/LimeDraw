@@ -53,55 +53,56 @@ WASM_PATH="./res/$sanitized_name.wasm"
 echo "WASM build complete!"
 
 # Start the node initialization and run in background
-./../../icp-devnet/deploy_devnet_fresh.sh
+# ./../../lottery-app/legder.sh
 
 
 
-echo "Initializing node..."
-merod --node-name $NODE_NAME init --server-port $SERVER_PORT --swarm-port $SWARM_PORT >/dev/null 2>&1 &
-sleep 1
 
-echo "Starting node..."
-merod --node-name $NODE_NAME run >/dev/null 2>&1 &
-sleep 2
+# echo "Initializing node..."
+# merod --node-name $NODE_NAME init --server-port $SERVER_PORT --swarm-port $SWARM_PORT >/dev/null 2>&1 &
+# sleep 1
 
-# # Install application and capture ID
-echo "Installing application..."
-APP_ID=$(meroctl --node-name $NODE_NAME app install --path $WASM_PATH | grep "id:" | awk '{print $2}')
-sleep 3
+# echo "Starting node..."
+# merod --node-name $NODE_NAME run >/dev/null 2>&1 &
+# sleep 2
 
-if [ -z "$APP_ID" ]; then
-    echo "Failed to get application ID"
-    exit 1
-fi
+# # # Install application and capture ID
+# echo "Installing application..."
+# APP_ID=$(meroctl --node-name $NODE_NAME app install --path $WASM_PATH | grep "id:" | awk '{print $2}')
+# sleep 3
 
-# # Create context and capture both ID and public key
-echo "Creating context..."
-CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $APP_ID --protocol icp)
-CONTEXT_ID=$(echo "$CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
-MEMBER_PUBLIC_KEY=$(echo "$CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
-sleep 5
+# if [ -z "$APP_ID" ]; then
+#     echo "Failed to get application ID"
+#     exit 1
+# fi
 
-if [ -z "$CONTEXT_ID" ]; then
-    echo "Failed to get context ID"
-    exit 1
-fi
+# # # Create context and capture both ID and public key
+# echo "Creating context..."
+# CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $APP_ID --protocol icp)
+# CONTEXT_ID=$(echo "$CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
+# MEMBER_PUBLIC_KEY=$(echo "$CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
+# sleep 5
 
-# Store variables in a file
-echo "NODE_NAME=$NODE_NAME" > node_vars.env
-echo "SERVER_PORT=$SERVER_PORT" >> node_vars.env
-echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
-echo "APP_ID=$APP_ID" >> node_vars.env
-echo "CONTEXT_ID=$CONTEXT_ID" >> node_vars.env
-echo "MEMBER_PUBLIC_KEY=$MEMBER_PUBLIC_KEY" >> node_vars.env
-echo "APP_ID=$APP_ID" >> node_vars.env
+# if [ -z "$CONTEXT_ID" ]; then
+#     echo "Failed to get context ID"
+#     exit 1
+# fi
+
+# # Store variables in a file
+# echo "NODE_NAME=$NODE_NAME" > node_vars.env
+# echo "SERVER_PORT=$SERVER_PORT" >> node_vars.env
+# echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
+# echo "APP_ID=$APP_ID" >> node_vars.env
+# echo "CONTEXT_ID=$CONTEXT_ID" >> node_vars.env
+# echo "MEMBER_PUBLIC_KEY=$MEMBER_PUBLIC_KEY" >> node_vars.env
+# echo "APP_ID=$APP_ID" >> node_vars.env
 
 
-# Print summary
-echo "==============================================="
-echo "Node is up and running!"
-echo "Port: $SERVER_PORT"
-echo "Application ID: $APP_ID"
-echo "Context ID: $CONTEXT_ID"
-echo "Member Public Key: $MEMBER_PUBLIC_KEY"
-echo "==============================================="
+# # Print summary
+# echo "==============================================="
+# echo "Node is up and running!"
+# echo "Port: $SERVER_PORT"
+# echo "Application ID: $APP_ID"
+# echo "Context ID: $CONTEXT_ID"
+# echo "Member Public Key: $MEMBER_PUBLIC_KEY"
+# echo "==============================================="

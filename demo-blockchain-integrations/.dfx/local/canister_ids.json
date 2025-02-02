@@ -1,11 +1,11 @@
 {
-  "__Candid_UI": {
+  "LOTTERY_APP_backend": {
     "local": "br5f7-7uaaa-aaaaa-qaaca-cai"
   },
   "context_contract": {
     "local": "bkyz2-fmaaa-aaaaa-qaaaq-cai"
   },
-  "ledger": {
+  "icp_ledger_canister": {
     "local": "bd3sg-teaaa-aaaaa-qaaba-cai"
   },
   "mock_external": {

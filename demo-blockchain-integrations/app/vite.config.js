@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import { buffer } from 'stream/consumers';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,5 +16,10 @@ export default defineConfig({
       },
     },
   },
-  plugins: [nodePolyfills(), react()],
+  resolve: {
+    alias: {
+      buffer: 'vite-plugin-node-polyfills/shims/buffer',
+    },
+  },
+  plugins: [nodePolyfills({ buffer: true }), react()],
 });

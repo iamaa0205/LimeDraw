@@ -9,6 +9,7 @@ import CryptoLottery from './pages/admin/navigate';
 import CounterComponent from './pages/admin/counter';
 import Winner from './pages/admin/winner';
 import { useEffect } from 'react';
+import Check from './pages/admin/check';
 export default function App() {
 
 
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/navigate" element={<CryptoLottery />} />
           <Route path="/counter" element={<CounterComponent />} />
           <Route path="/winner" element={<Winner />}/>
+          <Route path="/check" element={<Check />}/>
           
         </Routes>
       </BrowserRouter>

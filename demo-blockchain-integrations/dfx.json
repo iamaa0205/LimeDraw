@@ -5,7 +5,7 @@
           "candid": "./context-config/calimero_context_config_icp.did",
           "wasm": "./context-config/calimero_context_config_icp.wasm"
         },
-        "ledger": {
+        "icp_ledger_canister": {
           "type": "custom",
           "wasm": "https://download.dfinity.systems/ic/aba60ffbc46acfc8990bf4d5685c1360bd7026b9/canisters/ledger-canister.wasm.gz",
           "candid": "https://raw.githubusercontent.com/dfinity/ic/aba60ffbc46acfc8990bf4d5685c1360bd7026b9/rs/ledger_suite/icp/ledger.did"
@@ -16,7 +16,10 @@
           "candid": "./context-proxy/mock/external/calimero_mock_external_icp.did",
           "wasm": "./context-proxy/mock/external/calimero_mock_external_icp.wasm"
         },
-        
+        "LOTTERY_APP_backend": {
+      "main": "../lottery-app/src/LOTTERY_APP_backend/backend.mo",
+      "type": "motoko"
+    },
         "internet_identity": {
             "type": "pull",
             "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
