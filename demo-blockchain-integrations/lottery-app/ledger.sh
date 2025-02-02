@@ -46,6 +46,15 @@ done
 dfxvm default 0.24.3
 
 # Stop dfx and clean up all state
+PID=$(lsof -ti :4943)
+if [ -n "$PID" ]; then
+    echo "Found process on port 4943 (PID: $PID). Killing it..."
+    kill -9 $PID
+    echo "Process on port 4943 killed successfully."
+else
+    echo "No process found on port 4943."
+fi
+
 dfx stop
 rm -rf .dfx
 rm -rf ~/.config/dfx/replica-configuration/
@@ -179,14 +188,14 @@ dfx canister call context_contract set_proxy_code --argument-file <(
 
 # Print all relevant information at the end
 echo -e "\n=== Deployment Summary ==="
-echo "Context_Contract_ID=${CONTEXT_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Ledger_Contract_ID=${LEDGER_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Backend_Canister_Contract_ID=${BACKEND_CANISTER}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Url_for_Backend_Canister=${BACKEND_URL}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Demo_External_Contract_ID=${MOCK_EXTERNAL_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Context_Contract_ID=${CONTEXT_ID}" >> ../logic/node_vars.env
+echo "Ledger_Contract_ID=${LEDGER_ID}" >> ../logic/node_vars.env
+echo "Backend_Canister_Contract_ID=${BACKEND_CANISTER}" >> ../logic/node_vars.env
+echo "Url_for_Backend_Canister=${BACKEND_URL}" >> ../logic/node_vars.env
+echo "Demo_External_Contract_ID=${MOCK_EXTERNAL_ID}" >> ../logic/node_vars.env
 echo -e "\nAccount Information:" 
-echo "Minting_Account=${MINTING_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Initial_Account=${INITIAL_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Archive_Principal=${ARCHIVE_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Recipient_Principal=${RECIPIENT_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Minting_Account=${MINTING_ACCOUNT}" >> ../logic/node_vars.env
+echo "Initial_Account=${INITIAL_ACCOUNT}" >> ../logic/node_vars.env
+echo "Archive_Principal=${ARCHIVE_PRINCIPAL}" >> ../logic/node_vars.env
+echo "Recipient_Principal=${RECIPIENT_PRINCIPAL}" >> ../logic/node_vars.env
 echo -e "\nDeployment completed successfully!" 

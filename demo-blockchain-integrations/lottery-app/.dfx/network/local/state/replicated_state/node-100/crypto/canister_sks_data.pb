@@ -1,8 +1,7 @@
-Ã
-@427aef4a915901eaf8337c88e6b60ce3f9312e2e84408e10177da7194c8d3431
-d¡uIDkgCommitmentOpening¡fSimple¡dK256˜ Ã=y7næ%1ÿU6â¿é
-CN¸µŒflKŞk‰”æ¿¼Const:IDkgThresholdKeys
-@44d504e1479ae217a4d96c77ad9e8441972a6feced4f5a189903f3a2cc3cbb4bË
-¯¡uIDkgCommitmentOpening¡hPedersen‚¡dK256˜ üîÏÙwF¥İéø2é9ä(¾j•£Á¹lLe×y@h¡dK256˜ -QÌO6–CÓ(—ßhc&Ô­B=c>“ÂqçEConst:IDkgThresholdKeysÆ
-@c65c4f725cbe957a9c07793c5f489594e24d88110b33e4b150f68ce6874ac90a
-f¡uIDkgCommitmentOpening¡fSimple¡dK256˜ µ”¿îuÈçHÏòe†;r[a?—TWÔ ÷|÷{ZáßConst:IDkgThresholdKeys
+
+@39e01f249292cd6fbce039d03b922682110b1687eb8725ff71b74b1575bdbf96Ë
+¯¡uIDkgCommitmentOpening¡hPedersen‚¡dK256˜ 7Jè@Dªñ€Í•À±,¬mlaŠ10öü›ÒPEjP'¡dK256˜ z˜g˜ª2ÑÒÌÙ5O¦½…œ…Óöô`_˜Ÿa¿E1[Const:IDkgThresholdKeysÁ
+@caed86ee6228585451370efe8474e33785332b2185ba97b5cf36139b53f11c2b}
+b¡uIDkgCommitmentOpening¡fSimple¡dK256˜ •hp·F76dÛtsºÌ0+gRáù[ŠAxîÊConst:IDkgThresholdKeysÁ
+@82305242fdf9c9d3a773062af0786c3b4e9f32a90618d8b82b4008cfeaad65b8}
+b¡uIDkgCommitmentOpening¡fSimple¡dK256˜ ­MP3_Suã†‚á2N}s®]«~ó©RSã°Const:IDkgThresholdKeys
