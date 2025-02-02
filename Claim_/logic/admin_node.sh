@@ -66,39 +66,39 @@ sleep 2
 
 # # Install application and capture ID
 echo "Installing application..."
-APP_ID=$(meroctl --node-name $NODE_NAME app install --path $WASM_PATH | grep "id:" | awk '{print $2}')
+CHAT_APP_ID=$(meroctl --node-name $NODE_NAME app install --path $WASM_PATH | grep "id:" | awk '{print $2}')
 sleep 3
 
-if [ -z "$APP_ID" ]; then
+if [ -z "$CHAT_APP_ID" ]; then
     echo "Failed to get application ID"
     exit 1
 fi
 
 # # Create context and capture both ID and public key
 echo "Creating context..."
-CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $APP_ID --protocol icp)
-CONTEXT_ID=$(echo "$CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
-MEMBER_PUBLIC_KEY=$(echo "$CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
+CHAT_CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $CHAT_APP_ID --protocol icp)
+CHAT_CONTEXT_ID=$(echo "$CHAT_CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
+ADMIN_PUBLIC_KEY=$(echo "$CHAT_CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
 sleep 5
 
-if [ -z "$CONTEXT_ID" ]; then
+if [ -z "$CHAT_CONTEXT_ID" ]; then
     echo "Failed to get context ID"
     exit 1
 fi
 
 # Store variables in a file
-echo "NODE_NAME=$NODE_NAME" > ../../demo-blockchain-integrations/logic/node_vars.env
+echo "ADMIN_NAME=$NODE_NAME" > ../../demo-blockchain-integrations/logic/node_vars.env
 echo "SERVER_PORT=$SERVER_PORT" >> ../../demo-blockchain-integrations/logic/node_vars.env
 echo "SWARM_PORT=$SWARM_PORT" >> ../../demo-blockchain-integrations/logic/node_vars.env
-echo "APP_ID=$APP_ID" >> ../../demo-blockchain-integrations/logic/node_vars.env
-echo "CONTEXT_ID=$CONTEXT_ID" >> ../../demo-blockchain-integrations/logic/node_vars.env
-echo "MEMBER_PUBLIC_KEY=$MEMBER_PUBLIC_KEY" >> ../../demo-blockchain-integrations/logic/node_vars.env
+echo "CHAT_APP_ID=$CHAT_APP_ID" >> ../../demo-blockchain-integrations/logic/node_vars.env
+echo "CHAT_CONTEXT_ID=$CHAT_CONTEXT_ID" >> ../../demo-blockchain-integrations/logic/node_vars.env
+echo "ADMIN_PUBLIC_KEY=$ADMIN_PUBLIC_KEY" >> ../../demo-blockchain-integrations/logic/node_vars.env
 
 # Print summary
 echo "==============================================="
 echo "Node is up and running!"
 echo "Port: $SERVER_PORT"
-echo "Application ID: $APP_ID"
-echo "Context ID: $CONTEXT_ID"
-echo "Member Public Key: $MEMBER_PUBLIC_KEY"
+echo "Application ID: $CHAT_APP_ID"
+echo "Context ID: $CHAT_CONTEXT_ID"
+echo "Member Public Key: $ADMIN_PUBLIC_KEY"
 echo "==============================================="
