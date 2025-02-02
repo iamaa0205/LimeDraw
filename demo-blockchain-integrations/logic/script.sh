@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-NODE_NAME="node1"
-SERVER_PORT=2427
-SWARM_PORT=2527
+NODE_NAME="host"
+SERVER_PORT=2440
+SWARM_PORT=2540
 
 # Kill any existing merod processes
 if pgrep -f merod > /dev/null; then
@@ -53,8 +53,9 @@ WASM_PATH="./res/$sanitized_name.wasm"
 echo "WASM build complete!"
 
 # Start the node initialization and run in background
-# ./../../lottery-app/legder.sh
-
+cd ../../lottery-app/
+./ledger.sh
+cd ../demo-blockchain-integrations/logic/cd 
 
 
 
@@ -62,40 +63,36 @@ echo "WASM build complete!"
 # merod --node-name $NODE_NAME init --server-port $SERVER_PORT --swarm-port $SWARM_PORT >/dev/null 2>&1 &
 # sleep 1
 
-# echo "Starting node..."
-# merod --node-name $NODE_NAME run >/dev/null 2>&1 &
-# sleep 2
+# # Install application and capture ID
+echo "Installing application..."
+LOTTERY_APP_ID=$(meroctl --node-name $NODE_NAME app install --path $WASM_PATH | grep "id:" | awk '{print $2}')
+sleep 3
 
-# # # Install application and capture ID
-# echo "Installing application..."
-# APP_ID=$(meroctl --node-name $NODE_NAME app install --path $WASM_PATH | grep "id:" | awk '{print $2}')
-# sleep 3
+if [ -z "$LOTTERY_APP_ID" ]; then
+    echo "Failed to get application ID"
+    exit 1
+fi
 
-# if [ -z "$APP_ID" ]; then
-#     echo "Failed to get application ID"
-#     exit 1
-# fi
+# # Create context and capture both ID and public key
+echo "Creating context..."
+LOTTERY_CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $LOTTERY_APP_ID --protocol icp)
+LOTTERY_CONTEXT_ID=$(echo "$LOTTERY_CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
+HOST_PUBLIC_KEY=$(echo "$LOTTERY_CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
+sleep 5
 
-# # # Create context and capture both ID and public key
-# echo "Creating context..."
-# CONTEXT_OUTPUT=$(meroctl --node-name $NODE_NAME context create --application-id $APP_ID --protocol icp)
-# CONTEXT_ID=$(echo "$CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
-# MEMBER_PUBLIC_KEY=$(echo "$CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
-# sleep 5
+if [ -z "$LOTTERY_CONTEXT_ID" ]; then
+    echo "Failed to get context ID"
+    exit 1
+fi
 
-# if [ -z "$CONTEXT_ID" ]; then
-#     echo "Failed to get context ID"
-#     exit 1
-# fi
-
-# # Store variables in a file
-# echo "NODE_NAME=$NODE_NAME" > node_vars.env
-# echo "SERVER_PORT=$SERVER_PORT" >> node_vars.env
-# echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
-# echo "APP_ID=$APP_ID" >> node_vars.env
-# echo "CONTEXT_ID=$CONTEXT_ID" >> node_vars.env
-# echo "MEMBER_PUBLIC_KEY=$MEMBER_PUBLIC_KEY" >> node_vars.env
-# echo "APP_ID=$APP_ID" >> node_vars.env
+# Store variables in a file
+echo "HOST_NAME=$NODE_NAME" > node_vars.env
+echo "SERVER_PORT=$SERVER_PORT" >> node_vars.env
+echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
+echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
+echo "LOTTERY_CONTEXT_ID=$LOTTERY_CONTEXT_ID" >> node_vars.env
+echo "HOST_PUBLIC_KEY=$HOST_PUBLIC_KEY" >> node_vars.env
+echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
 
 
 # # Print summary
