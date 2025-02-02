@@ -18,7 +18,7 @@ export default function App() {
     if (window.location.pathname === "/demo-blockchain-integrations/") {
       // Only set "landing" if no view is already stored
       
-        localStorage.setItem("currentView", "landing");
+        sessionStorage.setItem("currentView", "landing");
       
     }
   }, []);

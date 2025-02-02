@@ -97,7 +97,7 @@ export default function CryptoLottery() {
       if (response?.data) {
        
         setLottery(response?.data)
-        console.log("dhdhdh",lottery)
+      
       }
     } catch (error) {
       console.error("Failed to fetch lottery:", error);
@@ -105,7 +105,28 @@ export default function CryptoLottery() {
   };
   useEffect(()=>{
     fetchLottery()
+    fetchPlayers1()
+
   },[])
+
+
+
+  const fetchPlayers1=async ()=>{
+    try {
+         const response = await new LogicApiDataSource().getAllPlayers();
+        
+         if (response?.data) {
+           setPlayers(response?.data); // Assuming API returns { players: Player[] }
+         }
+       } catch (error) {
+         console.error("Failed to fetch players:", error);
+       }
+
+ }
+
+
+
+
 
 
   useEffect(() => {
@@ -116,7 +137,7 @@ export default function CryptoLottery() {
           if (response?.data) {
            
             setLottery(response?.data)
-            console.log("dhdhdh",lottery)
+           
           }
         } catch (error) {
           console.error("Failed to fetch lottery:", error);
@@ -125,7 +146,7 @@ export default function CryptoLottery() {
       const fetchPlayers=async ()=>{
          try {
               const response = await new LogicApiDataSource().getAllPlayers();
-              console.log(response, "new ");
+             
               if (response?.data) {
                 setPlayers(response?.data); // Assuming API returns { players: Player[] }
               }
@@ -139,10 +160,7 @@ export default function CryptoLottery() {
       fetchPlayers();
     }
   }, [currentView]);
-  useEffect(()=>{
-    fetchLottery()
-
-  },[])
+ 
   
   useEffect(() => {
     if (currentView === "lotteryDetails") {
@@ -150,7 +168,7 @@ export default function CryptoLottery() {
       const fetchPlayers=async ()=>{
          try {
               const response = await new LogicApiDataSource().getAllPlayers();
-              console.log(response, "new ");
+             
               if (response?.data) {
                 setPlayers(response?.data); // Assuming API returns { players: Player[] }
               }
@@ -294,10 +312,10 @@ export default function CryptoLottery() {
         else{
           try {
             const response = await new LogicApiDataSource().getPlayerByPublicKey();
-            console.log(response, "playerrr ");
-
+            
            
-            if(response?.data && response?.data?.name===userName){
+           
+            if(response?.data && response?.data?.role===1){
               setCurrentView('hostDashboard');
               sessionStorage.setItem('currentView','hostDashboard');
 
@@ -325,6 +343,7 @@ export default function CryptoLottery() {
   };
   const handleUpdateDashboard=()=>{
     fetchLottery();
+    fetchPlayers1()
   }
 
   
