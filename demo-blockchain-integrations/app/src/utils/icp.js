@@ -25,22 +25,52 @@ export async function addLottery(num, t1, t2, pubKey) {
     throw error;
   }
 }
-export async function buyTicket(){
+export async function buyTicket(contextId,calimeroPubKey){
     try {
-        return await lotteryAppBackend.buyTicket();
+        return await lotteryAppBackend.buyTicket(contextId,calimeroPubKey);
         
     } catch (error) {
         console.error("error buying tickert",error)
         
     }
 }
-export async function checkWinnerDeclared(){
+export async function checkWinnerDeclared(contextId){
     try {
-        return await lotteryAppBackend.checkWinnerDeclared();
+        return await lotteryAppBackend.checkWinnerDeclared(contextId);
         
     } catch (error) {
         console.error("error checking winner",error)
         
     }
+}
+
+export async function getNoTicket(contextId){
+  try {
+      return await lotteryAppBackend.getNoTicket(contextId);
+      
+  } catch (error) {
+      console.error("error checking winner",error)
+      
+  }
+}
+
+export async function getPubKey(contextId,ticketNumber){
+  try {
+      return await lotteryAppBackend.getPubKey(contextId,ticketNumber);
+      
+  } catch (error) {
+      console.error("error checking winner",error)
+      
+  }
+}
+
+export async function setWinnerDeclared(contextId){
+  try {
+      return await lotteryAppBackend.setWinnerDeclared(contextId);
+      
+  } catch (error) {
+      console.error("error checking winner",error)
+      
+  }
 }
 

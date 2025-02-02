@@ -20,11 +20,6 @@ export const idlFactory = ({ IDL }) => {
       ),
     'init' : IDL.Func([], [], []),
     'setWinnerDeclared' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Nat)], []),
-    'setcontextToPubKeyToTicket' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Nat],
-        [],
-        [],
-      ),
   });
 };
 export const init = ({ IDL }) => { return []; };
