@@ -166,8 +166,8 @@ actor LotteryContract {
     };
   };
 
-  //
-  public func setcontextToPubKeyToTicket(outerKey : Text, innerKey : Text, value : Nat) : async () {
+  // Function for ease
+  private func setcontextToPubKeyToTicket(outerKey : Text, innerKey : Text, value : Nat) : async () {
     switch (contextToPubKeyToTicket.get(outerKey)) {
       case (null) {
         let innerMap = HashMap.HashMap<Text, Nat>(16, Text.equal, Text.hash);
