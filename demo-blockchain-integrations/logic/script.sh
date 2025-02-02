@@ -55,10 +55,10 @@ WASM_PATH="/Users/aadityaaren01/Desktop/Winfinity/demo-blockchain-integrations/l
 echo "WASM build complete!"
 
 # Start the node initialization and run in background
-cd ../../lottery-app/
+cd ../lottery-app/
 chmod +x ledger.sh
 ./ledger.sh
-cd ../demo-blockchain-integrations/logic/
+cd ../logic/
 
 echo "WASM_PATH=$WASM_PATH" >> node_vars.env
 
