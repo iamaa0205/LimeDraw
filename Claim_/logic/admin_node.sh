@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-NODE_NAME="host"
-SERVER_PORT=2440
-SWARM_PORT=2540
+NODE_NAME="admin"
+SERVER_PORT=2450
+SWARM_PORT=2550
 
 # Kill any existing merod processes
 if pgrep -f merod > /dev/null; then
@@ -53,7 +53,6 @@ WASM_PATH="./res/$sanitized_name.wasm"
 echo "WASM build complete!"
 
 # Start the node initialization and run in background
-./../../lottery-app/ledger.sh
 
 
 
@@ -88,14 +87,12 @@ if [ -z "$CONTEXT_ID" ]; then
 fi
 
 # Store variables in a file
-echo "NODE_NAME=$NODE_NAME" > node_vars.env
-echo "SERVER_PORT=$SERVER_PORT" >> node_vars.env
-echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
-echo "APP_ID=$APP_ID" >> node_vars.env
-echo "CONTEXT_ID=$CONTEXT_ID" >> node_vars.env
-echo "MEMBER_PUBLIC_KEY=$MEMBER_PUBLIC_KEY" >> node_vars.env
-echo "APP_ID=$APP_ID" >> node_vars.env
-
+echo "NODE_NAME=$NODE_NAME" > ../../demo-blockchain-integrations/logic/node_vars.env
+echo "SERVER_PORT=$SERVER_PORT" >> ../../demo-blockchain-integrations/logic/node_vars.env
+echo "SWARM_PORT=$SWARM_PORT" >> ../../demo-blockchain-integrations/logic/node_vars.env
+echo "APP_ID=$APP_ID" >> ../../demo-blockchain-integrations/logic/node_vars.env
+echo "CONTEXT_ID=$CONTEXT_ID" >> ../../demo-blockchain-integrations/logic/node_vars.env
+echo "MEMBER_PUBLIC_KEY=$MEMBER_PUBLIC_KEY" >> ../../demo-blockchain-integrations/logic/node_vars.env
 
 # Print summary
 echo "==============================================="

@@ -170,15 +170,15 @@ BACKEND_URL=$(dfx canister url LOTTERY_APP_backend)
 # )
 
 # Print all relevant information at the end
-echo -e "\n=== Deployment Summary ==="
+echo -e "\n=== Deployment Summary ===" >> ../demo-blockchain-integrations/logic/node_vars.env
 # echo "Context Contract ID: ${CONTEXT_ID}"
-echo "Ledger Contract ID: ${LEDGER_ID}"
-echo "Backend Canister Contract ID: ${BACKEND_CANISTER}"
-echo "Url for Backend Canister: ${BACKEND_URL}"
+echo "Ledger Contract ID: ${LEDGER_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Backend Canister Contract ID: ${BACKEND_CANISTER}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Url for Backend Canister: ${BACKEND_URL}" >> ../demo-blockchain-integrations/logic/node_vars.env
 # echo "Demo External Contract ID: ${MOCK_EXTERNAL_ID}"
 echo -e "\nAccount Information:"
-echo "Minting Account: ${MINTING_ACCOUNT}"
-echo "Initial Account: ${INITIAL_ACCOUNT}"
-echo "Archive Principal: ${ARCHIVE_PRINCIPAL}"
-echo "Recipient Principal: ${RECIPIENT_PRINCIPAL}"
-echo -e "\nDeployment completed successfully!"
+echo "Minting Account: ${MINTING_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Initial Account: ${INITIAL_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Archive Principal: ${ARCHIVE_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Recipient Principal: ${RECIPIENT_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo -e "\nDeployment completed successfully!" >> ../demo-blockchain-integrations/logic/node_vars.env
