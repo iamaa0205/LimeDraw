@@ -1,0 +1,31 @@
+{
+  "replica_rev": "a62848817cec7ae50618a87a526c85d020283fd9",
+  "effective_canister_id": null,
+  "type": "replica",
+  "config": {
+    "http_handler": {
+      "port": null,
+      "write_port_to": "/home/cyanide/Desktop/Winfinity/lottery-app/.dfx/network/local/replica-configuration/replica-1.port"
+    },
+    "state_manager": {
+      "state_root": "/home/cyanide/Desktop/Winfinity/lottery-app/.dfx/network/local/state/replicated_state"
+    },
+    "crypto": {
+      "crypto_root": "/home/cyanide/Desktop/Winfinity/lottery-app/.dfx/network/local/state/crypto_store"
+    },
+    "artifact_pool": {
+      "consensus_pool_path": "/home/cyanide/Desktop/Winfinity/lottery-app/.dfx/network/local/state/consensus_pool"
+    },
+    "subnet_type": "application",
+    "btc_adapter": {
+      "enabled": false,
+      "socket_path": null
+    },
+    "canister_http_adapter": {
+      "enabled": true,
+      "socket_path": "/tmp/ic-https-outcalls-adapter-socket.88570.1738517860"
+    },
+    "log_level": "error",
+    "artificial_delay": 600
+  }
+}
