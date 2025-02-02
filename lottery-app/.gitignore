@@ -23,4 +23,4 @@ dist/
 
 # environment variables
 .env
-node_vars.env
+demo-blockchain-integrations/logic/node_vars.env
