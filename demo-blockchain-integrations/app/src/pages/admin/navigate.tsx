@@ -20,8 +20,34 @@ TotalMembers, BuyTicketsSection, BuyTicketsForm, TicketInput, BuyButton,
 TotalCost, HostDashboardContainer, LotteryInfo, InfoItem,  StatisticsGrid, 
 StatCard, MembersList, MemberItem, NotificationWindow, fadeInUp, pageTransition, 
 StatusContainer, StatusDot, StatusText} from './styles'
+import {
+  getJWTObject,
+  getStorageAppEndpointKey,
+  JsonWebToken,
+} from '../../utils/storage';
+import { AxiosHeader, createJwtHeader } from '../../utils/jwtHeaders';
+import { getRpcPath } from '../../utils/env';
 
 
+export function getConfigAndJwt() {
+  const jwtObject: JsonWebToken | null = getJWTObject();
+  const headers: AxiosHeader | null = createJwtHeader();
+  if (!headers) {
+    return {
+      error: { message: 'Failed to create auth headers', code: 500 },
+    };
+  }
+  if (!jwtObject) {
+    return {
+      error: { message: 'Failed to get JWT token', code: 500 },
+    };
+  }
+  if (jwtObject.executor_public_key === null) {
+    return {
+      error: { message: 'Failed to get executor public key', code: 500 },
+    };
+  }
+}
 
 
 
@@ -41,9 +67,9 @@ const WalletStatus: React.FC<WalletStatusProps> = ({ connected }) => {
 
 export default function CryptoLottery() {
   const [currentView, setCurrentView] = useState(() => {
-    return localStorage.getItem("currentView") || "landing"; // Get from localStorage or set default
+    return sessionStorage.getItem("currentView") || "landing"; // Get from sessionStorage or set default
   });
-  const [walletConnected, setWalletConnected] = useState(false)
+  const [walletConnected, setWalletConnected] = useState(true)
   const [createLotteryForm, setCreateLotteryForm] = useState({
     name: "",
     description: "",
@@ -77,6 +103,9 @@ export default function CryptoLottery() {
       console.error("Failed to fetch lottery:", error);
     }
   };
+  useEffect(()=>{
+    fetchLottery()
+  },[])
 
 
   useEffect(() => {
@@ -133,6 +162,10 @@ export default function CryptoLottery() {
   
       fetchLottery();
       fetchPlayers();
+    }
+    if(currentView==='dashboard'){
+      fetchLottery();
+
     }
   }, [currentView]);
 
@@ -201,7 +234,7 @@ export default function CryptoLottery() {
 
       console.log('Lottery created successfully:', response.data);
       setCurrentView("hostDashboard"); 
-      localStorage.setItem("currentView","hostDashboard")// Set your dashboard view after success
+      sessionStorage.setItem("currentView","hostDashboard")// Set your dashboard view after success
     } catch (error) {
       console.error("Unexpected error while creating lottery:", error);
     }
@@ -250,11 +283,11 @@ export default function CryptoLottery() {
         alert("Please connect wallet");
       }
       else{
-        console.log(lottery.owner,"lottery")
-        if(!lottery.owner){
+    
+        if(lottery.name===""){
          
           setCurrentView("dashboard");
-          localStorage.setItem("currentView","dashboard")
+          sessionStorage.setItem("currentView","dashboard")
   
 
         }
@@ -262,9 +295,21 @@ export default function CryptoLottery() {
           try {
             const response = await new LogicApiDataSource().getPlayerByPublicKey();
             console.log(response, "playerrr ");
-            // if (response?.data) {
-            //   setPlayers(response?.data); // Assuming API returns { players: Player[] }
-            // }
+
+           
+            if(response?.data && response?.data?.name===userName){
+              setCurrentView('hostDashboard');
+              sessionStorage.setItem('currentView','hostDashboard');
+
+            }
+            else{
+              setCurrentView("dashboard");
+              sessionStorage.setItem("currentView","dashboard")
+      
+
+            }
+
+         
           } catch (error) {
             console.error("Failed to fetch players:", error);
           }
@@ -278,7 +323,9 @@ export default function CryptoLottery() {
       console.error("Unexpected error:", error);
     }
   };
-  
+  const handleUpdateDashboard=()=>{
+    fetchLottery();
+  }
 
   
 
@@ -334,13 +381,13 @@ export default function CryptoLottery() {
               win big. The power of blockchain ensures fairness and transparency in every game.
             </Description>
             <ButtonContainer>
-  {lottery === null ? (
+  {lottery && lottery.name==="" ? (
     <Button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={() => {
         setCurrentView("createLottery");
-        localStorage.setItem("currentView", "createLottery");
+        sessionStorage.setItem("currentView", "createLottery");
       }}
     >
       Create a Lottery
@@ -351,7 +398,7 @@ export default function CryptoLottery() {
       whileTap={{ scale: 0.95 }}
       onClick={() => {
         setCurrentView("lotteryDetails");
-        localStorage.setItem("currentView", "lotteryDetails");
+        sessionStorage.setItem("currentView", "lotteryDetails");
       }}
     >
       Join Lottery
@@ -428,7 +475,7 @@ export default function CryptoLottery() {
             transition={{ duration: 0.5 }}
           >
             <Title>Lottery Dashboard</Title>
-              {lottery && (
+              {lottery.owner && (
                 <LotteryInfo>
                   <h2>{lottery.name}</h2>
                   <p>{lottery.description}</p>
@@ -476,7 +523,19 @@ export default function CryptoLottery() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
             >
+            
               <Title>Host Dashboard</Title>
+
+              <Button
+              style={{ marginBottom: "1rem" }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleUpdateDashboard}
+            >
+              Update Dashboard
+            </Button>
+
+
               {lottery && (
                 <LotteryInfo>
                   <h2>{lottery.name}</h2>
@@ -498,6 +557,21 @@ export default function CryptoLottery() {
                     <MemberItem key={index}>{player.name}</MemberItem>
                   ))}
                 </MembersList>
+                <Button
+              style={{ marginTop: "2rem" }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                const winner = players[Math.floor(Math.random() * players.length)]
+                if (winner) {
+                  alert(`The winner is: ${winner.name}`)
+                } else {
+                  alert("No players available to declare a winner")
+                }
+              }}
+            >
+              Declare Winner
+            </Button>
               </HostDashboardContainer>
             )
       default:
@@ -512,7 +586,7 @@ export default function CryptoLottery() {
         <Header>
         <Logo onClick={() => {
               setCurrentView("dashboard");
-              localStorage.setItem("currentView", "dashboard");
+              sessionStorage.setItem("currentView", "dashboard");
           }}>
               <img src={xyz} height="60px" width="60px" alt="Crypto Lottery Logo" />
               <AppName>Winfinity</AppName>
@@ -535,7 +609,7 @@ export default function CryptoLottery() {
                 onClick={() => {
                   setWalletConnected(false)
                   setCurrentView("landing")
-                  localStorage.setItem("currentView", "landing");
+                  sessionStorage.setItem("currentView", "landing");
                 }}
               >
                 Disconnect Wallet
