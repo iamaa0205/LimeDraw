@@ -316,6 +316,11 @@ actor LotteryContract {
   //   return publicKey;
   // };
 
+  // Get the winning ticket corresponding to a contextId
+  public query func getWinningTicket(k : Text) : async ?Nat{
+    return storeWinner.get(k);
+  }
+
   public query func getcontextToPubKeyToTicket(outerKey : Text, innerKey : Text) : async ?Nat {
     switch (contextToPubKeyToTicket.get(outerKey)) {
       case (null) { null };
