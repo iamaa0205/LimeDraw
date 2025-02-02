@@ -6,7 +6,7 @@ import styled, { createGlobalStyle, keyframes, css } from "styled-components"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, User, Clock, Ticket, DollarSign, Users } from "lucide-react"
 import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
-import xyz from "./logo.png"
+import xyz from "./logo.jpg"
 import { GlobalStyle, glowingEffect, pulsingEffect, AppContainer, Header, Logo, LogoImg, AppName, 
   Button, MainContent, Title, Description, FeaturesList, FeatureCard, 
   FeatureIcon, FeatureTitle, FeatureDescription, ButtonContainer, Form
