@@ -86,16 +86,16 @@ dfx identity use default
 
 # Create initial identity if needed
 dfx identity new --storage-mode=plaintext minting || true
-# dfx identity use minting
+dfx identity use minting
 
 echo "Creating and deploying canister..."
-# dfx canister create context_contract
+dfx canister create context_contract
 dfx canister create icp_ledger_canister
-# dfx canister create mock_external
+dfx canister create mock_external
 dfx canister create LOTTERY_APP_backend
 
 # Get the context ID
-# CONTEXT_ID=$(dfx canister id context_contract)
+CONTEXT_ID=$(dfx canister id context_contract)
 # Get the wallet ID and seed it
 WALLET_ID=$(dfx identity get-wallet)
 
@@ -103,12 +103,12 @@ WALLET_ID=$(dfx identity get-wallet)
 dfx ledger fabricate-cycles --canister $WALLET_ID --amount 200000
 
 # Transfer cycles from wallet to context contract
-# dfx canister deposit-cycles 1000000000000000000 $CONTEXT_ID
+dfx canister deposit-cycles 1000000000000000000 $CONTEXT_ID
 
-# echo "Done! Cycles transferred to context contract: $CONTEXT_ID"
+echo "Done! Cycles transferred to context contract: $CONTEXT_ID"
 
 # Get the IDs
-# CONTEXT_ID=$(dfx canister id context_contract)
+CONTEXT_ID=$(dfx canister id context_contract)
 LEDGER_ID=$(dfx canister id icp_ledger_canister)
 
 # Prepare ledger initialization argument
@@ -136,46 +136,48 @@ dfx canister install icp_ledger_canister --mode=install --argument "$LEDGER_INIT
 
 # Get the ledger ID and install context contract with it
 LEDGER_ID=$(dfx canister id icp_ledger_canister)
-# dfx canister install context_contract --mode=install --argument "(principal \"${LEDGER_ID}\")"
+dfx canister install context_contract --mode=install --argument "(principal \"${LEDGER_ID}\")"
 
 # Install mock external canister
-# dfx canister install mock_external --mode=install --argument "(principal \"${LEDGER_ID}\")"
-# MOCK_EXTERNAL_ID=$(dfx canister id mock_external)
+dfx canister install mock_external --mode=install --argument "(principal \"${LEDGER_ID}\")"
+MOCK_EXTERNAL_ID=$(dfx canister id mock_external)
 
 # Install the backend canister
 dfx canister install LOTTERY_APP_backend --mode=install
 BACKEND_CANISTER=$(dfx canister id LOTTERY_APP_backend)
 BACKEND_URL=$(dfx canister url LOTTERY_APP_backend)
 
-# # Get the directory where the script is located
-# SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# # Build path relative to the script location
-# WASM_FILE="${SCRIPT_DIR}/context-proxy/calimero_context_proxy_icp.wasm"
+# Build path relative to the script location
+WASM_FILE="${SCRIPT_DIR}/context-proxy/calimero_context_proxy_icp.wasm"
 
-# # Verify file exists
-# if [ ! -f "$WASM_FILE" ]; then
-#     echo "Error: WASM file not found at: $WASM_FILE"
-#     exit 1
-# fi
+# Verify file exists
+if [ ! -f "$WASM_FILE" ]; then
+    echo "Error: WASM file not found at: $WASM_FILE"
+    exit 1
+fi
 
-# # Then modify the script to use a consistent reading method
-# WASM_CONTENTS=$(xxd -p "$WASM_FILE" | tr -d '\n' | sed 's/\(..\)/\\\1/g')
+# Then modify the script to use a consistent reading method
+WASM_CONTENTS=$(xxd -p "$WASM_FILE" | tr -d '\n' | sed 's/\(..\)/\\\1/g')
 
-# # Execute the command using the temporary file
-# dfx canister call context_contract set_proxy_code --argument-file <(
-#   echo "(
-#     blob \"${WASM_CONTENTS}\"
-#   )"
-# )
+# Execute the command using the temporary file
+dfx canister call context_contract set_proxy_code --argument-file <(
+  echo "(
+    blob \"${WASM_CONTENTS}\"
+  )"
+)
+
+# Move the did file to frontend folder
 
 # Print all relevant information at the end
-echo -e "\n=== Deployment Summary ===" >> ../demo-blockchain-integrations/logic/node_vars.env
-# echo "Context Contract ID: ${CONTEXT_ID}"
-echo "Ledger Contract ID: ${LEDGER_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Backend Canister Contract ID: ${BACKEND_CANISTER}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Url for Backend Canister: ${BACKEND_URL}" >> ../demo-blockchain-integrations/logic/node_vars.env
-# echo "Demo External Contract ID: ${MOCK_EXTERNAL_ID}"
+echo -e "\n=== Deployment Summary ==="
+echo "Context Contract ID: ${CONTEXT_ID}"
+echo "Ledger Contract ID: ${LEDGER_ID}"
+echo "Backend Canister Contract ID: ${BACKEND_CANISTER}"
+echo "Url for Backend Canister: ${BACKEND_URL}"
+echo "Demo External Contract ID: ${MOCK_EXTERNAL_ID}"
 echo -e "\nAccount Information:"
 echo "Minting Account: ${MINTING_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
 echo "Initial Account: ${INITIAL_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
