@@ -2,8 +2,8 @@
 set -e
 
 NODE_NAME="host"
-SERVER_PORT=2440
-SWARM_PORT=2540
+SERVER_PORT=2427
+SWARM_PORT=2527
 
 # Kill any existing merod processes
 if pgrep -f merod > /dev/null; then
@@ -12,6 +12,8 @@ if pgrep -f merod > /dev/null; then
     sleep 1
 fi
 
+# Clearing node_vars.env
+: > node_vars.env
 
 # First check and remove existing node directory if it exists
 if [ -d "$HOME/.calimero/$NODE_NAME" ]; then
@@ -48,20 +50,25 @@ if command -v wasm-opt >/dev/null; then
     wasm-opt -Oz ./res/$sanitized_name.wasm -o ./res/$sanitized_name.wasm
 fi
 
-WASM_PATH="./res/$sanitized_name.wasm"
+WASM_PATH="/Users/aadityaaren01/Desktop/Winfinity/demo-blockchain-integrations/logic/res/proxy_contract_demo.wasm"
 
 echo "WASM build complete!"
 
 # Start the node initialization and run in background
 cd ../../lottery-app/
+chmod +x ledger.sh
 ./ledger.sh
-cd ../demo-blockchain-integrations/logic/cd 
+cd ../demo-blockchain-integrations/logic/
 
+echo "WASM_PATH=$WASM_PATH" >> node_vars.env
 
+echo "Initializing node..."
+merod --node-name $NODE_NAME init --server-port $SERVER_PORT --swarm-port $SWARM_PORT >/dev/null 2>&1 &
+sleep 1
 
-# echo "Initializing node..."
-# merod --node-name $NODE_NAME init --server-port $SERVER_PORT --swarm-port $SWARM_PORT >/dev/null 2>&1 &
-# sleep 1
+echo "Starting node..."
+merod --node-name $NODE_NAME run >/dev/null 2>&1 &
+sleep 2
 
 # # Install application and capture ID
 echo "Installing application..."
@@ -86,13 +93,13 @@ if [ -z "$LOTTERY_CONTEXT_ID" ]; then
 fi
 
 # Store variables in a file
-echo "HOST_NAME=$NODE_NAME" > node_vars.env
+echo "HOST_NAME=$NODE_NAME" >> node_vars.env
 echo "SERVER_PORT=$SERVER_PORT" >> node_vars.env
 echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
 echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
 echo "LOTTERY_CONTEXT_ID=$LOTTERY_CONTEXT_ID" >> node_vars.env
 echo "HOST_PUBLIC_KEY=$HOST_PUBLIC_KEY" >> node_vars.env
-echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
+# echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
 
 
 # # Print summary

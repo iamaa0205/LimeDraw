@@ -172,15 +172,15 @@ dfx canister call context_contract set_proxy_code --argument-file <(
 # Move the did file to frontend folder
 
 # Print all relevant information at the end
-echo -e "\n=== Deployment Summary ===" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Context Contract ID: ${CONTEXT_ID}" ../demo-blockchain-integrations/logic/node_vars.env
-echo "Ledger Contract ID: ${LEDGER_ID}" ../demo-blockchain-integrations/logic/node_vars.env
-echo "Backend Canister Contract ID: ${BACKEND_CANISTER}" ../demo-blockchain-integrations/logic/node_vars.env
-echo "Url for Backend Canister: ${BACKEND_URL}" ../demo-blockchain-integrations/logic/node_vars.env
-echo "Demo External Contract ID: ${MOCK_EXTERNAL_ID}" ../demo-blockchain-integrations/logic/node_vars.env
-echo -e "\nAccount Information:" ../demo-blockchain-integrations/logic/node_vars.env
-echo "Minting Account: ${MINTING_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Initial Account: ${INITIAL_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Archive Principal: ${ARCHIVE_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo "Recipient Principal: ${RECIPIENT_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
-echo -e "\nDeployment completed successfully!" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo -e "\n=== Deployment Summary ==="
+echo "Context_Contract_ID=${CONTEXT_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Ledger_Contract_ID=${LEDGER_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Backend_Canister_Contract_ID=${BACKEND_CANISTER}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Url_for_Backend_Canister=${BACKEND_URL}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Demo_External_Contract_ID=${MOCK_EXTERNAL_ID}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo -e "\nAccount Information:" 
+echo "Minting_Account=${MINTING_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Initial_Account=${INITIAL_ACCOUNT}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Archive_Principal=${ARCHIVE_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo "Recipient_Principal=${RECIPIENT_PRINCIPAL}" >> ../demo-blockchain-integrations/logic/node_vars.env
+echo -e "\nDeployment completed successfully!" 
