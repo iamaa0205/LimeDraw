@@ -12,6 +12,7 @@ export interface _SERVICE {
   'getNoTicket' : ActorMethod<[string], [] | [bigint]>,
   'getPrincipal' : ActorMethod<[string], [] | [Principal]>,
   'getPubKey' : ActorMethod<[string, bigint], [] | [string]>,
+  'getWinningTicket' : ActorMethod<[string], [] | [bigint]>,
   'getcontextToPubKeyToTicket' : ActorMethod<[string, string], [] | [bigint]>,
   'init' : ActorMethod<[], undefined>,
   'setWinnerDeclared' : ActorMethod<[string], [] | [bigint]>,

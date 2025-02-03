@@ -13,6 +13,7 @@ export const idlFactory = ({ IDL }) => {
     'getNoTicket' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Nat)], ['query']),
     'getPrincipal' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Principal)], ['query']),
     'getPubKey' : IDL.Func([IDL.Text, IDL.Nat], [IDL.Opt(IDL.Text)], ['query']),
+    'getWinningTicket' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Nat)], ['query']),
     'getcontextToPubKeyToTicket' : IDL.Func(
         [IDL.Text, IDL.Text],
         [IDL.Opt(IDL.Nat)],

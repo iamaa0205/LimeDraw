@@ -8,6 +8,7 @@ service : {
   getNoTicket: (text) -> (opt nat) query;
   getPrincipal: (text) -> (opt principal) query;
   getPubKey: (text, nat) -> (opt text) query;
+  getWinningTicket: (text) -> (opt nat) query;
   getcontextToPubKeyToTicket: (text, text) -> (opt nat) query;
   init: () -> ();
   setWinnerDeclared: (text) -> (opt nat);

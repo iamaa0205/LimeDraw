@@ -46,14 +46,14 @@ done
 dfxvm default 0.24.3
 
 # Stop dfx and clean up all state
-PID=$(lsof -ti :4943)
-if [ -n "$PID" ]; then
-    echo "Found process on port 4943 (PID: $PID). Killing it..."
-    kill -9 $PID
-    echo "Process on port 4943 killed successfully."
-else
-    echo "No process found on port 4943."
-fi
+# PID=$(lsof -i :4943)
+# if [ -n "$PID" ]; then
+#     echo "Found process on port 4943 (PID: $PID). Killing it..."
+#     kill -9 $PID
+#     echo "Process on port 4943 killed successfully."
+# else
+#     echo "No process found on port 4943."
+# fi
 
 dfx stop
 rm -rf .dfx
