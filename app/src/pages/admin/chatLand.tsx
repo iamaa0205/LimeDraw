@@ -5,14 +5,15 @@ import { useState } from "react"
 import styled, { createGlobalStyle } from "styled-components"
 import { motion, AnimatePresence } from "framer-motion"
 import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
+import xyz from "./logo.jpg"
 
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #141414);
+    color: #00ff99;
   }
 `
 
@@ -20,18 +21,22 @@ const AppContainer = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
 `
 
 const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: rgba(26, 26, 46, 0.8);
+  width: 100%;
+  padding: 1.5rem 3rem;
+  background-color: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0px 4px 10px rgba(0, 255, 153, 0.2);
 `
 
 const Logo = styled.div`
@@ -41,23 +46,26 @@ const Logo = styled.div`
 `
 
 const LogoImg = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   margin-right: 1rem;
+  border-radius: 50%;
+  box-shadow: 0px 0px 10px rgba(0, 255, 153, 0.5);
 `
 
 const AppName = styled.h1`
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin: 0;
-  background: linear-gradient(45deg, #4a90e2, #63b3ed);
+  background: linear-gradient(45deg, #00ff99, #39ff14);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 255, 153, 0.8);
 `
 
 const MainContent = styled.main`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 1000px;
+  padding: 3rem;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -66,41 +74,47 @@ const MainContent = styled.main`
 `
 
 const Title = styled(motion.h2)`
-  font-size: 2.8rem;
+  font-size: 3rem;
+  font-weight: 700;
   margin-bottom: 2rem;
   text-align: center;
-  background: linear-gradient(45deg, #4a90e2, #63b3ed);
+  background: linear-gradient(45deg, #00ff99, #39ff14);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 4px 4px 6px rgba(0, 255, 153, 0.5);
 `
 
 const Message = styled(motion.p)`
-  font-size: 1.5rem;
-  margin-bottom: 2rem;
+  font-size: 1.6rem;
+  margin-bottom: 2.5rem;
   text-align: center;
-  color: #ecf0f1;
+  color: #e0e0e0;
+  text-shadow: 2px 2px 5px rgba(0, 255, 153, 0.3);
 `
 
 const Button = styled(motion.button)`
-  background: linear-gradient(45deg, #4a90e2, #63b3ed);
+  background: linear-gradient(45deg, #00ff99, #39ff14);
   color: #ffffff;
+  font-size: 1.2rem;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0px 5px 15px rgba(0, 255, 153, 0.4);
 
   &:hover {
-    opacity: 0.9;
+    transform: scale(1.1);
+    box-shadow: 0px 7px 20px rgba(0, 255, 153, 0.6);
   }
 `
 
 const Footer = styled.footer`
-  background-color: rgba(26, 26, 46, 0.8);
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
   padding: 1rem;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 1rem;
 `
 
 const Popup = styled(motion.div)`
@@ -108,29 +122,32 @@ const Popup = styled(motion.div)`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(26, 26, 46, 0.9);
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.95);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0px 5px 20px rgba(0, 255, 153, 0.5);
   z-index: 1000;
 `
 
 const Input = styled.input`
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #4a90e2;
-  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(0, 255, 153, 0.1);
   color: #ffffff;
   margin-bottom: 1rem;
   width: 100%;
+  font-size: 1rem;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 255, 153, 0.3);
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5);
+    box-shadow: 0 0 0 3px rgba(0, 255, 153, 0.8);
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
   }
 `
 
@@ -147,26 +164,16 @@ const ChatLand: React.FC = () => {
     e.preventDefault();
     console.log('Entered name:', userName);
 
-    // Create the AddHostRequest object
-    const request= {
-      name: userName,
-      
-    };
+    const request= { name: userName };
 
     try {
-      // Call addHost function
       const response = await new LogicApiDataSource().addHost(request);
-
       if (response.error) {
-        // Handle error
-        setError(response.error.message); // Assuming the error has a message field
-        console.error('Error:', response.error);
+        alert("Please enter a correct username");
       } else {
-        // Handle success
         console.log('Host added successfully:', response.data);
-        // Close the popup or show a success message
         setShowPopup(false);
-        window.location.href='./chatroom'
+        window.location.href='./chatroom';
       }
     } catch (err) {
       console.error('Error during addHost:', err);
@@ -180,45 +187,24 @@ const ChatLand: React.FC = () => {
       <AppContainer>
         <Header>
           <Logo>
-            <LogoImg src="/logo.png" alt="Lottery Chat Logo" />
-            <AppName>Lottery Chat</AppName>
+            <LogoImg src={xyz} alt="Lottery Chat Logo" />
+            <AppName>Crypto Chat</AppName>
           </Logo>
         </Header>
         <MainContent>
-          <Title initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            Welcome to Lottery Chat Room
-          </Title>
-          <Message
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            As a host, you have the privilege to discuss lotteries now.
-          </Message>
-          <Button onClick={handleEnterChat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            Enter Chat
-          </Button>
+          <Title>Welcome to the Crypto Chat</Title>
+          <Message>As a host, you have the privilege to discuss crypto and lotteries anonymously.</Message>
+          <Button onClick={handleEnterChat}>Enter Chat</Button>
         </MainContent>
         <Footer>
-          <p>&copy; {new Date().getFullYear()} Lottery Chat. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Crypto Chat. All rights reserved.</p>
         </Footer>
       </AppContainer>
       <AnimatePresence>
         {showPopup && (
-          <Popup
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-          >
+          <Popup>
             <form onSubmit={handleSubmitName}>
-              <Input
-                type="text"
-                placeholder="Enter your name"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                required
-              />
+              <Input type="text" placeholder="Enter your name" value={userName} onChange={(e) => setUserName(e.target.value)} required />
               <Button type="submit">Enter Chat</Button>
             </form>
           </Popup>
@@ -229,4 +215,3 @@ const ChatLand: React.FC = () => {
 }
 
 export default ChatLand
-

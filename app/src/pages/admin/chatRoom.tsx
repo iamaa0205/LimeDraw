@@ -28,12 +28,32 @@ const ChatContainer = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `
 
+const UpdateButton = styled(motion.button)`
+  background: linear-gradient(45deg, #2ecc71, #27ae60);
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  box-shadow: 0 4px 6px rgba(46, 204, 113, 0.4);
+
+  &:hover {
+    opacity: 0.9;
+  }
+`
+
 const ChatHeader = styled.div`
-  background-color: rgba(74, 144, 226, 0.9);
+  background-color: rgba(46, 204, 113, 0.8);
   padding: 1rem;
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
+  color: #ffffff;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 `
 
 const MessageList = styled.div`
@@ -43,7 +63,7 @@ const MessageList = styled.div`
 `
 
 const MessageItem = styled(motion.div)`
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(46, 204, 113, 0.1);
   border-radius: 10px;
   padding: 0.5rem 1rem;
   margin-bottom: 0.5rem;
@@ -52,7 +72,7 @@ const MessageItem = styled(motion.div)`
 const MessageSender = styled.span`
   font-weight: bold;
   margin-right: 0.5rem;
-  color: #4a90e2;
+  color: #2ecc71;
 `
 
 const MessageTime = styled.span`
@@ -74,14 +94,14 @@ const Input = styled.input`
   flex-grow: 1;
   padding: 0.5rem;
   border-radius: 5px;
-  border: 1px solid #4a90e2;
+  border: 1px solid #2ecc71;
   background-color: rgba(255, 255, 255, 0.1);
   color: #ffffff;
   margin-right: 0.5rem;
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.5);
+    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.5);
   }
 
   &::placeholder {
@@ -90,18 +110,20 @@ const Input = styled.input`
 `
 
 const SendButton = styled(motion.button)`
-  background: linear-gradient(45deg, #4a90e2, #63b3ed);
+  background: linear-gradient(45deg, #2ecc71, #27ae60);
   color: #ffffff;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(46, 204, 113, 0.4);
 
   &:hover {
     opacity: 0.9;
   }
 `
+
 interface Message {
   id: string;
   sender: string;
@@ -122,11 +144,11 @@ const ChatRoom: React.FC = () => {
         if (response.error) {
           console.error("Error fetching messages:", response.error);
         } else {
-          const fetchedMessages: Message[] = response.data.rooms.map((room:any) => ({
-            id: 1,
-            sender: "System", // Adjust if you store sender info
+          const fetchedMessages: Message[] = response.data.rooms.map((room: any) => ({
+            id: `${Date.now()}`,
+            sender: "System", 
             content: room.text,
-            timestamp: new Date(), // Adjust if the API provides timestamps
+            timestamp: new Date(),
           }));
           setMessages(fetchedMessages);
         }
@@ -151,7 +173,7 @@ const ChatRoom: React.FC = () => {
 
     if (newMessage.trim()) {
       const request: CreateMessageRoomRequest = {
-        id: `${Date.now()}`, // Unique ID for the message room
+        id: `${Date.now()}`,
         text: newMessage.trim(),
       };
 
@@ -180,10 +202,18 @@ const ChatRoom: React.FC = () => {
     }
   };
 
+  // Handle Update button click
+  const handleUpdate = () => {
+    alert("Update functionality will be added later.");
+  };
+
   return (
     <>
       <GlobalStyle />
       <ChatContainer>
+        <UpdateButton onClick={handleUpdate} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          Update
+        </UpdateButton>
         <ChatHeader>Lottery Chat Room</ChatHeader>
         <MessageList ref={messageListRef}>
           {messages.map((msg) => (
