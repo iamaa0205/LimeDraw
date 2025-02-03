@@ -660,111 +660,417 @@ export default function CryptoLottery() {
         
       case "createLottery":
         return (
-          <motion.div initial="hidden" animate="visible" exit="hidden" variants={fadeInUp} transition={pageTransition}>
-            <Title>Create a New Lottery</Title>
-            <Form onSubmit={handleCreateLottery}>
-              <Input
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={fadeInUp}
+            transition={pageTransition}
+            style={{
+              padding: '3rem 2rem',
+              maxWidth: '700px',  // Making the form wider
+              margin: 'auto',
+              background: 'linear-gradient(145deg, #f0f9f0, #e0f9e0)',
+              borderRadius: '12px',
+              boxShadow: '0 10px 30px rgba(0, 128, 0, 0.1)',
+              border: '2px solid #00FF00',
+            }}
+          >
+            <h2 style={{
+              fontSize: '2.2rem',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              color: '#2a7f34',  // Consistent green theme
+              marginBottom: '1.8rem',
+            }}>
+              Create a New Lottery
+            </h2>
+            <p style={{
+              fontSize: '1rem',
+              color: '#666',
+              textAlign: 'center',
+              marginBottom: '2rem',
+            }}>
+              Help make the lottery system fair and transparent. Create a new lottery for players to participate in!
+            </p>
+            <form
+              onSubmit={handleCreateLottery}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.8rem',
+              }}
+            >
+              {/* Name */}
+              <input
                 type="text"
                 name="name"
                 placeholder="Lottery Name"
                 value={createLotteryForm.name}
                 onChange={handleInputChange}
                 required
+                style={{
+                  padding: '1rem 1.5rem',
+                  border: '1px solid #00FF00',
+                  borderRadius: '10px',
+                  fontSize: '1.1rem',
+                  outline: 'none',
+                  transition: '0.3s all ease',
+                  backgroundColor: '#f9fff5',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
-              <TextArea
+      
+              {/* Description */}
+              <textarea
                 name="description"
                 placeholder="Description (Optional)"
                 value={createLotteryForm.description}
                 onChange={handleInputChange}
+                style={{
+                  padding: '1rem',
+                  border: '1px solid #00FF00',
+                  borderRadius: '10px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: '0.3s all ease',
+                  backgroundColor: '#f9fff5',
+                  resize: 'vertical',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
-              <Input
+      
+              {/* Ticket Price */}
+              <input
                 type="number"
                 name="ticketPrice"
                 placeholder="Ticket Price"
                 value={createLotteryForm.ticketPrice}
                 onChange={handleInputChange}
                 required
+                style={{
+                  padding: '1rem 1.5rem',
+                  border: '1px solid #00FF00',
+                  borderRadius: '10px',
+                  fontSize: '1.1rem',
+                  outline: 'none',
+                  transition: '0.3s all ease',
+                  backgroundColor: '#f9fff5',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
-              <Input
+      
+              {/* Total Tickets */}
+              <input
                 type="number"
                 name="totalTickets"
                 placeholder="Total Number of Tickets"
                 value={createLotteryForm.totalTickets}
                 onChange={handleInputChange}
                 required
+                style={{
+                  padding: '1rem 1.5rem',
+                  border: '1px solid #00FF00',
+                  borderRadius: '10px',
+                  fontSize: '1.1rem',
+                  outline: 'none',
+                  transition: '0.3s all ease',
+                  backgroundColor: '#f9fff5',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
-              <Input
+      
+              {/* Winner Announcement Date */}
+              <input
                 type="datetime-local"
                 name="winnerAnnouncementDate"
                 placeholder="Winner Announcement Date"
                 value={createLotteryForm.winnerAnnouncementDate}
                 onChange={handleInputChange}
                 required
+                style={{
+                  padding: '1rem 1.5rem',
+                  border: '1px solid #00FF00',
+                  borderRadius: '10px',
+                  fontSize: '1.1rem',
+                  outline: 'none',
+                  transition: '0.3s all ease',
+                  backgroundColor: '#f9fff5',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
-              <Input
+      
+              {/* Prize Pool */}
+              <input
                 type="number"
                 name="prizePool"
                 placeholder="Prize Pool Amount"
                 value={createLotteryForm.prizePool}
                 onChange={handleInputChange}
                 required
+                style={{
+                  padding: '1rem 1.5rem',
+                  border: '1px solid #00FF00',
+                  borderRadius: '10px',
+                  fontSize: '1.1rem',
+                  outline: 'none',
+                  transition: '0.3s all ease',
+                  backgroundColor: '#f9fff5',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#00FF00';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
-              <Button type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                Create Lottery
-              </Button>
-            </Form>
-          </motion.div>
-        )
       
+              {/* Submit Button */}
+              <motion.button
+                type="submit"
+                style={{
+                  background: 'linear-gradient(45deg, #00FF00, #32CD32)',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '1rem 2rem',
+                  fontSize: '1.2rem',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  fontWeight: 'bold',
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Create Lottery
+              </motion.button>
+            </form>
+          </motion.div>
+        );
+       
       case "lotteryDetails":
         return (
-          <LotteryDetailsContainer
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
+            style={{
+              padding: '3rem 2rem',
+              maxWidth: '900px',  // Increased width
+              margin: 'auto',
+              background: 'linear-gradient(145deg, #f0f9f0, #e0f9e0)',
+              borderRadius: '12px',
+              boxShadow: '0 10px 30px rgba(0, 128, 0, 0.1)',
+              border: '2px solid #00FF00',
+            }}
           >
-            <Title>Lottery Dashboard</Title>
-              {lottery.owner && (
-                <LotteryInfo>
-                  <h2>{lottery.name}</h2>
-                  <p>{lottery.description}</p>
-                  <InfoItem>Ticket Price: ${lottery.ticket_price}</InfoItem>
-                  <InfoItem>Total Tickets: {lottery.ticket_count}</InfoItem>
-                  <InfoItem>Tickets Remaining: {lottery.remaining_tickets}</InfoItem>
-                </LotteryInfo>
-                )}
-                <StatisticsGrid>
-                  <StatCard>
-                    <h3>Total Members</h3>
-                    <p>{players.length}</p>
-                  </StatCard>
-                </StatisticsGrid>
-                <h3>Members</h3>
-                <MembersList>
+            <h2 style={{
+              fontSize: '2.5rem',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              color: '#2a7f34',
+              marginBottom: '2rem',
+            }}>
+              Lottery Dashboard
+            </h2>
+      
+            {lottery.owner && (
+              <div style={{
+                padding: '1.5rem',
+                background: '#f5fff0',
+                borderRadius: '10px',
+                boxShadow: '0 5px 15px rgba(0, 255, 0, 0.2)',
+                marginBottom: '2rem',
+              }}>
+                <h2 style={{ color: '#2a7f34', fontSize: '1.8rem', marginBottom: '0.5rem' }}>
+                  {lottery.name}
+                </h2>
+                <p style={{ fontSize: '1rem', color: '#666', marginBottom: '1rem' }}>
+                  {lottery.description}
+                </p>
+                <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#008000' }}>
+                  Ticket Price: ${lottery.ticket_price}
+                </p>
+                <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#008000' }}>
+                  Total Tickets: {lottery.ticket_count}
+                </p>
+                <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#d9534f' }}>
+                  Tickets Remaining: {lottery.remaining_tickets}
+                </p>
+              </div>
+            )}
+      
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '1.5rem',
+              marginBottom: '2rem',
+            }}>
+              <div style={{
+                padding: '1.5rem',
+                background: '#d4f8d4',
+                borderRadius: '10px',
+                boxShadow: '0 5px 15px rgba(0, 255, 0, 0.2)',
+                textAlign: 'center',
+              }}>
+                <h3 style={{ fontSize: '1.5rem', color: '#2a7f34' }}>Total Members</h3>
+                <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#008000' }}>
+                  {players.length}
+                </p>
+              </div>
+            </div>
+      
+            <h3 style={{
+              fontSize: '1.8rem',
+              fontWeight: 'bold',
+              color: '#2a7f34',
+              marginBottom: '1rem',
+            }}>
+              Members
+            </h3>
+            <div style={{
+              background: '#f5fff0',
+              padding: '1.5rem',
+              borderRadius: '10px',
+              boxShadow: '0 5px 15px rgba(0, 255, 0, 0.2)',
+              marginBottom: '2rem',
+            }}>
+              {players.length > 0 ? (
+                <ul style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                }}>
                   {players.map((player, index) => (
-                    <MemberItem key={index}>{player.name}</MemberItem>
+                    <li key={index} style={{
+                      fontSize: '1.1rem',
+                      color: '#2a7f34',
+                      padding: '0.5rem 0',
+                      borderBottom: '1px solid rgba(0, 128, 0, 0.2)',
+                    }}>
+                      {player.name}
+                    </li>
                   ))}
-                </MembersList>
-
-            <BuyTicketsSection>
-              <h2>Buy Tickets</h2>
-              <BuyTicketsForm onSubmit={handleBuyTickets}>
-                <TicketInput
+                </ul>
+              ) : (
+                <p style={{ fontSize: '1rem', color: '#666' }}>No members yet.</p>
+              )}
+            </div>
+      
+            <div style={{
+              padding: '2rem',
+              background: '#d4f8d4',
+              borderRadius: '12px',
+              boxShadow: '0 10px 30px rgba(0, 128, 0, 0.2)',
+            }}>
+              <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2a7f34', textAlign: 'center' }}>
+                Buy Tickets
+              </h2>
+              <form onSubmit={handleBuyTickets} style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.2rem',
+                alignItems: 'center',
+                marginTop: '1rem',
+              }}>
+                <input
                   type="number"
                   min="1"
                   value={ticketsToBuy}
                   onChange={(e) => setTicketsToBuy(Number(e.target.value))}
                   placeholder="Number of tickets"
+                  required
+                  style={{
+                    width: '100%',
+                    maxWidth: '300px',
+                    padding: '1rem',
+                    fontSize: '1.1rem',
+                    border: '2px solid #00FF00',
+                    borderRadius: '10px',
+                    textAlign: 'center',
+                    outline: 'none',
+                    transition: '0.3s all ease',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#00FF00';
+                    e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#00FF00';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
-                <BuyButton type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.button
+                  type="submit"
+                  style={{
+                    background: 'linear-gradient(45deg, #00FF00, #32CD32)',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '1rem 2rem',
+                    fontSize: '1.2rem',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    fontWeight: 'bold',
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   Buy Tickets
-                </BuyButton>
-              </BuyTicketsForm>
-              {lottery && (<TotalCost>Total Cost: ${(Number(lottery.ticketPrice) * ticketsToBuy).toFixed(2)}</TotalCost> )}
-            </BuyTicketsSection>
-          </LotteryDetailsContainer>
-        )
+                </motion.button>
+              </form>
+              {lottery && (
+                <p style={{
+                  fontSize: '1.3rem',
+                  fontWeight: 'bold',
+                  color: '#008000',
+                  textAlign: 'center',
+                  marginTop: '1rem',
+                }}>
+                  Total Cost: ${(Number(lottery.ticketPrice) * ticketsToBuy).toFixed(2)}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        );
         case "hostDashboard":
           return(
             <HostDashboardContainer
