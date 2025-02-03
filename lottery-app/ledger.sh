@@ -61,6 +61,9 @@ rm -rf ~/.config/dfx/replica-configuration/
 rm -rf ~/.config/dfx/identity/minting
 rm -rf ~/.config/dfx/identity/initial
 rm -rf ~/.config/dfx/identity/archive
+rm -rf ~/.config/dfx/identity/user1
+rm -rf ~/.config/dfx/identity/user2
+rm -rf ~/.config/dfx/identity/user3
 rm -rf ~/.cache/dfinity/
 rm -rf ~/.config/dfx/
 dfxvm default 0.24.3
@@ -90,6 +93,24 @@ ARCHIVE_PRINCIPAL=$(dfx identity get-principal)
 dfx identity new recipient --storage-mode=plaintext || true
 dfx identity use recipient
 RECIPIENT_PRINCIPAL=$(dfx identity get-principal)
+
+# Generate user1 account
+dfx identity new user1 --storage-mode=plaintext || true
+dfx identity use user1
+USER1_PRINCIPAL=$(dfx identity get-principal)
+USER1_ACCOUNT=$(get_account_id "$USER1_PRINCIPAL")
+
+# Generate user2 account
+dfx identity new user2 --storage-mode=plaintext || true
+dfx identity use user2
+USER2_PRINCIPAL=$(dfx identity get-principal)
+USER2_ACCOUNT=$(get_account_id "$USER2_PRINCIPAL")
+
+# Generate user3 account
+dfx identity new user3 --storage-mode=plaintext || true
+dfx identity use user3
+USER3_PRINCIPAL=$(dfx identity get-principal)
+USER3_ACCOUNT=$(get_account_id "$USER3_PRINCIPAL")
 
 # Switch back to default identity
 dfx identity use default
@@ -130,7 +151,10 @@ LEDGER_ID=$(dfx canister id icp_ledger_canister)
 LEDGER_INIT_ARG="(variant { Init = record { 
     minting_account = \"${MINTING_ACCOUNT}\"; 
     initial_values = vec { 
-        record { \"${INITIAL_ACCOUNT}\"; record { e8s = 100_000_000_000 } } 
+        record { \"${INITIAL_ACCOUNT}\"; record { e8s = 100_000_000_000 } }; 
+        record { \"${USER1_ACCOUNT}\"; record { e8s = 75_000_000_000 } }; 
+        record { \"${USER2_ACCOUNT}\"; record { e8s = 75_000_000_000 } };
+        record { \"${USER3_ACCOUNT}\"; record { e8s = 75_000_000_000 } }
     }; 
     send_whitelist = vec {}; 
     transfer_fee = opt record { e8s = 10_000 }; 
@@ -198,4 +222,7 @@ echo "Minting_Account=${MINTING_ACCOUNT}" >> ../logic/node_vars.env
 echo "Initial_Account=${INITIAL_ACCOUNT}" >> ../logic/node_vars.env
 echo "Archive_Principal=${ARCHIVE_PRINCIPAL}" >> ../logic/node_vars.env
 echo "Recipient_Principal=${RECIPIENT_PRINCIPAL}" >> ../logic/node_vars.env
+echo "User1_Principal=${USER1_PRINCIPAL}" >> ../logic/node_vars.env
+echo "User2_Principal=${USER2_PRINCIPAL}" >> ../logic/node_vars.env
+echo "User3_Principal=${USER3_PRINCIPAL}" >> ../logic/node_vars.env
 echo -e "\nDeployment completed successfully!" 
