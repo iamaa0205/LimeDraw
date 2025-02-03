@@ -26,7 +26,7 @@ cd ../app
 pnpm run dev
 ```
 
-All the data corresponding to the canisters, pub-pvt key pairs of the nodes and application id get stored to the `./demo-blockchain-integrations/logic/node_vars.env` .
+All the data corresponding to the canisters, pub-pvt key pairs of the nodes and application id get stored to `./demo-blockchain-integrations/logic/node_vars.env` .
 
 ## **Features**
 
