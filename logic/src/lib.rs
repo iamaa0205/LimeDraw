@@ -142,14 +142,23 @@ impl AppState {
     }
 
 
-    pub fn add_host(&mut self, calimero_public_key: String, name: String) {
+    pub fn add_host(&mut self, calimero_public_key: String, name: String) -> Result<(), Error> {
+        // Check if the host already exists
+        if self.hosts.iter().any(|host| host.calimero_public_key == calimero_public_key) {
+            env::log("❌ Error: Host with this Calimero public key already exists.");
+            return Err(Error::msg("Host with this Calimero public key already exists."));
+        }
+    
         let new_host = Host {
             calimero_public_key,
             name,
         };
     
         self.hosts.push(new_host);
+        env::log("✅ Host successfully added.");
+        Ok(())
     }
+    
     
 
 
