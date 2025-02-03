@@ -4,8 +4,10 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import styled, { createGlobalStyle } from "styled-components"
 import { motion } from "framer-motion"
-import { LogicApiDataSource } from "../api/dataSource/LogicApiDataSource"
-import { CreateMessageRoomRequest } from "../api/clientApi"
+// import { LogicApiDataSource } from "../api/dataSource/LogicApiDataSource"
+// import { CreateMessageRoomRequest } from "../api/clientApi"
+import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
+import { CreateMessageRoomResponse } from "../../api/clientApi"
 
 const GlobalStyle = createGlobalStyle`
   body {

@@ -10,6 +10,8 @@ import CounterComponent from './pages/admin/counter';
 import Winner from './pages/admin/winner';
 import { useEffect } from 'react';
 import Check from './pages/admin/check';
+import ChatLand from './pages/admin/chatLand';
+import ChatRoom from './pages/admin/chatRoom';
 export default function App() {
 
 
@@ -37,6 +39,8 @@ export default function App() {
           <Route path="/counter" element={<CounterComponent />} />
           <Route path="/winner" element={<Winner />}/>
           <Route path="/check" element={<Check />}/>
+          <Route path="/chatland" element={<ChatLand />}/>
+          <Route path="/chatroom" element={<ChatRoom />}/>
           
         </Routes>
       </BrowserRouter>

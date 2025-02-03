@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import styled, { createGlobalStyle } from "styled-components"
 import { motion, AnimatePresence } from "framer-motion"
-import { LogicApiDataSource } from "../api/dataSource/LogicApiDataSource"
+import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -166,7 +166,7 @@ const ChatLand: React.FC = () => {
         console.log('Host added successfully:', response.data);
         // Close the popup or show a success message
         setShowPopup(false);
-        window.location.href='./chat-room'
+        window.location.href='./chatroom'
       }
     } catch (err) {
       console.error('Error during addHost:', err);

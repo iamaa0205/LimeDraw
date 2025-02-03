@@ -16,6 +16,8 @@ pub struct AppState {
     ticket_owner: UnorderedMap<u32, String>,
     calimero_public_key_onwer: UnorderedMap<String, Player>,
     counter: Counter,
+    messageRoomMessages: Vec<MessageRoom>,
+    hosts:Vec<Host>,
 }
 
 #[derive(
@@ -66,6 +68,31 @@ pub struct LotteryState {
     winner: Option<Player>,
 }
 
+
+#[derive(
+    Clone, Debug, PartialEq, PartialOrd, BorshSerialize, BorshDeserialize, Serialize, Deserialize,
+)]
+#[borsh(crate = "calimero_sdk::borsh")]
+#[serde(crate = "calimero_sdk::serde")]
+pub struct MessageRoom {
+    id:String,
+    text:String,
+
+}
+#[derive(
+    Clone, Debug, PartialEq, PartialOrd, BorshSerialize, BorshDeserialize, Serialize, Deserialize,
+)]
+#[borsh(crate = "calimero_sdk::borsh")]
+#[serde(crate = "calimero_sdk::serde")]
+pub struct Host{
+    calimero_public_key:String,
+    name:String,
+}
+
+
+
+
+
 #[app::event]
 pub enum Event {
     ProposalCreated { id: ProposalId },
@@ -99,8 +126,33 @@ impl AppState {
             ticket_owner: UnorderedMap::new(),
             calimero_public_key_onwer: UnorderedMap::new(),
             counter: Counter { value: 0 },
+            messageRoomMessages: Vec::new(),
+            hosts:Vec::new(),
         }
     }
+
+    pub fn create_message_room(&mut self, id: String, text: String) {
+        let new_room = MessageRoom { id, text };
+        self.messageRoomMessages.push(new_room);
+    }
+
+
+    pub fn get_all_message_rooms(&self) -> Vec<MessageRoom> {
+        self.messageRoomMessages.clone()
+    }
+
+
+    pub fn add_host(&mut self, calimero_public_key: String, name: String) {
+        let new_host = Host {
+            calimero_public_key,
+            name,
+        };
+    
+        self.hosts.push(new_host);
+    }
+    
+
+
     pub fn increment_counter(&mut self) {
         self.counter.value += 1;
         env::log(&format!("Counter incremented: {}", self.counter.value));

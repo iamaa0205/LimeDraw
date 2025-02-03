@@ -177,6 +177,37 @@ export interface GetPlayerResponse {
   success: boolean;
   player: Player | null;
 }
+export interface CreateMessageRoomRequest {
+  id: string;
+  text: string;
+}
+
+export interface CreateMessageRoomResponse {
+  success: boolean;
+  message: string;
+}
+export interface AddHostRequest {
+  calimero_public_key?: string;
+  name: string;
+}
+
+export interface AddHostResponse {
+  success: boolean;
+  message: string;
+}
+export interface GetMessageRoomsResponse {
+  success: boolean;
+  messageRooms: MessageRoom[];
+}
+
+export interface MessageRoom {
+  id: string;
+  text: string;
+}
+
+export interface GetMessageRoomsRequest {
+  // If you need to filter messages, you can add optional parameters here
+}
 
 
 
@@ -194,7 +225,10 @@ export enum ClientMethod {
   GET_ALL_PLAYERS = 'get_all_players',
   CREATE_LOTTERY = 'create_lottery',
   GET_LOTTERY = 'get_lottery',
-  GET_PLAYER = 'get_player_by_public_key'
+  GET_PLAYER = 'get_player_by_public_key',
+  ADD_HOST='add_host',
+  AddMessage='create_message_room',
+  GetMessage='get_all_message_rooms',
 
 }
 
