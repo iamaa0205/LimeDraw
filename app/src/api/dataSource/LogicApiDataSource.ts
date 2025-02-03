@@ -388,6 +388,7 @@ export class LogicApiDataSource implements ClientApi {
       method: ClientMethod.AddMessage, // Use the appropriate method
       argsJson: {
         id: request.id,
+        name:request.name,
         text: request.text,
       },
       executorPublicKey: jwtObject.executor_public_key,

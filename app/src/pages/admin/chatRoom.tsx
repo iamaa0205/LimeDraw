@@ -132,30 +132,27 @@ interface Message {
 }
 
 const ChatRoom: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messageListRef = useRef<HTMLDivElement>(null);
+  const fetchMessages = async () => {
+    try {
+      const response = await new LogicApiDataSource().getAllMessageRooms();
+      if (response.error) {
+        console.error("Error fetching messages:", response.error);
+      } else {
+        console.log(response,"messages")
+        const fetchedMessages= response.data
+        setMessages(fetchedMessages);
+      }
+    } catch (err) {
+      console.error("Unexpected error fetching messages:", err);
+    }
+  };
 
   // Fetch messages from API
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await new LogicApiDataSource().getAllMessageRooms();
-        if (response.error) {
-          console.error("Error fetching messages:", response.error);
-        } else {
-          const fetchedMessages: Message[] = response.data.rooms.map((room: any) => ({
-            id: `${Date.now()}`,
-            sender: "System", 
-            content: room.text,
-            timestamp: new Date(),
-          }));
-          setMessages(fetchedMessages);
-        }
-      } catch (err) {
-        console.error("Unexpected error fetching messages:", err);
-      }
-    };
+    
 
     fetchMessages();
   }, []);
@@ -172,8 +169,10 @@ const ChatRoom: React.FC = () => {
     e.preventDefault();
 
     if (newMessage.trim()) {
-      const request: CreateMessageRoomRequest = {
+      const request = {
         id: `${Date.now()}`,
+        name:sessionStorage.getItem('name')||'admin',
+
         text: newMessage.trim(),
       };
 
@@ -186,11 +185,11 @@ const ChatRoom: React.FC = () => {
           console.log("Message sent successfully:", response.data);
           
           // Add new message to the UI
-          const newMsg: Message = {
+          const newMsg = {
             id: request.id,
-            sender: "You",
-            content: request.text,
-            timestamp: new Date(),
+            name:sessionStorage.getItem('name'),
+            text: request.text,
+            
           };
 
           setMessages((prevMessages) => [...prevMessages, newMsg]);
@@ -204,7 +203,8 @@ const ChatRoom: React.FC = () => {
 
   // Handle Update button click
   const handleUpdate = () => {
-    alert("Update functionality will be added later.");
+    fetchMessages();
+   
   };
 
   return (
@@ -223,9 +223,9 @@ const ChatRoom: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <MessageSender>{msg.sender}</MessageSender>
-              <MessageTime>{msg.timestamp.toLocaleTimeString()}</MessageTime>
-              <MessageContent>{msg.content}</MessageContent>
+              <MessageSender>{msg.name}</MessageSender>
+              
+              <MessageContent>{msg.text}</MessageContent>
             </MessageItem>
           ))}
         </MessageList>

@@ -168,6 +168,7 @@ const ChatLand: React.FC = () => {
 
     try {
       const response = await new LogicApiDataSource().addHost(request);
+      sessionStorage.setItem('name',userName)
       if (response.error) {
         alert("Please enter a correct username");
       } else {

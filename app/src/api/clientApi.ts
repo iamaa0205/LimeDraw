@@ -179,6 +179,7 @@ export interface GetPlayerResponse {
 }
 export interface CreateMessageRoomRequest {
   id: string;
+  name:string
   text: string;
 }
 

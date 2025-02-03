@@ -76,6 +76,7 @@ pub struct LotteryState {
 #[serde(crate = "calimero_sdk::serde")]
 pub struct MessageRoom {
     id:String,
+    name:String,
     text:String,
 
 }
@@ -131,8 +132,8 @@ impl AppState {
         }
     }
 
-    pub fn create_message_room(&mut self, id: String, text: String) {
-        let new_room = MessageRoom { id, text };
+    pub fn create_message_room(&mut self, id: String, name:String, text: String) {
+        let new_room = MessageRoom { id, name,text };
         self.messageRoomMessages.push(new_room);
     }
 
