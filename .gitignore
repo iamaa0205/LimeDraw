@@ -7,4 +7,5 @@ data/
 target/
 /logic/node_vars.env
 /rsa-encryption-app/keys/
+/rsa-encryption-app/node_modules/
 
