@@ -13,7 +13,7 @@ This repository contains:
 
 ### **Clone the Repository**
 ```bash title="Terminal"
-git clone 
+git clone https://github.com/iamaa0205/LimeDraw.git
 cd LimeDraw
 ```
 
@@ -26,7 +26,7 @@ pnpm install
 ### **Setting up Calimero Node and ICP contracts**
 Run the given script which will set up local ICP network and deploy the canisters. It also makes a host and deploys the application with the host
 ```bash title="Terminal"
-cd demo-blockchain-integrations/logic
+cd logic
 chmod +x ./script.sh
 ./script.sh
 ```
