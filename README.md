@@ -1,4 +1,4 @@
-# **LimeDraw**
+# <img src="path_to_logo/logo.png" alt="LimeDraw Logo" width="50" height="50" style="vertical-align: middle;"> **LimeDraw**
 
 LimeDraw is an Anonymous Lottery System built on top of ICP with the help of Calimero SDK. 
 

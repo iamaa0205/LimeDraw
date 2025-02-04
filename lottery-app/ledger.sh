@@ -184,6 +184,9 @@ dfx canister call context_contract set_proxy_code --argument-file <(
   )"
 )
 
+# deploy the node backend
+node ../rsa-encryption-app/server.js
+
 # Move the did file to frontend folder
 
 # Print all relevant information at the end

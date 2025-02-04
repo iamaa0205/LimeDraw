@@ -1,80 +1,79 @@
-'use client'
-import type React from "react"
-
+'use client';
+import type React from 'react';
 
 const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   const footerStyle: React.CSSProperties = {
-    backgroundColor: "#001a00",
-    color: "#00FF00",
-    padding: "40px 20px",
-    position: "relative",
-    marginTop: "50px",
-    borderTop: "3px solid #00FF00",
+    backgroundColor: '#001a00',
+    color: '#00FF00',
+    padding: '40px 20px',
+    position: 'relative',
+    marginTop: '50px',
+    borderTop: '3px solid #00FF00',
     fontFamily: "'Arial', sans-serif",
-  }
+  };
 
   const containerStyle: React.CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    maxWidth: "1200px",
-    margin: "0 auto",
-  }
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    maxWidth: '1200px',
+    margin: '0 auto',
+  };
 
   const sectionStyle: React.CSSProperties = {
-    flex: "1 1 250px",
-    marginBottom: "30px",
-    marginRight: "20px",
-  }
+    flex: '1 1 250px',
+    marginBottom: '30px',
+    marginRight: '20px',
+  };
 
   const headingStyle: React.CSSProperties = {
-    color: "#00FF00",
-    fontSize: "18px",
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    letterSpacing: "1.5px",
-    marginBottom: "15px",
-    textShadow: "0 0 10px rgba(0, 255, 0, 0.5)",
-  }
+    color: '#00FF00',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: '1.5px',
+    marginBottom: '15px',
+    textShadow: '0 0 10px rgba(0, 255, 0, 0.5)',
+  };
 
   const linkStyle: React.CSSProperties = {
-    color: "#00FF00",
-    textDecoration: "none",
-    fontSize: "14px",
-    display: "block",
-    margin: "10px 0",
-    transition: "all 0.3s ease",
-  }
+    color: '#00FF00',
+    textDecoration: 'none',
+    fontSize: '14px',
+    display: 'block',
+    margin: '10px 0',
+    transition: 'all 0.3s ease',
+  };
 
   const inputStyle: React.CSSProperties = {
-    backgroundColor: "#003300",
-    border: "1px solid #00FF00",
-    color: "#00FF00",
-    padding: "10px",
-    fontSize: "14px",
-    width: "100%",
-    marginBottom: "10px",
-  }
+    backgroundColor: '#003300',
+    border: '1px solid #00FF00',
+    color: '#00FF00',
+    padding: '10px',
+    fontSize: '14px',
+    width: '100%',
+    marginBottom: '10px',
+  };
 
   const buttonStyle: React.CSSProperties = {
-    backgroundColor: "#00FF00",
-    color: "#000",
-    border: "none",
-    padding: "10px 20px",
-    fontSize: "14px",
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-  }
+    backgroundColor: '#00FF00',
+    color: '#000',
+    border: 'none',
+    padding: '10px 20px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  };
 
   const copyrightStyle: React.CSSProperties = {
-    textAlign: "center",
-    marginTop: "40px",
-    borderTop: "1px solid rgba(0, 255, 0, 0.2)",
-    paddingTop: "20px",
-    fontSize: "14px",
-  }
+    textAlign: 'center',
+    marginTop: '40px',
+    borderTop: '1px solid rgba(0, 255, 0, 0.2)',
+    paddingTop: '20px',
+    fontSize: '14px',
+  };
 
   return (
     <footer style={footerStyle}>
@@ -110,14 +109,29 @@ const Footer: React.FC = () => {
 
         <div style={sectionStyle}>
           <h4 style={headingStyle}>Follow Us</h4>
-          <div style={{ display: "flex", gap: "20px" }}>
-            <a href="https://twitter.com/cryptolottery" target="_blank" rel="noopener noreferrer" style={linkStyle}>
+          <div style={{ display: 'flex', gap: '20px' }}>
+            <a
+              href="https://twitter.com/cryptolottery"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={linkStyle}
+            >
               Twitter
             </a>
-            <a href="https://facebook.com/cryptolottery" target="_blank" rel="noopener noreferrer" style={linkStyle}>
+            <a
+              href="https://facebook.com/cryptolottery"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={linkStyle}
+            >
               Facebook
             </a>
-            <a href="https://instagram.com/cryptolottery" target="_blank" rel="noopener noreferrer" style={linkStyle}>
+            <a
+              href="https://instagram.com/cryptolottery"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={linkStyle}
+            >
               Instagram
             </a>
           </div>
@@ -125,7 +139,9 @@ const Footer: React.FC = () => {
 
         <div style={sectionStyle}>
           <h4 style={headingStyle}>Newsletter</h4>
-          <p style={{ fontSize: "14px", marginBottom: "10px", color: "#00FF00" }}>
+          <p
+            style={{ fontSize: '14px', marginBottom: '10px', color: '#00FF00' }}
+          >
             Stay updated with our latest news and offers!
           </p>
           <input type="email" placeholder="Your email" style={inputStyle} />
@@ -139,36 +155,40 @@ const Footer: React.FC = () => {
 
       <div
         style={{
-          position: "absolute",
-          top: "0",
-          left: "0",
-          width: "100%",
-          height: "3px",
-          background: "linear-gradient(90deg, transparent, #00FF00, transparent)",
-          animation: "glowMove 2s linear infinite",
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '3px',
+          background:
+            'linear-gradient(90deg, transparent, #00FF00, transparent)',
+          animation: 'glowMove 2s linear infinite',
         }}
       />
 
       <style jsx>{`
         @keyframes glowMove {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
         }
 
         a:hover {
-          color: #00FF99 !important;
+          color: #00ff99 !important;
           text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
           transform: translateY(-2px);
         }
 
         button:hover {
-          background-color: #00CC00;
+          background-color: #00cc00;
           box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
         }
       `}</style>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
-
+export default Footer;

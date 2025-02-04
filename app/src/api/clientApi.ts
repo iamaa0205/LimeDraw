@@ -72,8 +72,6 @@ export interface CreateProposalRequest {
   };
 }
 
-
-
 export interface CreateProposalResponse {
   proposal_id: String;
 }
@@ -108,10 +106,6 @@ export interface GetCounterValueResponse {
   value: number;
 }
 
-
-
-
-
 export interface CreatePlayerRequest {
   name: string;
   calimero_public_key?: string;
@@ -135,16 +129,14 @@ export interface Player {
   role: number; // 0 for regular player, other values for different roles
 }
 
-
 export interface CreateLotteryRequest {
   name: string;
   description: string;
-  ticket_price: Number;  // Using string for large numbers (to avoid precision issues)
-  ticket_count: Number;  // Same as above
-  prize_pool: Number;    // Same as above
+  ticket_price: Number; // Using string for large numbers (to avoid precision issues)
+  ticket_count: Number; // Same as above
+  prize_pool: Number; // Same as above
   calimero_public_key?: string;
 }
-
 
 export interface CreateLotteryResponse {
   success: boolean;
@@ -163,8 +155,7 @@ export interface LotteryState {
   winner: Player | null;
 }
 
-export interface GetLotteryRequest {
-}
+export interface GetLotteryRequest {}
 
 export interface GetLotteryResponse {
   success: boolean;
@@ -179,7 +170,7 @@ export interface GetPlayerResponse {
 }
 export interface CreateMessageRoomRequest {
   id: string;
-  name:string
+  name: string;
   text: string;
 }
 
@@ -210,27 +201,22 @@ export interface GetMessageRoomsRequest {
   // If you need to filter messages, you can add optional parameters here
 }
 
-
-
-
-
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',
   SEND_PROPOSAL_MESSAGE = 'send_proposal_messages',
   CREATE_PROPOSAL = 'create_new_proposal',
   APPROVE_PROPOSAL = 'approve_proposal',
-  GET_CALIMERO_PUBLIC_KEY = 'store_public_key', 
-  INCREMENT_COUNTER = 'increment_counter',  // New: Increment the counter
+  GET_CALIMERO_PUBLIC_KEY = 'store_public_key',
+  INCREMENT_COUNTER = 'increment_counter', // New: Increment the counter
   GET_COUNTER_VALUE = 'get_counter',
   CREATE_PLAYER = 'create_player',
   GET_ALL_PLAYERS = 'get_all_players',
   CREATE_LOTTERY = 'create_lottery',
   GET_LOTTERY = 'get_lottery',
   GET_PLAYER = 'get_player_by_public_key',
-  ADD_HOST='add_host',
-  AddMessage='create_message_room',
-  GetMessage='get_all_message_rooms',
-
+  ADD_HOST = 'add_host',
+  AddMessage = 'create_message_room',
+  GetMessage = 'get_all_message_rooms',
 }
 
 export interface ClientApi {
@@ -248,5 +234,4 @@ export interface ClientApi {
     request: ApproveProposalRequest,
   ): ApiResponse<ApproveProposalResponse>;
   deleteProposal(proposalId: string): ApiResponse<void>;
-
 }

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource";
+import React, { useState, useEffect } from 'react';
+import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 
 // Assuming Player is defined like this
 interface Player {
@@ -32,7 +32,7 @@ const CounterComponent: React.FC = () => {
         setCounter(response.data.value); // Assuming API returns { value: number }
       }
     } catch (error) {
-      console.error("Failed to fetch counter:", error);
+      console.error('Failed to fetch counter:', error);
     }
     setLoading(false);
   };
@@ -42,10 +42,10 @@ const CounterComponent: React.FC = () => {
     try {
       const response = await new LogicApiDataSource().incrementCounter();
       if (response?.data) {
-        console.log("Updated successfully"); // Update only when backend returns new value
+        console.log('Updated successfully'); // Update only when backend returns new value
       }
     } catch (error) {
-      console.error("Failed to increment counter:", error);
+      console.error('Failed to increment counter:', error);
     }
     setIncrementing(false);
   };
@@ -54,12 +54,12 @@ const CounterComponent: React.FC = () => {
     setLoading(true);
     try {
       const response = await new LogicApiDataSource().getAllPlayers();
-      console.log(response.data, "new ");
+      console.log(response.data, 'new ');
       if (response?.data) {
         setPlayers(response.data.players); // Assuming API returns { players: Player[] }
       }
     } catch (error) {
-      console.error("Failed to fetch players:", error);
+      console.error('Failed to fetch players:', error);
     }
     setLoading(false);
   };
@@ -69,11 +69,10 @@ const CounterComponent: React.FC = () => {
     try {
       const response = await new LogicApiDataSource().getLottery();
       if (response?.data) {
-        console.log(response.data)
-       
+        console.log(response.data);
       }
     } catch (error) {
-      console.error("Failed to fetch lottery:", error);
+      console.error('Failed to fetch lottery:', error);
     }
     setLoading(false);
   };
@@ -81,31 +80,44 @@ const CounterComponent: React.FC = () => {
   return (
     <div style={styles.container}>
       <p style={styles.counterText}>
-        {loading ? "Fetching..." : counter !== null ? `Counter: ${counter}` : "Counter not available"}
+        {loading
+          ? 'Fetching...'
+          : counter !== null
+            ? `Counter: ${counter}`
+            : 'Counter not available'}
       </p>
-      <button style={styles.button} onClick={incrementCounter} disabled={incrementing}>
-        {incrementing ? "Incrementing..." : "Increment Counter"}
+      <button
+        style={styles.button}
+        onClick={incrementCounter}
+        disabled={incrementing}
+      >
+        {incrementing ? 'Incrementing...' : 'Increment Counter'}
       </button>
       <button
-        style={{ ...styles.button, background: "white", color: "#333", border: "1px solid #333" }}
+        style={{
+          ...styles.button,
+          background: 'white',
+          color: '#333',
+          border: '1px solid #333',
+        }}
         onClick={fetchCounter}
         disabled={loading}
       >
-        {loading ? "Fetching..." : "Show Counter"}
+        {loading ? 'Fetching...' : 'Show Counter'}
       </button>
       <button
-        style={{ ...styles.button, background: "#28a745" }}
+        style={{ ...styles.button, background: '#28a745' }}
         onClick={fetchAllPlayers}
         disabled={loading}
       >
-        {loading ? "Fetching..." : "Show All Players"}
+        {loading ? 'Fetching...' : 'Show All Players'}
       </button>
       <button
-        style={{ ...styles.button, background: "#ffc107", color: "#333" }}
+        style={{ ...styles.button, background: '#ffc107', color: '#333' }}
         onClick={getLottery}
         disabled={loading}
       >
-        {loading ? "Fetching..." : "Get Lottery"}
+        {loading ? 'Fetching...' : 'Get Lottery'}
       </button>
       {players.length > 0 && (
         <div style={styles.playersList}>
@@ -130,52 +142,52 @@ const CounterComponent: React.FC = () => {
 // Inline CSS styles
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "1rem",
-    padding: "2rem",
-    border: "1px solid #ddd",
-    borderRadius: "12px",
-    background: "#f8f9fa",
-    width: "300px",
-    margin: "auto",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '1rem',
+    padding: '2rem',
+    border: '1px solid #ddd',
+    borderRadius: '12px',
+    background: '#f8f9fa',
+    width: '300px',
+    margin: 'auto',
+    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
   },
   counterText: {
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    color: "#333",
-    margin: "0",
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#333',
+    margin: '0',
   },
   button: {
-    padding: "10px 15px",
-    fontSize: "1rem",
-    cursor: "pointer",
-    borderRadius: "8px",
-    border: "none",
-    background: "#007bff",
-    color: "white",
-    transition: "0.3s",
-    width: "200px",
-    textAlign: "center",
+    padding: '10px 15px',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    borderRadius: '8px',
+    border: 'none',
+    background: '#007bff',
+    color: 'white',
+    transition: '0.3s',
+    width: '200px',
+    textAlign: 'center',
   },
   playersList: {
-    marginTop: "1rem",
-    padding: "1rem",
-    background: "#e9ecef",
-    borderRadius: "8px",
-    width: "100%",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    marginTop: '1rem',
+    padding: '1rem',
+    background: '#e9ecef',
+    borderRadius: '8px',
+    width: '100%',
+    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
   },
   lotteryResult: {
-    marginTop: "1rem",
-    padding: "1rem",
-    background: "#ffeeba",
-    borderRadius: "8px",
-    width: "100%",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-    textAlign: "center",
+    marginTop: '1rem',
+    padding: '1rem',
+    background: '#ffeeba',
+    borderRadius: '8px',
+    width: '100%',
+    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+    textAlign: 'center',
   },
 };
 

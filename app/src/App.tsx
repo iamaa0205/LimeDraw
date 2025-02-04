@@ -13,20 +13,14 @@ import Check from './pages/admin/check';
 import ChatLand from './pages/admin/chatLand';
 import ChatRoom from './pages/admin/chatRoom';
 export default function App() {
-
-
   useEffect(() => {
     // Check if the URL matches the base path
-    if (window.location.pathname === "/demo-blockchain-integrations/") {
+    if (window.location.pathname === '/demo-blockchain-integrations/') {
       // Only set "landing" if no view is already stored
-      
-        sessionStorage.setItem("currentView", "landing");
-      
+
+      sessionStorage.setItem('currentView', 'landing');
     }
   }, []);
-  
-
-
 
   return (
     <AccessTokenWrapper getNodeUrl={getNodeUrl}>
@@ -34,14 +28,13 @@ export default function App() {
         <Routes>
           <Route path="/" element={<SetupPage />} />
           <Route path="/auth" element={<Authenticate />} />
-          <Route path="/home" element={<HomePage />} />
+          <Route path="/home" element={<CryptoLottery />} />
           <Route path="/navigate" element={<CryptoLottery />} />
           <Route path="/counter" element={<CounterComponent />} />
-          <Route path="/winner" element={<Winner />}/>
-          <Route path="/check" element={<Check />}/>
-          <Route path="/chatland" element={<ChatLand />}/>
-          <Route path="/chatroom" element={<ChatRoom />}/>
-          
+          <Route path="/winner" element={<Winner />} />
+          <Route path="/check" element={<Check />} />
+          <Route path="/chatland" element={<ChatLand />} />
+          <Route path="/chatroom" element={<ChatRoom />} />
         </Routes>
       </BrowserRouter>
     </AccessTokenWrapper>
