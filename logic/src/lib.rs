@@ -234,6 +234,28 @@ impl AppState {
         Ok(self.lottery_state.clone())
     }
 
+
+    pub fn decrement_remaining_tickets(&mut self) -> Result<(), Error> {
+        // Check if there are remaining tickets
+        if self.lottery_state.remaining_tickets > 0 {
+            // Decrement the remaining tickets
+            self.lottery_state.remaining_tickets -= 1;
+    
+            // Log the change
+            env::log(&format!(
+                "📉 Remaining tickets decremented: {}",
+                self.lottery_state.remaining_tickets
+            ));
+    
+            Ok(())
+        } else {
+            // If no tickets are left, return an error
+            env::log("❌ Error: No remaining tickets to decrement.");
+            Err(Error::msg("No remaining tickets to decrement"))
+        }
+    }
+    
+
     pub fn create_lottery(
         &mut self,
         name: String,
