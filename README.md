@@ -42,9 +42,9 @@ All the data corresponding to the canisters, pub-pvt key pairs of the nodes and 
 
 ## **Features**
 - Encrypted Prize Pools
-- Ensuring Winner Anonymity and Secure Ticket Mapping
+- Ensuring Winner Anonymity And Secure Ticket Mapping
 - Private Chat Rooms for Hosts
-- Auditable Random Number Generation
+- Auditable Random Number Generation For Winner Selection
 
 ## **Architecture of LimeDraw**
 <img src="architecture.png" alt="architecture" width="500" height="300" />
