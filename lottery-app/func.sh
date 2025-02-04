@@ -63,6 +63,25 @@ fund_princ() {
     fi
 }
 
+get_proxy_contract() {
+    local context_id=$1
+    local result
+
+    # Make the first request
+    result=$(curl -s -X GET "http://localhost:2427/admin-api/contexts/${context_id}/proxy-contract" | jq -r '.data')
+
+    # Check if result is null or empty
+    if [ "$result" == "null" ] || [ -z "$result" ]; then
+        echo "Data is null, making another request..."
+        result=$(curl -s -X GET "http://localhost:2428/admin-api/contexts/${context_id}/alternative-endpoint" | jq -r '.data')
+    fi
+
+    # Store the result in a global environment variable
+    # export PROXY_CONTRACT="$result"
+    echo "Stored in PROXY_CONTRACT: $PROXY_CONTRACT"
+    echo "$result"
+}
+
 # Check if function argument is provided
 if [ -z "$1" ]; then
     echo "No function name provided!"
@@ -76,6 +95,9 @@ case $1 in
         ;;
     balance)
         balance "$2"
+        ;;
+    get_proxy_contract)
+        get_proxy_contract "$2"
         ;;
     *)
         echo "Function '$1' is not defined."
