@@ -1,13 +1,13 @@
-'use client';
+"use client"
 
-import type React from 'react';
-import { useState, useEffect, useRef } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
-import { motion } from 'framer-motion';
+import type React from "react"
+import { useState, useEffect, useRef } from "react"
+import styled, { createGlobalStyle } from "styled-components"
+import { motion } from "framer-motion"
 // import { LogicApiDataSource } from "../api/dataSource/LogicApiDataSource"
 // import { CreateMessageRoomRequest } from "../api/clientApi"
-import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
-import { CreateMessageRoomResponse } from '../../api/clientApi';
+import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
+import { CreateMessageRoomResponse } from "../../api/clientApi"
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -17,7 +17,7 @@ const GlobalStyle = createGlobalStyle`
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: #ffffff;
   }
-`;
+`
 
 const ChatContainer = styled.div`
   max-width: 800px;
@@ -26,7 +26,7 @@ const ChatContainer = styled.div`
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
+`
 
 const UpdateButton = styled(motion.button)`
   background: linear-gradient(45deg, #2ecc71, #27ae60);
@@ -44,7 +44,7 @@ const UpdateButton = styled(motion.button)`
   &:hover {
     opacity: 0.9;
   }
-`;
+`
 
 const ChatHeader = styled.div`
   background-color: rgba(46, 204, 113, 0.8);
@@ -54,41 +54,41 @@ const ChatHeader = styled.div`
   font-weight: bold;
   color: #ffffff;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-`;
+`
 
 const MessageList = styled.div`
   height: 400px;
   overflow-y: auto;
   padding: 1rem;
-`;
+`
 
 const MessageItem = styled(motion.div)`
   background-color: rgba(46, 204, 113, 0.1);
   border-radius: 10px;
   padding: 0.5rem 1rem;
   margin-bottom: 0.5rem;
-`;
+`
 
 const MessageSender = styled.span`
   font-weight: bold;
   margin-right: 0.5rem;
   color: #2ecc71;
-`;
+`
 
 const MessageTime = styled.span`
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.5);
-`;
+`
 
 const MessageContent = styled.p`
   margin: 0.5rem 0 0;
-`;
+`
 
 const InputArea = styled.form`
   display: flex;
   padding: 1rem;
   background-color: rgba(26, 26, 46, 0.9);
-`;
+`
 
 const Input = styled.input`
   flex-grow: 1;
@@ -107,7 +107,7 @@ const Input = styled.input`
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
   }
-`;
+`
 
 const SendButton = styled(motion.button)`
   background: linear-gradient(45deg, #2ecc71, #27ae60);
@@ -122,7 +122,7 @@ const SendButton = styled(motion.button)`
   &:hover {
     opacity: 0.9;
   }
-`;
+`
 
 interface Message {
   id: string;
@@ -133,25 +133,27 @@ interface Message {
 
 const ChatRoom: React.FC = () => {
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const messageListRef = useRef<HTMLDivElement>(null);
   const fetchMessages = async () => {
     try {
       const response = await new LogicApiDataSource().getAllMessageRooms();
       if (response.error) {
-        console.error('Error fetching messages:', response.error);
+        console.error("Error fetching messages:", response.error);
       } else {
-        console.log(response, 'messages');
-        const fetchedMessages = response.data;
+        console.log(response,"messages")
+        const fetchedMessages= response.data
         setMessages(fetchedMessages);
       }
     } catch (err) {
-      console.error('Unexpected error fetching messages:', err);
+      console.error("Unexpected error fetching messages:", err);
     }
   };
 
   // Fetch messages from API
   useEffect(() => {
+    
+
     fetchMessages();
   }, []);
 
@@ -169,7 +171,7 @@ const ChatRoom: React.FC = () => {
     if (newMessage.trim()) {
       const request = {
         id: `${Date.now()}`,
-        name: sessionStorage.getItem('name') || 'admin',
+        name:sessionStorage.getItem('name')||'admin',
 
         text: newMessage.trim(),
       };
@@ -178,22 +180,23 @@ const ChatRoom: React.FC = () => {
         const response = await new LogicApiDataSource().addMessage(request);
 
         if (response.error) {
-          console.error('Error sending message:', response.error);
+          console.error("Error sending message:", response.error);
         } else {
-          console.log('Message sent successfully:', response.data);
-
+          console.log("Message sent successfully:", response.data);
+          
           // Add new message to the UI
           const newMsg = {
             id: request.id,
-            name: sessionStorage.getItem('name'),
+            name:sessionStorage.getItem('name'),
             text: request.text,
+            
           };
 
           setMessages((prevMessages) => [...prevMessages, newMsg]);
-          setNewMessage(''); // Clear input
+          setNewMessage(""); // Clear input
         }
       } catch (err) {
-        console.error('Unexpected error sending message:', err);
+        console.error("Unexpected error sending message:", err);
       }
     }
   };
@@ -201,17 +204,14 @@ const ChatRoom: React.FC = () => {
   // Handle Update button click
   const handleUpdate = () => {
     fetchMessages();
+   
   };
 
   return (
     <>
       <GlobalStyle />
       <ChatContainer>
-        <UpdateButton
-          onClick={handleUpdate}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
+        <UpdateButton onClick={handleUpdate} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           Update
         </UpdateButton>
         <ChatHeader>Lottery Chat Room</ChatHeader>
@@ -224,7 +224,7 @@ const ChatRoom: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
               <MessageSender>{msg.name}</MessageSender>
-
+              
               <MessageContent>{msg.text}</MessageContent>
             </MessageItem>
           ))}
@@ -236,11 +236,7 @@ const ChatRoom: React.FC = () => {
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type your message..."
           />
-          <SendButton
-            type="submit"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <SendButton type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             Send
           </SendButton>
         </InputArea>

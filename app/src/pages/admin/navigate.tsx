@@ -1,5 +1,7 @@
 'use client';
 
+
+
 import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import styled, { createGlobalStyle, keyframes, css } from 'styled-components';
@@ -7,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, User, Clock, Ticket, DollarSign, Users } from 'lucide-react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 import xyz from './logo.jpg';
-import {
+import { 
   GlobalStyle,
   glowingEffect,
   pulsingEffect,
@@ -87,6 +89,8 @@ import { AxiosHeader, createJwtHeader } from '../../utils/jwtHeaders';
 import { getRpcPath } from '../../utils/env';
 import Footer from './footer';
 import HowItWorksSection from './benifits';
+import { addLottery } from '../../utils/icp';
+
 
 export function getConfigAndJwt() {
   const jwtObject: JsonWebToken | null = getJWTObject();
@@ -122,6 +126,9 @@ const WalletStatus: React.FC<WalletStatusProps> = ({ connected }) => {
 };
 
 export default function CryptoLottery() {
+ 
+  console.log("value is " , import.meta.env.VITE_LOTTERY_APP_CONTEXT_ID);
+  console.log("value is " , import.meta.env.VITE_LOTTERY_CONTEXT_ID2);
   const [currentView, setCurrentView] = useState(() => {
     return sessionStorage.getItem('currentView') || 'landing'; // Get from sessionStorage or set default
   });
@@ -134,6 +141,7 @@ export default function CryptoLottery() {
     winnerAnnouncementDate: '',
     prizePool: 0,
   });
+ 
   const [lottery, setLottery] = useState<any>(null);
   const [selectedLottery, setSelectedLottery] = useState(null);
   const [countdown, setCountdown] = useState('');
@@ -173,6 +181,14 @@ export default function CryptoLottery() {
       console.error('Failed to fetch players:', error);
     }
   };
+  const handleAddLottery = async (tickets:any,context1:any,context2:any,principal:any) => {
+      try {
+        await addLottery(tickets, context1, context2, principal);
+        console.log('Lottery added successfully');
+      } catch (error) {
+        console.error('Failed to add lottery:', error);
+      }
+    };
 
   useEffect(() => {
     if (currentView === 'hostDashboard') {
@@ -266,10 +282,15 @@ export default function CryptoLottery() {
     },
     [setIsWalletPopupOpen, onButtonPress],
   ); // Added dependencies to useCallback
+  console.log(import.meta.env.VITE_LOTTERY_CONTEXT_ID,"1",import.meta.env.VITE_LOTTERY_CONTEXT_ID2);
+
 
   const handleCreateLottery = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Creating lottery:', createLotteryForm);
+    await handleAddLottery(Number(createLotteryForm.totalTickets),import.meta.env.VITE_LOTTERY_CONTEXT_ID,import.meta.env.VITE_LOTTERY_CONTEXT_ID2,"eqacl-d4egw-nu33r-52og4-kqirg-5nwgo-2xl46-2intl-ow63i-ghntr-tqe");
+    console.log('Lottery added successfully');
+
 
     // Call createLottery async function
     const request = {

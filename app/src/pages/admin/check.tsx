@@ -10,7 +10,7 @@ const Check: React.FC = () => {
         100,
         'team1',
         'team2',
-        'rcj7e-hnxhs-ryy5x-c64vv-ryztu-a6qh5-fejcs-utw4p-6q3oj-7l3o4-sqe',
+        'ggnrl-hx36i-23hbl-m62bs-cvqef-a56bi-u4iy4-jb2i2-6wpxb-gyjph-mqe',
       );
       console.log('Lottery added successfully');
     } catch (error) {

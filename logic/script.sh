@@ -87,6 +87,13 @@ LOTTERY_CONTEXT_ID=$(echo "$LOTTERY_CONTEXT_OUTPUT" | grep "id:" | awk '{print $
 HOST_PUBLIC_KEY=$(echo "$LOTTERY_CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
 sleep 5
 
+echo "Creating second context..."
+LOTTERY_CONTEXT_OUTPUT2=$(meroctl --node-name $NODE_NAME context create --application-id $LOTTERY_APP_ID --protocol icp)
+LOTTERY_CONTEXT_ID2=$(echo "$LOTTERY_CONTEXT_OUTPUT2" | grep "id:" | awk '{print $2}')
+HOST_PUBLIC_KEY2=$(echo "$LOTTERY_CONTEXT_OUTPUT2" | grep "member_public_key:" | awk '{print $2}')
+sleep 5
+
+
 if [ -z "$LOTTERY_CONTEXT_ID" ]; then
     echo "Failed to get context ID"
     exit 1
@@ -99,6 +106,8 @@ echo "SWARM_PORT=$SWARM_PORT" >> node_vars.env
 echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
 echo "LOTTERY_CONTEXT_ID=$LOTTERY_CONTEXT_ID" >> node_vars.env
 echo "HOST_PUBLIC_KEY=$HOST_PUBLIC_KEY" >> node_vars.env
+echo "LOTTERY_CONTEXT_ID2=$LOTTERY_CONTEXT_ID2" >> node_vars.env
+echo "HOST_PUBLIC_KEY2=$HOST_PUBLIC_KEY2" >> node_vars.env
 # echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
 
 
@@ -110,3 +119,6 @@ echo "HOST_PUBLIC_KEY=$HOST_PUBLIC_KEY" >> node_vars.env
 # echo "Context ID: $CONTEXT_ID"
 # echo "Member Public Key: $MEMBER_PUBLIC_KEY"
 # echo "==============================================="
+
+chmod +x ./update_env.sh
+./update_env.sh
