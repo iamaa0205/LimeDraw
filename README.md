@@ -1,4 +1,4 @@
-# <img src="path_to_logo/logo.png" alt="LimeDraw Logo" width="50" height="50" style="vertical-align: middle;"> **LimeDraw**
+# <img src="app/src/pages/admin/logo.jpg" alt="LimeDraw Logo" width="50" height="50" style="vertical-align: middle;"> **LimeDraw**
 
 LimeDraw is an Anonymous Lottery System built on top of ICP with the help of Calimero SDK. 
 
@@ -41,8 +41,10 @@ chmod +x ./participants.sh
 All the data corresponding to the canisters, pub-pvt key pairs of the nodes and application id get stored to `./demo-blockchain-integrations/logic/node_vars.env` .
 
 ## **Features**
-- ** **
--
+- Encrypted Prize Pools
+- Ensuring Winner Anonymity And Secure Ticket Mapping
+- Private Chat Rooms for Hosts
+- Auditable Random Number Generation For Winner Selection
 
 ## **Architecture of LimeDraw**
 <img src="architecture.png" alt="architecture" width="500" height="300" />
