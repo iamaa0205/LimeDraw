@@ -121,10 +121,10 @@ echo "HOST_PUBLIC_KEY2=$HOST_PUBLIC_KEY2" >> node_vars.env
 # echo "==============================================="
 
 chmod +x ../lottery-app/func.sh
-PROXY_CONTRACT1 = ../lottery-app/func.sh get_proxy_contract $LOTTERY_CONTEXT_ID
-PROXY_CONTRACT2 = ../lottery-app/func.sh get_proxy_contract $LOTTERY_CONTEXT_ID2
-echo "PROXY_CONTRACT_ID1=$LOTTERY_CONTEXT_ID" >> node_vars.env
-echo "PROXY_CONTRACT_ID2=$LOTTERY_CONTEXT_ID2" >> node_vars.env
+PROXY_CONTRACT1=$(../lottery-app/func.sh get_proxy_contract "$LOTTERY_CONTEXT_ID")
+PROXY_CONTRACT2=$(../lottery-app/func.sh get_proxy_contract "$LOTTERY_CONTEXT_ID2")
+echo "PROXY_CONTRACT_ID1=$PROXY_CONTRACT1" >> node_vars.env
+echo "PROXY_CONTRACT_ID2=$PROXY_CONTRACT2" >> node_vars.env
 
 chmod +x ./update_env.sh
 ./update_env.sh
