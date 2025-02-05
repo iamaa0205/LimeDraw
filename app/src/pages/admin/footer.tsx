@@ -1,5 +1,7 @@
 'use client';
 import type React from 'react';
+// import 'font-awesome/css/font-awesome.min.css';
+
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -99,42 +101,42 @@ const Footer: React.FC = () => {
 
         <div style={sectionStyle}>
           <h4 style={headingStyle}>Contact</h4>
-          <a href="mailto:support@cryptolottery.com" style={linkStyle}>
-            support@cryptolottery.com
+          <a href="mailto:omaren0248@gmail.com" style={linkStyle}>
+            omaren0248@gmail.com
           </a>
-          <a href="tel:+1234567890" style={linkStyle}>
-            +1 (234) 567-890
+          <a href="tel:+919878987655" style={linkStyle}>
+            +(91) 9878987655
           </a>
         </div>
 
         <div style={sectionStyle}>
-          <h4 style={headingStyle}>Follow Us</h4>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <a
-              href="https://twitter.com/cryptolottery"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={linkStyle}
-            >
-              Twitter
-            </a>
-            <a
-              href="https://facebook.com/cryptolottery"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={linkStyle}
-            >
-              Facebook
-            </a>
-            <a
-              href="https://instagram.com/cryptolottery"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={linkStyle}
-            >
-              Instagram
-            </a>
-          </div>
+            <h4 style={headingStyle}>Follow Us</h4>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <a
+                href="https://twitter.com/0xcyanide"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={linkStyle}
+              >
+                <i className="fab fa-twitter" style={{ fontSize: '24px', color: '#1DA1F2' }}></i> Twitter
+              </a>
+              <a
+                href="https://www.facebook.com/om.aren.3517/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={linkStyle}
+              >
+                <i className="fab fa-facebook-f" style={{ fontSize: '24px', color: '#1877F2' }}></i> Facebook
+              </a>
+              <a
+                href="https://www.instagram.com/_aaditya_aren/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={linkStyle}
+              >
+                <i className="fab fa-instagram" style={{ fontSize: '24px', color: '#C13584' }}></i> Instagram
+              </a>
+            </div>
         </div>
 
         <div style={sectionStyle}>
@@ -150,7 +152,7 @@ const Footer: React.FC = () => {
       </div>
 
       <div style={copyrightStyle}>
-        <p>&copy; {currentYear} Crypto Lottery. All rights reserved.</p>
+        <p>&copy; {currentYear} LimeDraw. All rights reserved.</p>
       </div>
 
       <div

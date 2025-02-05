@@ -20,38 +20,54 @@ const HowItWorksSection = () => {
   const steps = [
     {
       step: 'Step 1',
-      title: 'Enter the Lottery',
+      title: 'Connect Wallet 🔗',
       description:
-        'Choose your lucky numbers and enter the lottery pool using cryptocurrency.',
-      icon: '🎟️',
+        'Use Plug wallet to connect securely. No personal details required—stay anonymous!',
+      icon: '🔗',
       color: '#00ff00',
     },
     {
       step: 'Step 2',
-      title: 'Verify Randomness',
+      title: 'Buy Lottery Tickets 🎟️',
       description:
-        'Our blockchain-based system ensures all draws are verifiably fair and transparent.',
-      icon: '🔍',
+        'Buy as many tickets as you want. Pay with ICP cryptocurrency.',
+      icon: '🎟️',
       color: '#00ffff',
     },
     {
       step: 'Step 3',
-      title: 'Draw Winner',
+      title: 'Join the Draw 🎰',
       description:
-        'Smart contracts randomly select the winner, with instant notification to all participants.',
-      icon: '🏆',
+        'Your ticket(s) are entered into the smart contract. The draw is conducted transparently on the blockchain.',
+      icon: '🎰',
       color: '#ff00ff',
     },
     {
       step: 'Step 4',
-      title: 'Instant Payout',
+      title: 'Wait for the Results ⏳',
       description:
-        'Winners receive their crypto prizes directly in their wallet, no delays or intermediaries.',
-      icon: '💰',
+        'The lottery closes at a fixed time. A fair and verifiable random number selects the winner.',
+      icon: '⏳',
       color: '#ffff00',
     },
+    {
+      step: 'Step 5',
+      title: 'Claim Winnings 🏆',
+      description:
+        'If you win, the smart contract automatically transfers funds to your wallet. No intermediaries—100% decentralized!',
+      icon: '🏆',
+      color: '#ff8000',
+    },
+    {
+      step: 'Step 6',
+      title: 'Verify & Repeat 🔄',
+      description:
+        'Check past draws on the blockchain for transparency. Play again for more chances to win!',
+      icon: '🔄',
+      color: '#00ccff',
+    },
   ];
-
+  
   return (
     <motion.div
       initial="hidden"
@@ -101,7 +117,7 @@ const HowItWorksSection = () => {
           zIndex: 2,
         }}
       >
-        How Crypto Lottery Works
+        How LimeDraw Works
       </motion.h2>
       <div
         style={{
@@ -164,25 +180,7 @@ const HowItWorksSection = () => {
           </motion.div>
         ))}
       </div>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        style={{
-          marginTop: '60px',
-          padding: '15px 30px',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          color: '#000',
-          backgroundColor: '#00FF00',
-          border: 'none',
-          borderRadius: '30px',
-          cursor: 'pointer',
-          boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
-          transition: 'all 0.3s ease-in-out',
-        }}
-      >
-        Start Your Crypto Lottery Journey
-      </motion.button>
+      
     </motion.div>
   );
 };

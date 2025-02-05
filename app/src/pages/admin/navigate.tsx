@@ -1,7 +1,5 @@
 'use client';
 
-
-
 import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import styled, { createGlobalStyle, keyframes, css } from 'styled-components';
@@ -9,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, User, Clock, Ticket, DollarSign, Users } from 'lucide-react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 import xyz from './logo.jpg';
-import { 
+import {
   GlobalStyle,
   glowingEffect,
   pulsingEffect,
@@ -90,7 +88,9 @@ import { getRpcPath } from '../../utils/env';
 import Footer from './footer';
 import HowItWorksSection from './benifits';
 import { addLottery } from '../../utils/icp';
-
+import { CreateProposalRequest } from '../../api/clientApi';
+import { ProposalActionType } from '../../api/clientApi';
+import {encryptData,decryptData} from "../../utils/encrypt"
 
 export function getConfigAndJwt() {
   const jwtObject: JsonWebToken | null = getJWTObject();
@@ -110,7 +110,9 @@ export function getConfigAndJwt() {
       error: { message: 'Failed to get executor public key', code: 500 },
     };
   }
+  return(jwtObject.executor_public_key)
 }
+
 
 interface WalletStatusProps {
   connected: boolean;
@@ -126,9 +128,8 @@ const WalletStatus: React.FC<WalletStatusProps> = ({ connected }) => {
 };
 
 export default function CryptoLottery() {
- 
-  console.log("value is " , import.meta.env.VITE_LOTTERY_APP_CONTEXT_ID);
-  console.log("value is " , import.meta.env.VITE_LOTTERY_CONTEXT_ID2);
+  console.log('value is ', import.meta.env.VITE_LOTTERY_APP_CONTEXT_ID);
+  console.log('value is ', import.meta.env.VITE_LOTTERY_CONTEXT_ID2);
   const [currentView, setCurrentView] = useState(() => {
     return sessionStorage.getItem('currentView') || 'landing'; // Get from sessionStorage or set default
   });
@@ -141,7 +142,7 @@ export default function CryptoLottery() {
     winnerAnnouncementDate: '',
     prizePool: 0,
   });
- 
+
   const [lottery, setLottery] = useState<any>(null);
   const [selectedLottery, setSelectedLottery] = useState(null);
   const [countdown, setCountdown] = useState('');
@@ -155,6 +156,38 @@ export default function CryptoLottery() {
   const [lotteryDetails, getLottery] = useState(null);
   const [players, setPlayers] = useState<any>([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const testimonials = [
+    {
+      name: 'John D.',
+      feedback:
+        "This is the most exciting lottery I've ever participated in! Fast payouts and an incredible user experience.",
+      avatar: '👨‍💼',
+      winAmount: '5,000 USDT',
+    },
+    {
+      name: 'Anna L.',
+      feedback:
+        "I love the transparency of the blockchain! It's reassuring to know my winnings are verifiable and secure.",
+      avatar: '👩‍🔬',
+      winAmount: '10,000 USDT',
+    },
+    {
+      name: 'Alex T.',
+      feedback:
+        'The system is intuitive and I can play from anywhere in the world. Crypto Lottery has revolutionized online gambling!',
+      avatar: '🧑‍💻',
+      winAmount: '7,500 USDT',
+    },
+    {
+      name: 'Sarah M.',
+      feedback:
+        'As a crypto enthusiast, I appreciate the innovative approach. The smart contracts ensure fairness and instant payouts.',
+      avatar: '👩‍🚀',
+      winAmount: '15,000 USDT',
+    },
+  ];
   const fetchLottery = async () => {
     try {
       const response = await new LogicApiDataSource().getLottery();
@@ -181,14 +214,19 @@ export default function CryptoLottery() {
       console.error('Failed to fetch players:', error);
     }
   };
-  const handleAddLottery = async (tickets:any,context1:any,context2:any,principal:any) => {
-      try {
-        await addLottery(tickets, context1, context2, principal);
-        console.log('Lottery added successfully');
-      } catch (error) {
-        console.error('Failed to add lottery:', error);
-      }
-    };
+  const handleAddLottery = async (
+    tickets: any,
+    context1: any,
+    context2: any,
+    principal: any,
+  ) => {
+    try {
+      await addLottery(tickets, context1, context2, principal);
+      console.log('Lottery added successfully');
+    } catch (error) {
+      console.error('Failed to add lottery:', error);
+    }
+  };
 
   useEffect(() => {
     if (currentView === 'hostDashboard') {
@@ -282,15 +320,22 @@ export default function CryptoLottery() {
     },
     [setIsWalletPopupOpen, onButtonPress],
   ); // Added dependencies to useCallback
-  console.log(import.meta.env.VITE_LOTTERY_CONTEXT_ID,"1",import.meta.env.VITE_LOTTERY_CONTEXT_ID2);
-
+  console.log(
+    import.meta.env.VITE_LOTTERY_CONTEXT_ID,
+    '1',
+    import.meta.env.VITE_LOTTERY_CONTEXT_ID2,
+  );
 
   const handleCreateLottery = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Creating lottery:', createLotteryForm);
-    await handleAddLottery(Number(createLotteryForm.totalTickets),import.meta.env.VITE_LOTTERY_CONTEXT_ID,import.meta.env.VITE_LOTTERY_CONTEXT_ID2,"eqacl-d4egw-nu33r-52og4-kqirg-5nwgo-2xl46-2intl-ow63i-ghntr-tqe");
+    await handleAddLottery(
+      Number(createLotteryForm.totalTickets),
+      import.meta.env.VITE_LOTTERY_CONTEXT_ID,
+      import.meta.env.VITE_LOTTERY_CONTEXT_ID2,
+      'b77ix-eeaaa-aaaaa-qaada-cai',
+    );
     console.log('Lottery added successfully');
-
 
     // Call createLottery async function
     const request = {
@@ -327,11 +372,58 @@ export default function CryptoLottery() {
 
   const handleJoinLottery = (lotteryId: string) => {};
 
-  const handleBuyTickets = (e: React.FormEvent) => {
+  const handleBuyTickets = async(e: React.FormEvent) => {
     e.preventDefault();
-    console.log(
-      `Buying ${ticketsToBuy} tickets for lottery ${selectedLottery.name}`,
-    );
+    const cpubkey=getConfigAndJwt();
+    const encryptedPubKey=await encryptData(cpubkey);
+    console.log(encryptedPubKey)
+
+  
+    // try {
+    //   const request: CreateProposalRequest = {
+    //     action_type: ProposalActionType.ExternalFunctionCall,
+    //     params: {
+    //       receiver_id:import.meta.env.VITE_Backend_Canister_Contract_ID, // Replace with actual contract ID
+    //       method_name: "buyTicket",
+    //       args: JSON.stringify({
+    //         buyer: "your-account.near", // Replace with actual user ID
+    //       }),
+    //       deposit: "0", // Example deposit in yoctoNEAR
+    //       gas: "30000000000000", // Example gas limit
+    //     },
+    //   };
+  
+    //   console.log("Sending proposal request:", request);
+  
+    //   const response = await new LogicApiDataSource().createProposal(request);
+  
+    //   if (response.error) {
+    //     console.log("Failed to create proposal. Try again later.");
+    //   } else {
+    //     console.log("Proposal created successfully:", response.data);
+    //   }
+    // } catch (error) {
+    //   console.error("Error in handleBuyTickets:", error);
+    // }
+
+
+    try {
+      // Call the API to decrement remaining tickets
+      const response = await new LogicApiDataSource().decrementRemainingTickets();
+
+      if (response.error) {
+        console.log('Failed to decrement tickets. Try again later.');
+      } else {
+        // Handle successful response
+        console.log('Remaining tickets after decrement:');
+       
+      }
+    } catch (error) {
+     
+      console.error(error);
+    } 
+  
+    
     // Implement ticket purchase logic here
   };
 
@@ -433,103 +525,103 @@ export default function CryptoLottery() {
                 fontStyle: 'italic',
               }}
             >
-              Step into the future of lotteries with LimeDraw. Experience the
-              thrill of fair, transparent, and exciting games powered by
-              cutting-edge blockchain technology. Your chance to win big awaits!
+            <p>
+              Step into the future of lotteries with{' '}
+              <span
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: '24px',
+                  color: '#00FF00', // Neon Green
+                  textShadow: '0px 0px 10px rgba(0, 255, 0, 1)', // Neon glow effect
+                  letterSpacing: '1px',
+                }}
+              >
+                LimeDraw
+              </span>
+              . Experience the thrill of fair, transparent, and exciting games powered by cutting-edge blockchain technology. Your chance to win big awaits!
+            </p>
             </Description>
             <FeaturesList
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                gap: '30px',
-                padding: '20px 0',
-                width: '100%',
-                justifyItems: 'center',
-              }}
-            >
-              {[
-                {
-                  icon: '🔒',
-                  title: 'Decentralized',
-                  description: 'Fully transparent and trustless system',
-                },
-                {
-                  icon: '⚖️',
-                  title: 'Provably Fair',
-                  description: 'Verifiable randomness for all games',
-                },
-                {
-                  icon: '⚡',
-                  title: 'Instant Payouts',
-                  description: 'Receive winnings immediately',
-                },
-                {
-                  icon: '💸',
-                  title: 'Low Fees',
-                  description: 'Minimal transaction costs',
-                },
-                {
-                  icon: '🕵️',
-                  title: 'Anonymous',
-                  description: 'Play without revealing your identity',
-                },
-                {
-                  icon: '🌍',
-                  title: 'Global Access',
-                  description: 'Play from anywhere in the world',
-                },
-              ].map((feature, index) => (
-                <FeatureCard
-                  key={index}
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeInUp}
-                  transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
-                  style={{
-                    background: 'rgba(0, 255, 0, 0.1)',
-                    border: '2px solid #00FF00',
-                    padding: '20px',
-                    borderRadius: '10px',
-                    boxShadow: '0 4px 10px rgba(0, 255, 0, 0.4)',
-                    textAlign: 'center',
-                    width: '100%',
-                    maxWidth: '280px',
-                  }}
-                >
-                  <FeatureIcon
-                    style={{
-                      fontSize: '40px',
-                      marginBottom: '15px',
-                      color: '#00FF00',
-                      textShadow: '0px 0px 10px rgba(0, 255, 0, 0.8)',
-                    }}
-                  >
-                    {feature.icon}
-                  </FeatureIcon>
-                  <FeatureTitle
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: '18px',
-                      letterSpacing: '1px',
-                      marginBottom: '10px',
-                      color: '#00FF00',
-                    }}
-                  >
-                    {feature.title}
-                  </FeatureTitle>
-                  <FeatureDescription
-                    style={{
-                      fontSize: '14px',
-                      color: '#00FF00',
-                      opacity: 0.8,
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {feature.description}
-                  </FeatureDescription>
-                </FeatureCard>
-              ))}
-            </FeaturesList>
+  style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '40px',
+    padding: '30px 0',
+    width: '100%',
+    justifyItems: 'center',
+  }}
+>
+  {[
+    { icon: '🔒', title: 'Decentralized', description: 'Fully transparent and trustless system' },
+    { icon: '⚖️', title: 'Provably Fair', description: 'Verifiable randomness for all games' },
+    { icon: '⚡', title: 'Instant Payouts', description: 'Receive winnings immediately' },
+    { icon: '💸', title: 'Low Fees', description: 'Minimal transaction costs' },
+    { icon: '🕵️', title: 'Anonymous', description: 'Play without revealing your identity' },
+    { icon: '🌍', title: 'Global Access', description: 'Play from anywhere in the world' },
+  ].map((feature, index) => (
+    <FeatureCard
+      key={index}
+      initial="hidden"
+      animate="visible"
+      variants={fadeInUp}
+      transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
+      style={{
+        background: 'rgba(0, 255, 0, 0.15)',
+        border: '3px solid #00FF00',
+        padding: '30px',
+        borderRadius: '15px',
+        boxShadow: '0 6px 15px rgba(0, 255, 0, 0.5)',
+        textAlign: 'center',
+        width: '100%',
+        maxWidth: '200%', // Increased width
+        display: 'grid',
+        
+        flexDirection: 'column',
+        alignItems: 'center',
+        transition: 'transform 0.3s ease-in-out',
+        cursor: 'pointer',
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+    >
+      <FeatureIcon
+        style={{
+          fontSize: '50px', // Increased icon size
+          marginBottom: '20px',
+          color: '#00FF00',
+          textShadow: '0px 0px 15px rgba(0, 255, 0, 1)',
+        }}
+      >
+        {feature.icon}
+      </FeatureIcon>
+      <FeatureTitle
+        style={{
+          fontWeight: 'bold',
+          fontSize: '22px', // Larger font size
+          letterSpacing: '1.2px',
+          marginBottom: '12px',
+          color: '#00FF00',
+          textShadow: '0px 0px 10px rgba(0, 255, 0, 1)',
+        }}
+      >
+        {feature.title}
+      </FeatureTitle>
+      <FeatureDescription
+        style={{
+          fontSize: '16px', // Increased text size
+          color: '#00FF00',
+          opacity: 0.9,
+          fontStyle: 'italic',
+          textAlign: 'center',
+          maxWidth: '90%',
+        }}
+      >
+        {feature.description}
+      </FeatureDescription>
+    </FeatureCard>
+  ))}
+</FeaturesList>
+
             <ButtonContainer
               style={{
                 display: 'flex',
@@ -1586,7 +1678,7 @@ export default function CryptoLottery() {
             }
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
-            <img
+           <img
               src={xyz}
               height="60px"
               width="60px"
@@ -1594,8 +1686,12 @@ export default function CryptoLottery() {
               style={{
                 filter: 'drop-shadow(0px 0px 10px rgba(0, 255, 0, 0.8))',
                 transition: '0.3s',
+                marginRight: '1rem',
+                borderRadius: '50%',
+                boxShadow: '0px 0px 10px rgba(0, 255, 153, 0.5)',
               }}
             />
+
             <span
               style={{
                 fontSize: '24px',
@@ -1757,7 +1853,175 @@ export default function CryptoLottery() {
         </motion.div>
 
         <HowItWorksSection></HowItWorksSection>
-        <TestimonialsSection></TestimonialsSection>
+      <div>
+              <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    variants={fadeInUp}
+                    transition={pageTransition}
+                    style={{
+                      background: 'linear-gradient(135deg, #020617, #0a0f1e)',
+                      padding: '80px 30px',
+                      textAlign: 'center',
+                      color: '#00FF00',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <motion.div
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background:
+                          "url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300FF00' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+                        opacity: 0.1,
+                        zIndex: 1,
+                      }}
+                    />
+                    <motion.h2
+                      variants={fadeInUp}
+                      style={{
+                        fontSize: '42px',
+                        fontWeight: 'bold',
+                        letterSpacing: '3px',
+                        marginBottom: '60px',
+                        textShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)',
+                        position: 'relative',
+                        zIndex: 2,
+                      }}
+                    >
+                      Voices of Our Winners
+                    </motion.h2>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: '40px',
+                        flexWrap: 'wrap',
+                        position: 'relative',
+                        zIndex: 2,
+                      }}
+                    >
+                      {testimonials.map((testimonial, index) => (
+                        <motion.div
+                          key={index}
+                          initial="hidden"
+                          animate="visible"
+                          variants={fadeInUp}
+                          transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
+                          style={{
+                            background: `rgba(0, 255, 0, ${hoveredIndex === index ? 0.15 : 0.1})`,
+                            border: '2px solid #00FF00',
+                            padding: '30px',
+                            borderRadius: '15px',
+                            boxShadow: `0 8px 32px rgba(0, 255, 0, ${hoveredIndex === index ? 0.4 : 0.2})`,
+                            width: '300px',
+                            transition: 'all 0.3s ease-in-out',
+                            transform: hoveredIndex === index ? 'translateY(-10px)' : 'none',
+                          }}
+                          onMouseEnter={() => setHoveredIndex(index)}
+                          onMouseLeave={() => setHoveredIndex(null)}
+                        >
+                          <div
+                            style={{
+                              fontSize: '48px',
+                              marginBottom: '20px',
+                            }}
+                          >
+                            {testimonial.avatar}
+                          </div>
+                          <p
+                            style={{
+                              fontStyle: 'italic',
+                              fontSize: '16px',
+                              color: '#00FF00',
+                              marginBottom: '20px',
+                              lineHeight: '1.6',
+                            }}
+                          >
+                            "{testimonial.feedback}"
+                          </p>
+                          <h4
+                            style={{
+                              fontWeight: 'bold',
+                              color: '#00FF00',
+                              fontSize: '18px',
+                              marginBottom: '10px',
+                            }}
+                          >
+                            {testimonial.name}
+                          </h4>
+                          <p
+                            style={{
+                              color: '#00FFFF',
+                              fontSize: '14px',
+                              fontWeight: 'bold',
+                            }}
+                          >
+                            Won {testimonial.winAmount}
+                          </p>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <motion.p
+                      variants={fadeInUp}
+                      style={{
+                        fontSize: '14px',
+                        color: 'rgba(0, 255, 0, 0.7)',
+                        marginTop: '30px',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      Note: These are demo testimonials for display purposes only.
+                    </motion.p>
+                    <ButtonContainer
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '40px',
+              }}
+            >
+              <Button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  console.log('Button clicked! Opening popup...');
+                  setIsGetStartedPopupOpen(true);
+                }}
+                style={{
+                  background: 'rgba(0, 255, 0, 0.2)',
+                  color: '#00FF00',
+                  border: '2px solid #00FF00',
+                  padding: '15px 30px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  boxShadow: '0px 0px 10px rgba(0, 255, 0, 0.7)',
+                  transition: '0.3s',
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    '0px 0px 20px rgba(0, 255, 0, 1)')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    '0px 0px 10px rgba(0, 255, 0, 0.7)')
+                }
+              >
+                Join our Amazing Team Of Winers
+              </Button>
+            </ButtonContainer>
+                  </motion.div>
+      </div>
+
+
+        
+
 
         <Footer></Footer>
 

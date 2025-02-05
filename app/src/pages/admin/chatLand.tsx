@@ -1,11 +1,11 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useState } from "react"
-import styled, { createGlobalStyle } from "styled-components"
-import { motion, AnimatePresence } from "framer-motion"
-import { LogicApiDataSource } from "../../api/dataSource/LogicApiDataSource"
-import xyz from "./logo.jpg"
+import type React from 'react';
+import { useState } from 'react';
+import styled, { createGlobalStyle } from 'styled-components';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
+import xyz from './logo.jpg';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -15,7 +15,7 @@ const GlobalStyle = createGlobalStyle`
     background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #141414);
     color: #00ff99;
   }
-`
+`;
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -23,7 +23,7 @@ const AppContainer = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
-`
+`;
 
 const Header = styled.header`
   display: flex;
@@ -37,13 +37,13 @@ const Header = styled.header`
   top: 0;
   z-index: 1000;
   box-shadow: 0px 4px 10px rgba(0, 255, 153, 0.2);
-`
+`;
 
 const Logo = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
-`
+`;
 
 const LogoImg = styled.img`
   width: 60px;
@@ -51,7 +51,7 @@ const LogoImg = styled.img`
   margin-right: 1rem;
   border-radius: 50%;
   box-shadow: 0px 0px 10px rgba(0, 255, 153, 0.5);
-`
+`;
 
 const AppName = styled.h1`
   font-size: 2rem;
@@ -61,7 +61,7 @@ const AppName = styled.h1`
   -webkit-text-fill-color: transparent;
   font-weight: bold;
   text-shadow: 0 0 10px rgba(0, 255, 153, 0.8);
-`
+`;
 
 const MainContent = styled.main`
   max-width: 1000px;
@@ -71,7 +71,7 @@ const MainContent = styled.main`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`
+`;
 
 const Title = styled(motion.h2)`
   font-size: 3rem;
@@ -82,7 +82,7 @@ const Title = styled(motion.h2)`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 4px 4px 6px rgba(0, 255, 153, 0.5);
-`
+`;
 
 const Message = styled(motion.p)`
   font-size: 1.6rem;
@@ -90,7 +90,7 @@ const Message = styled(motion.p)`
   text-align: center;
   color: #e0e0e0;
   text-shadow: 2px 2px 5px rgba(0, 255, 153, 0.3);
-`
+`;
 
 const Button = styled(motion.button)`
   background: linear-gradient(45deg, #00ff99, #39ff14);
@@ -107,7 +107,7 @@ const Button = styled(motion.button)`
     transform: scale(1.1);
     box-shadow: 0px 7px 20px rgba(0, 255, 153, 0.6);
   }
-`
+`;
 
 const Footer = styled.footer`
   width: 100%;
@@ -115,7 +115,7 @@ const Footer = styled.footer`
   padding: 1rem;
   text-align: center;
   font-size: 1rem;
-`
+`;
 
 const Popup = styled(motion.div)`
   position: fixed;
@@ -127,7 +127,7 @@ const Popup = styled(motion.div)`
   border-radius: 12px;
   box-shadow: 0px 5px 20px rgba(0, 255, 153, 0.5);
   z-index: 1000;
-`
+`;
 
 const Input = styled.input`
   padding: 0.75rem;
@@ -149,32 +149,32 @@ const Input = styled.input`
   &::placeholder {
     color: rgba(255, 255, 255, 0.6);
   }
-`
+`;
 
 const ChatLand: React.FC = () => {
-  const [showPopup, setShowPopup] = useState(false)
-  const [userName, setUserName] = useState("")
+  const [showPopup, setShowPopup] = useState(false);
+  const [userName, setUserName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const handleEnterChat = () => {
-    setShowPopup(true)
-  }
+    setShowPopup(true);
+  };
 
   const handleSubmitName = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Entered name:', userName);
 
-    const request= { name: userName };
+    const request = { name: userName };
 
     try {
       const response = await new LogicApiDataSource().addHost(request);
-      sessionStorage.setItem('name',userName)
+      sessionStorage.setItem('name', userName);
       if (response.error) {
-        alert("Please enter a correct username");
+        alert('Please enter a correct username');
       } else {
         console.log('Host added successfully:', response.data);
         setShowPopup(false);
-        window.location.href='./chatroom';
+        window.location.href = './chatroom';
       }
     } catch (err) {
       console.error('Error during addHost:', err);
@@ -194,25 +194,36 @@ const ChatLand: React.FC = () => {
         </Header>
         <MainContent>
           <Title>Welcome to the LimeDraw Chat</Title>
-          <Message>As a host, you have the privilege to discuss crypto and lotteries anonymously.</Message>
+          <Message>
+            As a host, you have the privilege to discuss crypto and lotteries
+            anonymously.
+          </Message>
           <Button onClick={handleEnterChat}>Enter Chat</Button>
         </MainContent>
         <Footer>
-          <p>&copy; {new Date().getFullYear()} Crypto Chat. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Crypto Chat. All rights reserved.
+          </p>
         </Footer>
       </AppContainer>
       <AnimatePresence>
         {showPopup && (
           <Popup>
             <form onSubmit={handleSubmitName}>
-              <Input type="text" placeholder="Enter your name" value={userName} onChange={(e) => setUserName(e.target.value)} required />
+              <Input
+                type="text"
+                placeholder="Enter your name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
               <Button type="submit">Enter Chat</Button>
             </form>
           </Popup>
         )}
       </AnimatePresence>
     </>
-  )
-}
+  );
+};
 
-export default ChatLand
+export default ChatLand;

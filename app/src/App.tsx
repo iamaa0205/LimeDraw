@@ -28,7 +28,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<SetupPage />} />
           <Route path="/auth" element={<Authenticate />} />
-          <Route path="/home" element={<CryptoLottery />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/navigate" element={<CryptoLottery />} />
           <Route path="/counter" element={<CounterComponent />} />
           <Route path="/winner" element={<Winner />} />

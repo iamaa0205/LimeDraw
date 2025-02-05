@@ -200,6 +200,15 @@ export interface MessageRoom {
 export interface GetMessageRoomsRequest {
   // If you need to filter messages, you can add optional parameters here
 }
+export interface DecrementRemainingTicketsRequest {
+  // No additional parameters required for this function
+}
+export interface DecrementRemainingTicketsResponse {
+  success: boolean;
+  message: string;
+  remaining_tickets?: number;  // Optionally return the remaining tickets after the decrement
+}
+
 
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',
@@ -217,6 +226,7 @@ export enum ClientMethod {
   ADD_HOST = 'add_host',
   AddMessage = 'create_message_room',
   GetMessage = 'get_all_message_rooms',
+  DECREMENT_REMAINING_TICKETS = 'decrement_remaining_tickets',
 }
 
 export interface ClientApi {
