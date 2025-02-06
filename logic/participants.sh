@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-# set -x ## uncomment for debugging purposes.
+# set -x ## uncomment for debugging purposes
 
 if [ -z "$1" ]; then
     echo "Usage: $0 <number_of_nodes>"

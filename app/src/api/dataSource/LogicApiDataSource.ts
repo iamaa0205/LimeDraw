@@ -43,7 +43,7 @@ import {
   GetMessageRoomsResponse,
   GetMessageRoomsRequest,
   DecrementRemainingTicketsRequest,
-  DecrementRemainingTicketsResponse
+  DecrementRemainingTicketsResponse,
 } from '../clientApi';
 import { getContextId, getNodeUrl } from '../../utils/node';
 import {
@@ -132,40 +132,42 @@ export class LogicApiDataSource implements ClientApi {
     };
   }
 
-
   async decrementRemainingTickets(): ApiResponse<DecrementRemainingTicketsResponse> {
     const { jwtObject, config, error } = getConfigAndJwt();
     if (error) {
       return { error };
     }
-  
+
     const params: RpcQueryParams<typeof request> = {
       contextId: jwtObject?.context_id ?? getContextId(),
       method: ClientMethod.DECREMENT_REMAINING_TICKETS,
       argsJson: {}, // No arguments needed for this action
       executorPublicKey: jwtObject.executor_public_key,
     };
-  
+
     console.log('RPC params:', params);
-  
+
     const response = await getJsonRpcClient().execute<
       typeof request,
       DecrementRemainingTicketsResponse
     >(params, config);
-  
+
     console.log('Raw response:', response);
-  
+
     if (response?.error) {
       console.error('RPC error:', response.error);
-      return await this.handleError(response.error, {}, this.decrementRemainingTickets);
+      return await this.handleError(
+        response.error,
+        {},
+        this.decrementRemainingTickets,
+      );
     }
-  
+
     return {
       data: response.result.output as DecrementRemainingTicketsResponse,
       error: null,
     };
   }
-  
 
   async getLottery(): ApiResponse<GetLotteryResponse> {
     const { jwtObject, config, error } = getConfigAndJwt();

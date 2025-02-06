@@ -50,17 +50,17 @@ fund_princ() {
       }
     )'
 
-    # Get final balance
-    final_balance=$(balance "$princ")
-    echo "Final balance of $princ: $final_balance"
+    # # Get final balance
+    # final_balance=$(balance "$princ")
+    # echo "Final balance of $princ: $final_balance"
 
-    # Check if transfer was successful
-    expected_balance=$((initial_balance + amt))
-    if [ "$final_balance" -eq "$expected_balance" ]; then
-        echo "Successfully funded $princ with amount $amt"
-    else
-        echo "Funding may have failed. Expected: $expected_balance, Got: $final_balance"
-    fi
+    # # Check if transfer was successful
+    # expected_balance=$((initial_balance + amt))
+    # if [ "$final_balance" -eq "$expected_balance" ]; then
+    #     echo "Successfully funded $princ with amount $amt"
+    # else
+    #     echo "Funding may have failed. Expected: $expected_balance, Got: $final_balance"
+    # fi
 }
 
 get_proxy_contract() {
@@ -78,7 +78,7 @@ get_proxy_contract() {
 
     # Store the result in a global environment variable
     # export PROXY_CONTRACT="$result"
-    echo "Stored in PROXY_CONTRACT: $PROXY_CONTRACT"
+    # echo "Stored in PROXY_CONTRACT: $PROXY_CONTRACT"
     echo "$result"
 }
 

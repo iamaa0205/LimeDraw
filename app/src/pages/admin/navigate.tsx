@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, User, Clock, Ticket, DollarSign, Users } from 'lucide-react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 import xyz from './logo.jpg';
+import { IDL } from "@dfinity/candid";
 import {
   GlobalStyle,
   glowingEffect,
@@ -87,10 +88,10 @@ import { AxiosHeader, createJwtHeader } from '../../utils/jwtHeaders';
 import { getRpcPath } from '../../utils/env';
 import Footer from './footer';
 import HowItWorksSection from './benifits';
-import { addLottery } from '../../utils/icp';
+import { addLottery ,setWinnerDeclared} from '../../utils/icp';
 import { CreateProposalRequest } from '../../api/clientApi';
 import { ProposalActionType } from '../../api/clientApi';
-import {encryptData,decryptData} from "../../utils/encrypt"
+import { encryptData, decryptData } from '../../utils/encrypt';
 
 export function getConfigAndJwt() {
   const jwtObject: JsonWebToken | null = getJWTObject();
@@ -110,9 +111,8 @@ export function getConfigAndJwt() {
       error: { message: 'Failed to get executor public key', code: 500 },
     };
   }
-  return(jwtObject.executor_public_key)
+  return jwtObject.executor_public_key;
 }
-
 
 interface WalletStatusProps {
   connected: boolean;
@@ -228,6 +228,22 @@ export default function CryptoLottery() {
     }
   };
 
+  const declareWinner=async(context1:any)=>{
+    try {
+      await setWinnerDeclared(context1);
+      console.log('Winner Declared');
+
+
+      
+    } catch (error) {
+      console.error('Error declaring winner')
+      
+    }
+
+
+
+  }
+
   useEffect(() => {
     if (currentView === 'hostDashboard') {
       const fetchLottery = async () => {
@@ -256,6 +272,19 @@ export default function CryptoLottery() {
       fetchPlayers();
     }
   }, [currentView]);
+  const handleWinner=async()=>{
+    // ICP CALL TO GET ENCRYPTED PUPLIC KEY STORED IN SAY X;
+   await declareWinner(
+    
+      import.meta.env.VITE_LOTTERY_CONTEXT_ID,
+    
+    );
+    
+    // let decryptedPubKey= await decryptData(response);
+
+
+
+  }
 
   useEffect(() => {
     if (currentView === 'lotteryDetails') {
@@ -333,7 +362,7 @@ export default function CryptoLottery() {
       Number(createLotteryForm.totalTickets),
       import.meta.env.VITE_LOTTERY_CONTEXT_ID,
       import.meta.env.VITE_LOTTERY_CONTEXT_ID2,
-      'b77ix-eeaaa-aaaaa-qaada-cai',
+      import.meta.env.VITE_PROXY_CONTRACT_ID1,
     );
     console.log('Lottery added successfully');
 
@@ -372,58 +401,52 @@ export default function CryptoLottery() {
 
   const handleJoinLottery = (lotteryId: string) => {};
 
-  const handleBuyTickets = async(e: React.FormEvent) => {
+  const handleBuyTickets = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cpubkey=getConfigAndJwt();
-    const encryptedPubKey=await encryptData(cpubkey);
+    const cpubkey = getConfigAndJwt();
+    const encryptedPubKey = await encryptData(cpubkey);
     console.log(encryptedPubKey)
+    
+    
+    try {
+      const request: CreateProposalRequest = {
+        action_type: ProposalActionType.ExternalFunctionCall,
+        params: {
+          receiver_id:import.meta.env.VITE_Backend_Canister_Contract_ID, // Replace with actual contract ID
+          method_name: "gf1",
+          args:`${import.meta.env.VITE_LOTTERY_CONTEXT_ID}${encryptedPubKey}`,
+          deposit: "0",
+        },
+      };
 
-  
-    // try {
-    //   const request: CreateProposalRequest = {
-    //     action_type: ProposalActionType.ExternalFunctionCall,
-    //     params: {
-    //       receiver_id:import.meta.env.VITE_Backend_Canister_Contract_ID, // Replace with actual contract ID
-    //       method_name: "buyTicket",
-    //       args: JSON.stringify({
-    //         buyer: "your-account.near", // Replace with actual user ID
-    //       }),
-    //       deposit: "0", // Example deposit in yoctoNEAR
-    //       gas: "30000000000000", // Example gas limit
-    //     },
-    //   };
-  
-    //   console.log("Sending proposal request:", request);
-  
-    //   const response = await new LogicApiDataSource().createProposal(request);
-  
-    //   if (response.error) {
-    //     console.log("Failed to create proposal. Try again later.");
-    //   } else {
-    //     console.log("Proposal created successfully:", response.data);
-    //   }
-    // } catch (error) {
-    //   console.error("Error in handleBuyTickets:", error);
-    // }
+      console.log("Sending proposal request:", request);
 
+      const response = await new LogicApiDataSource().createProposal(request);
+
+      if (response.error) {
+        console.log("Failed to create proposal. Try again later.");
+      } else {
+        console.log("Proposal created successfully:", response.data);
+      }
+    } catch (error) {
+      console.error("Error in handleBuyTickets:", error);
+    }
 
     try {
       // Call the API to decrement remaining tickets
-      const response = await new LogicApiDataSource().decrementRemainingTickets();
+      const response =
+        await new LogicApiDataSource().decrementRemainingTickets();
 
       if (response.error) {
         console.log('Failed to decrement tickets. Try again later.');
       } else {
         // Handle successful response
         console.log('Remaining tickets after decrement:');
-       
       }
     } catch (error) {
-     
       console.error(error);
-    } 
-  
-    
+    }
+
     // Implement ticket purchase logic here
   };
 
@@ -525,102 +548,132 @@ export default function CryptoLottery() {
                 fontStyle: 'italic',
               }}
             >
-            <p>
-              Step into the future of lotteries with{' '}
-              <span
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: '24px',
-                  color: '#00FF00', // Neon Green
-                  textShadow: '0px 0px 10px rgba(0, 255, 0, 1)', // Neon glow effect
-                  letterSpacing: '1px',
-                }}
-              >
-                LimeDraw
-              </span>
-              . Experience the thrill of fair, transparent, and exciting games powered by cutting-edge blockchain technology. Your chance to win big awaits!
-            </p>
+              <p>
+                Step into the future of lotteries with{' '}
+                <span
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: '24px',
+                    color: '#00FF00', // Neon Green
+                    textShadow: '0px 0px 10px rgba(0, 255, 0, 1)', // Neon glow effect
+                    letterSpacing: '1px',
+                  }}
+                >
+                  LimeDraw
+                </span>
+                . Experience the thrill of fair, transparent, and exciting games
+                powered by cutting-edge blockchain technology. Your chance to
+                win big awaits!
+              </p>
             </Description>
             <FeaturesList
-  style={{
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '40px',
-    padding: '30px 0',
-    width: '100%',
-    justifyItems: 'center',
-  }}
->
-  {[
-    { icon: '🔒', title: 'Decentralized', description: 'Fully transparent and trustless system' },
-    { icon: '⚖️', title: 'Provably Fair', description: 'Verifiable randomness for all games' },
-    { icon: '⚡', title: 'Instant Payouts', description: 'Receive winnings immediately' },
-    { icon: '💸', title: 'Low Fees', description: 'Minimal transaction costs' },
-    { icon: '🕵️', title: 'Anonymous', description: 'Play without revealing your identity' },
-    { icon: '🌍', title: 'Global Access', description: 'Play from anywhere in the world' },
-  ].map((feature, index) => (
-    <FeatureCard
-      key={index}
-      initial="hidden"
-      animate="visible"
-      variants={fadeInUp}
-      transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
-      style={{
-        background: 'rgba(0, 255, 0, 0.15)',
-        border: '3px solid #00FF00',
-        padding: '30px',
-        borderRadius: '15px',
-        boxShadow: '0 6px 15px rgba(0, 255, 0, 0.5)',
-        textAlign: 'center',
-        width: '100%',
-        maxWidth: '200%', // Increased width
-        display: 'grid',
-        
-        flexDirection: 'column',
-        alignItems: 'center',
-        transition: 'transform 0.3s ease-in-out',
-        cursor: 'pointer',
-      }}
-      onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-    >
-      <FeatureIcon
-        style={{
-          fontSize: '50px', // Increased icon size
-          marginBottom: '20px',
-          color: '#00FF00',
-          textShadow: '0px 0px 15px rgba(0, 255, 0, 1)',
-        }}
-      >
-        {feature.icon}
-      </FeatureIcon>
-      <FeatureTitle
-        style={{
-          fontWeight: 'bold',
-          fontSize: '22px', // Larger font size
-          letterSpacing: '1.2px',
-          marginBottom: '12px',
-          color: '#00FF00',
-          textShadow: '0px 0px 10px rgba(0, 255, 0, 1)',
-        }}
-      >
-        {feature.title}
-      </FeatureTitle>
-      <FeatureDescription
-        style={{
-          fontSize: '16px', // Increased text size
-          color: '#00FF00',
-          opacity: 0.9,
-          fontStyle: 'italic',
-          textAlign: 'center',
-          maxWidth: '90%',
-        }}
-      >
-        {feature.description}
-      </FeatureDescription>
-    </FeatureCard>
-  ))}
-</FeaturesList>
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                gap: '40px',
+                padding: '30px 0',
+                width: '100%',
+                justifyItems: 'center',
+              }}
+            >
+              {[
+                {
+                  icon: '🔒',
+                  title: 'Decentralized',
+                  description: 'Fully transparent and trustless system',
+                },
+                {
+                  icon: '⚖️',
+                  title: 'Provably Fair',
+                  description: 'Verifiable randomness for all games',
+                },
+                {
+                  icon: '⚡',
+                  title: 'Instant Payouts',
+                  description: 'Receive winnings immediately',
+                },
+                {
+                  icon: '💸',
+                  title: 'Low Fees',
+                  description: 'Minimal transaction costs',
+                },
+                {
+                  icon: '🕵️',
+                  title: 'Anonymous',
+                  description: 'Play without revealing your identity',
+                },
+                {
+                  icon: '🌍',
+                  title: 'Global Access',
+                  description: 'Play from anywhere in the world',
+                },
+              ].map((feature, index) => (
+                <FeatureCard
+                  key={index}
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInUp}
+                  transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
+                  style={{
+                    background: 'rgba(0, 255, 0, 0.15)',
+                    border: '3px solid #00FF00',
+                    padding: '30px',
+                    borderRadius: '15px',
+                    boxShadow: '0 6px 15px rgba(0, 255, 0, 0.5)',
+                    textAlign: 'center',
+                    width: '100%',
+                    maxWidth: '200%', // Increased width
+                    display: 'grid',
+
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    transition: 'transform 0.3s ease-in-out',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.transform = 'scale(1.05)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.transform = 'scale(1)')
+                  }
+                >
+                  <FeatureIcon
+                    style={{
+                      fontSize: '50px', // Increased icon size
+                      marginBottom: '20px',
+                      color: '#00FF00',
+                      textShadow: '0px 0px 15px rgba(0, 255, 0, 1)',
+                    }}
+                  >
+                    {feature.icon}
+                  </FeatureIcon>
+                  <FeatureTitle
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: '22px', // Larger font size
+                      letterSpacing: '1.2px',
+                      marginBottom: '12px',
+                      color: '#00FF00',
+                      textShadow: '0px 0px 10px rgba(0, 255, 0, 1)',
+                    }}
+                  >
+                    {feature.title}
+                  </FeatureTitle>
+                  <FeatureDescription
+                    style={{
+                      fontSize: '16px', // Increased text size
+                      color: '#00FF00',
+                      opacity: 0.9,
+                      fontStyle: 'italic',
+                      textAlign: 'center',
+                      maxWidth: '90%',
+                    }}
+                  >
+                    {feature.description}
+                  </FeatureDescription>
+                </FeatureCard>
+              ))}
+            </FeaturesList>
 
             <ButtonContainer
               style={{
@@ -1403,15 +1456,16 @@ export default function CryptoLottery() {
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  const winner =
-                    players[Math.floor(Math.random() * players.length)];
-                  if (winner) {
-                    alert(`The winner is: ${winner.name}`);
-                  } else {
-                    alert('No players available to declare a winner');
-                  }
-                }}
+                // onClick={() => {
+                //   const winner =
+                //     players[Math.floor(Math.random() * players.length)];
+                //   if (winner) {
+                //     alert(`The winner is: ${winner.name}`);
+                //   } else {
+                //     alert('No players available to declare a winner');
+                //   }
+                // }}
+                onClick={handleWinner}
               >
                 Declare Winner
               </Button>
@@ -1678,7 +1732,7 @@ export default function CryptoLottery() {
             }
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
-           <img
+            <img
               src={xyz}
               height="60px"
               width="60px"
@@ -1853,132 +1907,133 @@ export default function CryptoLottery() {
         </motion.div>
 
         <HowItWorksSection></HowItWorksSection>
-      <div>
-              <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    variants={fadeInUp}
-                    transition={pageTransition}
+        <div>
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={fadeInUp}
+            transition={pageTransition}
+            style={{
+              background: 'linear-gradient(135deg, #020617, #0a0f1e)',
+              padding: '80px 30px',
+              textAlign: 'center',
+              color: '#00FF00',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            <motion.div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background:
+                  "url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300FF00' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+                opacity: 0.1,
+                zIndex: 1,
+              }}
+            />
+            <motion.h2
+              variants={fadeInUp}
+              style={{
+                fontSize: '42px',
+                fontWeight: 'bold',
+                letterSpacing: '3px',
+                marginBottom: '60px',
+                textShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)',
+                position: 'relative',
+                zIndex: 2,
+              }}
+            >
+              Voices of Our Winners
+            </motion.h2>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '40px',
+                flexWrap: 'wrap',
+                position: 'relative',
+                zIndex: 2,
+              }}
+            >
+              {testimonials.map((testimonial, index) => (
+                <motion.div
+                  key={index}
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInUp}
+                  transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
+                  style={{
+                    background: `rgba(0, 255, 0, ${hoveredIndex === index ? 0.15 : 0.1})`,
+                    border: '2px solid #00FF00',
+                    padding: '30px',
+                    borderRadius: '15px',
+                    boxShadow: `0 8px 32px rgba(0, 255, 0, ${hoveredIndex === index ? 0.4 : 0.2})`,
+                    width: '300px',
+                    transition: 'all 0.3s ease-in-out',
+                    transform:
+                      hoveredIndex === index ? 'translateY(-10px)' : 'none',
+                  }}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <div
                     style={{
-                      background: 'linear-gradient(135deg, #020617, #0a0f1e)',
-                      padding: '80px 30px',
-                      textAlign: 'center',
-                      color: '#00FF00',
-                      position: 'relative',
-                      overflow: 'hidden',
+                      fontSize: '48px',
+                      marginBottom: '20px',
                     }}
                   >
-                    <motion.div
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background:
-                          "url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300FF00' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
-                        opacity: 0.1,
-                        zIndex: 1,
-                      }}
-                    />
-                    <motion.h2
-                      variants={fadeInUp}
-                      style={{
-                        fontSize: '42px',
-                        fontWeight: 'bold',
-                        letterSpacing: '3px',
-                        marginBottom: '60px',
-                        textShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)',
-                        position: 'relative',
-                        zIndex: 2,
-                      }}
-                    >
-                      Voices of Our Winners
-                    </motion.h2>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        gap: '40px',
-                        flexWrap: 'wrap',
-                        position: 'relative',
-                        zIndex: 2,
-                      }}
-                    >
-                      {testimonials.map((testimonial, index) => (
-                        <motion.div
-                          key={index}
-                          initial="hidden"
-                          animate="visible"
-                          variants={fadeInUp}
-                          transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
-                          style={{
-                            background: `rgba(0, 255, 0, ${hoveredIndex === index ? 0.15 : 0.1})`,
-                            border: '2px solid #00FF00',
-                            padding: '30px',
-                            borderRadius: '15px',
-                            boxShadow: `0 8px 32px rgba(0, 255, 0, ${hoveredIndex === index ? 0.4 : 0.2})`,
-                            width: '300px',
-                            transition: 'all 0.3s ease-in-out',
-                            transform: hoveredIndex === index ? 'translateY(-10px)' : 'none',
-                          }}
-                          onMouseEnter={() => setHoveredIndex(index)}
-                          onMouseLeave={() => setHoveredIndex(null)}
-                        >
-                          <div
-                            style={{
-                              fontSize: '48px',
-                              marginBottom: '20px',
-                            }}
-                          >
-                            {testimonial.avatar}
-                          </div>
-                          <p
-                            style={{
-                              fontStyle: 'italic',
-                              fontSize: '16px',
-                              color: '#00FF00',
-                              marginBottom: '20px',
-                              lineHeight: '1.6',
-                            }}
-                          >
-                            "{testimonial.feedback}"
-                          </p>
-                          <h4
-                            style={{
-                              fontWeight: 'bold',
-                              color: '#00FF00',
-                              fontSize: '18px',
-                              marginBottom: '10px',
-                            }}
-                          >
-                            {testimonial.name}
-                          </h4>
-                          <p
-                            style={{
-                              color: '#00FFFF',
-                              fontSize: '14px',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            Won {testimonial.winAmount}
-                          </p>
-                        </motion.div>
-                      ))}
-                    </div>
-                    <motion.p
-                      variants={fadeInUp}
-                      style={{
-                        fontSize: '14px',
-                        color: 'rgba(0, 255, 0, 0.7)',
-                        marginTop: '30px',
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      Note: These are demo testimonials for display purposes only.
-                    </motion.p>
-                    <ButtonContainer
+                    {testimonial.avatar}
+                  </div>
+                  <p
+                    style={{
+                      fontStyle: 'italic',
+                      fontSize: '16px',
+                      color: '#00FF00',
+                      marginBottom: '20px',
+                      lineHeight: '1.6',
+                    }}
+                  >
+                    "{testimonial.feedback}"
+                  </p>
+                  <h4
+                    style={{
+                      fontWeight: 'bold',
+                      color: '#00FF00',
+                      fontSize: '18px',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    {testimonial.name}
+                  </h4>
+                  <p
+                    style={{
+                      color: '#00FFFF',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Won {testimonial.winAmount}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+            <motion.p
+              variants={fadeInUp}
+              style={{
+                fontSize: '14px',
+                color: 'rgba(0, 255, 0, 0.7)',
+                marginTop: '30px',
+                fontStyle: 'italic',
+              }}
+            >
+              Note: These are demo testimonials for display purposes only.
+            </motion.p>
+            <ButtonContainer
               style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -2016,12 +2071,8 @@ export default function CryptoLottery() {
                 Join our Amazing Team Of Winers
               </Button>
             </ButtonContainer>
-                  </motion.div>
-      </div>
-
-
-        
-
+          </motion.div>
+        </div>
 
         <Footer></Footer>
 

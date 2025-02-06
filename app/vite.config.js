@@ -6,7 +6,7 @@ import { buffer } from 'stream/consumers';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/demo-blockchain-integrations/',
+  base: '/',
   build: {
     outDir: 'build',
     rollupOptions: {

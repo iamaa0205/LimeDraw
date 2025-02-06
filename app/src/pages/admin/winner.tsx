@@ -196,7 +196,7 @@ const Winner: React.FC = () => {
       action_type: 'Transfer',
       params: {
         receiver_id: icpPublicKey,
-        amount: '100',
+        amount: '1000',
       },
     };
 

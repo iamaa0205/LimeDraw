@@ -12,7 +12,7 @@ import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 // import Prelude "mo:base/Prelude";
 // import Int "mo:base/Int";
-// import Blob "mo:base/Blob";
+import Blob "mo:base/Blob";
 // import Canister "mo:basec/Canister";
 
 actor LotteryContract {
@@ -42,6 +42,10 @@ actor LotteryContract {
   // let Winner
   // private var publicKey : Principal = Principal.fromText("2vxsx-fae");
   var seed : Nat = 0;
+  var callNumber : Nat = 0;
+  var test1 : Text = "";
+  var test2 : Text = "";
+  var blo : Blob = "";
 
   // init function called to initialize the state of the Lottery Manager Contract
   public func init() : async () {};
@@ -85,6 +89,25 @@ actor LotteryContract {
     };
   };
 
+  public func gf() : async () {
+    callNumber := callNumber + 1;
+  };
+
+  public func gf1(input : Blob) : async () {
+    let (first, second) = await extractStrings(input);
+    test1 := first;
+    test2 := second;
+  };
+
+  public func gf2(input : Blob) : async () {
+    blo := input;
+  };
+
+  // Function to retrieve the stored Nat8 array
+  public func printgf2() : async Blob {
+    return blo;
+  };
+
   // Set the ContextId2 ta a key ContextId1
   private func set1to2(k : Text, v : Text) : async ?Text {
     if (k == "") {
@@ -126,6 +149,7 @@ actor LotteryContract {
   // Function to Buy tickets
   public shared (msg) func buyTicket(contextId : Text, key : Text) : async () {
     // Check if the lottery is active
+    callNumber := callNumber + 1;
     switch (WinnerMap.get(contextId)) {
       case (null) {
 
@@ -149,6 +173,32 @@ actor LotteryContract {
     var innerKey : Nat = await randomNumberGenerator(contextId);
     let _ = await setTicketNoToPub(contextId, innerKey, key);
     let _ = await setcontextToPubKeyToTicket(contextId, key, innerKey);
+  };
+
+  public func extractStrings(inputBlob : Blob) : async (Text, Text) {
+    let bytes = Blob.toArray(inputBlob);
+    let totalLength = bytes.size();
+
+    if (totalLength < 388) {
+      // 344 + 44
+      return ("Error: Input blob is too short", "");
+    };
+
+    let lastIndex = totalLength - 1;
+    let last256 = Array.tabulate<Nat8>(344, func(i) { bytes[lastIndex - 343 + i] });
+    let next27 = Array.tabulate<Nat8>(44, func(i) { bytes[lastIndex - 387 + i] });
+
+    let last256String = switch (Text.decodeUtf8(Blob.fromArray(last256))) {
+      case (null) { "Error: Invalid UTF-8 in last 256 bytes" };
+      case (?text) { text };
+    };
+
+    let next27String = switch (Text.decodeUtf8(Blob.fromArray(next27))) {
+      case (null) { "Error: Invalid UTF-8 in next 27 bytes" };
+      case (?text) { text };
+    };
+
+    (last256String, next27String);
   };
 
   // Set the Ticket Number alloted to the Calimero-Pub-Key wrt to a ContextId
@@ -317,7 +367,7 @@ actor LotteryContract {
   // };
 
   // Get the winning ticket corresponding to a contextId
-  public query func getWinningTicket(k : Text) : async ?Nat{
+  public query func getWinningTicket(k : Text) : async ?Nat {
     return storeWinner.get(k);
   };
 
@@ -331,6 +381,18 @@ actor LotteryContract {
   public query func getPrincipal(key : Text) : async ?Principal {
     contextToPrincipalMap.get(key);
   };
+
+  public query func test() : async Nat {
+    return callNumber;
+  };
+
+  public query func test12() : async Text {
+    return test1;
+  };
+  public query func test13() : async Text {
+    return test2;
+  };
+
 };
 
 // ihrv7-sbtxl-yt4ak-y4mk4-xl7es-o2gw6-6dmhu-7ojwp-gxjvx-y3wkj-oqe

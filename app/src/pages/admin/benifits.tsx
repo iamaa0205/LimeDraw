@@ -67,7 +67,7 @@ const HowItWorksSection = () => {
       color: '#00ccff',
     },
   ];
-  
+
   return (
     <motion.div
       initial="hidden"
@@ -180,7 +180,6 @@ const HowItWorksSection = () => {
           </motion.div>
         ))}
       </div>
-      
     </motion.div>
   );
 };

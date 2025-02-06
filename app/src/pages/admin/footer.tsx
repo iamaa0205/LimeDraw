@@ -2,7 +2,6 @@
 import type React from 'react';
 // import 'font-awesome/css/font-awesome.min.css';
 
-
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
@@ -110,33 +109,45 @@ const Footer: React.FC = () => {
         </div>
 
         <div style={sectionStyle}>
-            <h4 style={headingStyle}>Follow Us</h4>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              <a
-                href="https://twitter.com/0xcyanide"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={linkStyle}
-              >
-                <i className="fab fa-twitter" style={{ fontSize: '24px', color: '#1DA1F2' }}></i> Twitter
-              </a>
-              <a
-                href="https://www.facebook.com/om.aren.3517/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={linkStyle}
-              >
-                <i className="fab fa-facebook-f" style={{ fontSize: '24px', color: '#1877F2' }}></i> Facebook
-              </a>
-              <a
-                href="https://www.instagram.com/_aaditya_aren/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={linkStyle}
-              >
-                <i className="fab fa-instagram" style={{ fontSize: '24px', color: '#C13584' }}></i> Instagram
-              </a>
-            </div>
+          <h4 style={headingStyle}>Follow Us</h4>
+          <div style={{ display: 'flex', gap: '20px' }}>
+            <a
+              href="https://twitter.com/0xcyanide"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={linkStyle}
+            >
+              <i
+                className="fab fa-twitter"
+                style={{ fontSize: '24px', color: '#1DA1F2' }}
+              ></i>{' '}
+              Twitter
+            </a>
+            <a
+              href="https://www.facebook.com/om.aren.3517/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={linkStyle}
+            >
+              <i
+                className="fab fa-facebook-f"
+                style={{ fontSize: '24px', color: '#1877F2' }}
+              ></i>{' '}
+              Facebook
+            </a>
+            <a
+              href="https://www.instagram.com/_aaditya_aren/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={linkStyle}
+            >
+              <i
+                className="fab fa-instagram"
+                style={{ fontSize: '24px', color: '#C13584' }}
+              ></i>{' '}
+              Instagram
+            </a>
+          </div>
         </div>
 
         <div style={sectionStyle}>

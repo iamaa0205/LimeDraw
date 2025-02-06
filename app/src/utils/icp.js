@@ -40,6 +40,8 @@ export async function checkWinnerDeclared(contextId) {
   }
 }
 
+
+
 export async function getNoTicket(contextId) {
   try {
     return await lotteryAppBackend.getNoTicket(contextId);

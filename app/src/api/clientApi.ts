@@ -206,9 +206,8 @@ export interface DecrementRemainingTicketsRequest {
 export interface DecrementRemainingTicketsResponse {
   success: boolean;
   message: string;
-  remaining_tickets?: number;  // Optionally return the remaining tickets after the decrement
+  remaining_tickets?: number; // Optionally return the remaining tickets after the decrement
 }
-
 
 export enum ClientMethod {
   GET_PROPOSAL_MESSAGES = 'get_proposal_messages',

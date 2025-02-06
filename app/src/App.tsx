@@ -15,7 +15,7 @@ import ChatRoom from './pages/admin/chatRoom';
 export default function App() {
   useEffect(() => {
     // Check if the URL matches the base path
-    if (window.location.pathname === '/demo-blockchain-integrations/') {
+    if (window.location.pathname === '/') {
       // Only set "landing" if no view is already stored
 
       sessionStorage.setItem('currentView', 'landing');
@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <AccessTokenWrapper getNodeUrl={getNodeUrl}>
-      <BrowserRouter basename="/demo-blockchain-integrations/">
+      <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<SetupPage />} />
           <Route path="/auth" element={<Authenticate />} />

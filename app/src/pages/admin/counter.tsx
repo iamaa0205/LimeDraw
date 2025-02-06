@@ -55,7 +55,6 @@ const CounterComponent: React.FC = () => {
     try {
       const response = await new LogicApiDataSource().getAllPlayers();
       console.log(response.data, 'new ');
-    
     } catch (error) {
       console.error('Failed to fetch players:', error);
     }

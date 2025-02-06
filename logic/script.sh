@@ -128,3 +128,13 @@ echo "PROXY_CONTRACT_ID2=$PROXY_CONTRACT2" >> node_vars.env
 
 chmod +x ./update_env.sh
 ./update_env.sh
+
+
+
+
+
+# MIDfBihzRCJQM9WFJq0IY1xxZTzLmgdfGuBAkyspS0u3buByb8NU089K18tbo0CmPIwuvA3FCu69tNWotUx5NZM9ieVhD5eVluhfF/MUWE+0c2iZp0Y5unryXukDMsJFvNSR/Ox48taTJjzGDaPWT346WbpnPmGfNWAt7HN4G/jmxiEx2YjbwKiOLux+TEvf1y5xLYbxx/0I+9G29T5y/UCz/Yt22MKIrJCAmRM9YdzptOa4BonFAFvHsTBzOP4X3BZ5dXimM1E2fHb7W9NUAlkGgcCPMqKziRveK8Gz3I49g2d6zxpwwMpMV7HyeqhlM2v7R6+7163rwE5JD77O5w==
+# 5Qu9R2eez78tA5iHxcjsUp51ZHGDkr6KNrjYPDiXYrMC
+
+# 354
+# 44

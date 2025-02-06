@@ -71,7 +71,7 @@ export default function Authenticate() {
             <ClientLogin
               getNodeUrl={getNodeUrl}
               getApplicationId={getStorageApplicationId}
-              sucessRedirect={() => navigate('/home')}
+              sucessRedirect={() => navigate('/navigate')}
             />
           </div>
           <div className="back-button" onClick={onSetupClick}>
