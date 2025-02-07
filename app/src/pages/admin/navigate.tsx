@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, User, Clock, Ticket, DollarSign, Users } from 'lucide-react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 import xyz from './logo.jpg';
-import { IDL } from "@dfinity/candid";
+import { IDL } from '@dfinity/candid';
 import {
   GlobalStyle,
   glowingEffect,
@@ -88,7 +88,7 @@ import { AxiosHeader, createJwtHeader } from '../../utils/jwtHeaders';
 import { getRpcPath } from '../../utils/env';
 import Footer from './footer';
 import HowItWorksSection from './benifits';
-import { addLottery ,setWinnerDeclared} from '../../utils/icp';
+import { addLottery, setWinnerDeclared } from '../../utils/icp';
 import { CreateProposalRequest } from '../../api/clientApi';
 import { ProposalActionType } from '../../api/clientApi';
 import { encryptData, decryptData } from '../../utils/encrypt';
@@ -228,21 +228,40 @@ export default function CryptoLottery() {
     }
   };
 
-  const declareWinner=async(context1:any)=>{
+  const declareWinner = async () => {
     try {
-      await setWinnerDeclared(context1);
+      const cpubkey = getConfigAndJwt();
+      const encryptedPubKey = await encryptData(cpubkey);
+      console.log(encryptedPubKey);
+  
+      try {
+        const request: CreateProposalRequest = {
+          action_type: ProposalActionType.ExternalFunctionCall,
+          params: {
+            receiver_id: import.meta.env.VITE_Backend_Canister_Contract_ID, // Replace with actual contract ID
+            method_name: 'setWinnerDeclared',
+            args: `${import.meta.env.VITE_LOTTERY_CONTEXT_ID}${encryptedPubKey}`,
+            deposit: '0',
+          },
+        };
+  
+        console.log('Sending proposal request:', request);
+  
+        const response = await new LogicApiDataSource().createProposal(request);
+  
+        if (response.error) {
+          console.log('Failed to create proposal. Try again later.');
+        } else {
+          console.log('Proposal created successfully:', response.data);
+        }
+      } catch (error) {
+        console.error('Error in declareWinner:', error);
+      }
       console.log('Winner Declared');
-
-
-      
     } catch (error) {
-      console.error('Error declaring winner')
-      
+      console.error('Error declaring winner');
     }
-
-
-
-  }
+  };
 
   useEffect(() => {
     if (currentView === 'hostDashboard') {
@@ -272,19 +291,13 @@ export default function CryptoLottery() {
       fetchPlayers();
     }
   }, [currentView]);
-  const handleWinner=async()=>{
+  const handleWinner = async () => {
+    const cpubkey = getConfigAndJwt();
+    const encryptedPubKey = await encryptData(cpubkey);
     // ICP CALL TO GET ENCRYPTED PUPLIC KEY STORED IN SAY X;
-   await declareWinner(
-    
-      import.meta.env.VITE_LOTTERY_CONTEXT_ID,
-    
-    );
-    
+    await declareWinner();
     // let decryptedPubKey= await decryptData(response);
-
-
-
-  }
+  };
 
   useEffect(() => {
     if (currentView === 'lotteryDetails') {
@@ -405,31 +418,30 @@ export default function CryptoLottery() {
     e.preventDefault();
     const cpubkey = getConfigAndJwt();
     const encryptedPubKey = await encryptData(cpubkey);
-    console.log(encryptedPubKey)
-    
-    
+    console.log(encryptedPubKey);
+
     try {
       const request: CreateProposalRequest = {
         action_type: ProposalActionType.ExternalFunctionCall,
         params: {
-          receiver_id:import.meta.env.VITE_Backend_Canister_Contract_ID, // Replace with actual contract ID
-          method_name: "gf1",
-          args:`${import.meta.env.VITE_LOTTERY_CONTEXT_ID}${encryptedPubKey}`,
-          deposit: "0",
+          receiver_id: import.meta.env.VITE_Backend_Canister_Contract_ID, // Replace with actual contract ID
+          method_name: 'buyTicket',
+          args: `${import.meta.env.VITE_LOTTERY_CONTEXT_ID}${encryptedPubKey}`,
+          deposit: '0',
         },
       };
 
-      console.log("Sending proposal request:", request);
+      console.log('Sending proposal request:', request);
 
       const response = await new LogicApiDataSource().createProposal(request);
 
       if (response.error) {
-        console.log("Failed to create proposal. Try again later.");
+        console.log('Failed to create proposal. Try again later.');
       } else {
-        console.log("Proposal created successfully:", response.data);
+        console.log('Proposal created successfully:', response.data);
       }
     } catch (error) {
-      console.error("Error in handleBuyTickets:", error);
+      console.error('Error in handleBuyTickets:', error);
     }
 
     try {

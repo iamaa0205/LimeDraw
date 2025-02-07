@@ -46,6 +46,7 @@ actor LotteryContract {
   var test1 : Text = "";
   var test2 : Text = "";
   var blo : Blob = "";
+  var test3 : Principal = Principal.fromText("2vxsx-fae");
 
   // init function called to initialize the state of the Lottery Manager Contract
   public func init() : async () {};
@@ -125,16 +126,18 @@ actor LotteryContract {
   };
 
   // Set if the Winner has already been declared
-  public shared (msg) func setWinnerDeclared(key : Text) : async (?Nat) {
+  public shared (msg) func setWinnerDeclared(input : Blob) : async (?Nat) {
+
+    let (_, key) = await extractStrings(input);
     // Check for equality of the proxy contract to allot the random number
     let callerkey : Principal = msg.caller;
-    try {
-      await checkPublicKey(callerkey, key);
-      // Public key matches
-    } catch (error) {
-      // Handle the error
-      Debug.print("Error: " # Error.message(error));
-    };
+    // try {
+    //   await checkPublicKey(callerkey, key);
+    //   // Public key matches
+    // } catch (error) {
+    //   // Handle the error
+    //   Debug.print("Error: " # Error.message(error));
+    // };
     let num = await randomNumberGenerator2(key);
     WinnerMap.put(key, true);
     storeWinner.put(key, num);
@@ -147,29 +150,51 @@ actor LotteryContract {
   };
 
   // Function to Buy tickets
-  public shared (msg) func buyTicket(contextId : Text, key : Text) : async () {
+  public shared (msg) func buyTicket(input : Blob) : async () {
     // Check if the lottery is active
-    callNumber := callNumber + 1;
-    switch (WinnerMap.get(contextId)) {
+    let (key, contextId) = await extractStrings(input);
+    test1 := key;
+    test2 := contextId;
+
+    var princ = switch (contextToPrincipalMap.get(key)) {
       case (null) {
-
+        Principal.fromText("2vxsx-fae");
       };
-      case (?value) {
-        if (value) {
-          throw Error.reject("Winner already declared");
-        };
+      case (?val) {
+        val;
       };
     };
 
-    // Check for equality of the proxy contract to allot the random number
-    let callerkey : Principal = msg.caller;
-    try {
-      await checkPublicKey(callerkey, contextId);
-      // Public key matches
-    } catch (error) {
-      // Handle the error
-      Debug.print("Error: " # Error.message(error));
-    };
+    test3 := princ;
+
+    // test3 := switch (await getPrincipal(key)) {
+    //   case (null) {
+    //     Principal.fromText("2vxsx-fae");
+    //   };
+    //   case (?val) {
+    //     val;
+    //   };
+    // };
+    // switch (WinnerMap.get(contextId)) {
+    //   case (null) {
+
+    //   };
+    //   case (?value) {
+    //     if (value) {
+    //       throw Error.reject("Winner already declared");
+    //     };
+    //   };
+    // };
+
+    // // Check for equality of the proxy contract to allot the random number
+    // let callerkey : Principal = msg.caller;
+    // try {
+    //   await checkPublicKey(callerkey, contextId);
+    //   // Public key matches
+    // } catch (error) {
+    //   // Handle the error
+    //   Debug.print("Error: " # Error.message(error));
+    // };
     var innerKey : Nat = await randomNumberGenerator(contextId);
     let _ = await setTicketNoToPub(contextId, innerKey, key);
     let _ = await setcontextToPubKeyToTicket(contextId, key, innerKey);
@@ -235,16 +260,25 @@ actor LotteryContract {
   public func checkPublicKey(callerkey : Principal, key : Text) : async () {
     // let callerPrincipal : Principal = msg.caller;
     // let derivedPrincipal = Principal.fromBlob(publicKey);
-    var publicKey : Principal = switch (await getPrincipal(key)) {
+    var princ = switch (contextToPrincipalMap.get(key)) {
       case (null) {
-        // Handle the case where the key is null, maybe assign a default value or throw an error
-        throw Error.reject("Principal not found");
+        Principal.fromText("2vxsx-fae");
       };
       case (?val) {
-        // Assign the value from the result to publicKey
-        val; // This will automatically return the principal (val) from the case
+        val;
       };
     };
+    var publicKey = princ;
+    // var publicKey : Principal = switch (await getPrincipal(key)) {
+    //   case (null) {
+    //     // Handle the case where the key is null, maybe assign a default value or throw an error
+    //     throw Error.reject("Principal not found");
+    //   };
+    //   case (?val) {
+    //     // Assign the value from the result to publicKey
+    //     val; // This will automatically return the principal (val) from the case
+    //   };
+    // };
 
     if (not Principal.equal(callerkey, publicKey)) {
       throw Error.reject("Caller's principal does not match the stored public key " #Principal.toText(callerkey));
@@ -392,7 +426,8 @@ actor LotteryContract {
   public query func test13() : async Text {
     return test2;
   };
+  public query func test14() : async Principal {
+    return test3;
+  };
 
 };
-
-// ihrv7-sbtxl-yt4ak-y4mk4-xl7es-o2gw6-6dmhu-7ojwp-gxjvx-y3wkj-oqe
