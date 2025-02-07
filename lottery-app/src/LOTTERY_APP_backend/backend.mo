@@ -42,6 +42,8 @@ actor LotteryContract {
   // let Winner
   // private var publicKey : Principal = Principal.fromText("2vxsx-fae");
   var seed : Nat = 0;
+
+  // testing vars
   var callNumber : Nat = 0;
   var test1 : Text = "";
   var test2 : Text = "";
@@ -90,25 +92,6 @@ actor LotteryContract {
     };
   };
 
-  public func gf() : async () {
-    callNumber := callNumber + 1;
-  };
-
-  public func gf1(input : Blob) : async () {
-    let (first, second) = await extractStrings(input);
-    test1 := first;
-    test2 := second;
-  };
-
-  public func gf2(input : Blob) : async () {
-    blo := input;
-  };
-
-  // Function to retrieve the stored Nat8 array
-  public func printgf2() : async Blob {
-    return blo;
-  };
-
   // Set the ContextId2 ta a key ContextId1
   private func set1to2(k : Text, v : Text) : async ?Text {
     if (k == "") {
@@ -131,13 +114,13 @@ actor LotteryContract {
     let (_, key) = await extractStrings(input);
     // Check for equality of the proxy contract to allot the random number
     let callerkey : Principal = msg.caller;
-    // try {
-    //   await checkPublicKey(callerkey, key);
-    //   // Public key matches
-    // } catch (error) {
-    //   // Handle the error
-    //   Debug.print("Error: " # Error.message(error));
-    // };
+    try {
+      await checkPublicKey(callerkey, key);
+      // Public key matches
+    } catch (error) {
+      // Handle the error
+      Debug.print("Error: " # Error.message(error));
+    };
     let num = await randomNumberGenerator2(key);
     WinnerMap.put(key, true);
     storeWinner.put(key, num);
@@ -153,10 +136,8 @@ actor LotteryContract {
   public shared (msg) func buyTicket(input : Blob) : async () {
     // Check if the lottery is active
     let (key, contextId) = await extractStrings(input);
-    test1 := key;
-    test2 := contextId;
 
-    var princ = switch (contextToPrincipalMap.get(key)) {
+    var princ = switch (contextToPrincipalMap.get(contextId)) {
       case (null) {
         Principal.fromText("2vxsx-fae");
       };
@@ -164,7 +145,8 @@ actor LotteryContract {
         val;
       };
     };
-
+    test1 := key;
+    test2 := contextId;
     test3 := princ;
 
     // test3 := switch (await getPrincipal(key)) {
@@ -186,15 +168,15 @@ actor LotteryContract {
     //   };
     // };
 
-    // // Check for equality of the proxy contract to allot the random number
-    // let callerkey : Principal = msg.caller;
-    // try {
-    //   await checkPublicKey(callerkey, contextId);
-    //   // Public key matches
-    // } catch (error) {
-    //   // Handle the error
-    //   Debug.print("Error: " # Error.message(error));
-    // };
+    // Check for equality of the proxy contract to allot the random number
+    let callerkey : Principal = msg.caller;
+    try {
+      await checkPublicKey(callerkey, contextId);
+      // Public key matches
+    } catch (error) {
+      // Handle the error
+      Debug.print("Error: " # Error.message(error));
+    };
     var innerKey : Nat = await randomNumberGenerator(contextId);
     let _ = await setTicketNoToPub(contextId, innerKey, key);
     let _ = await setcontextToPubKeyToTicket(contextId, key, innerKey);
@@ -396,10 +378,6 @@ actor LotteryContract {
     return noTicket.get(k);
   };
 
-  // public query func getPublicKey() : async Principal {
-  //   return publicKey;
-  // };
-
   // Get the winning ticket corresponding to a contextId
   public query func getWinningTicket(k : Text) : async ?Nat {
     return storeWinner.get(k);
@@ -416,10 +394,24 @@ actor LotteryContract {
     contextToPrincipalMap.get(key);
   };
 
+  // testing func
+  public func gf() : async () {
+    callNumber := callNumber + 1;
+  };
+  public func gf1(input : Blob) : async () {
+    let (first, second) = await extractStrings(input);
+    test1 := first;
+    test2 := second;
+  };
+  public func gf2(input : Blob) : async () {
+    blo := input;
+  };
+  public func printgf2() : async Blob {
+    return blo;
+  };
   public query func test() : async Nat {
     return callNumber;
   };
-
   public query func test12() : async Text {
     return test1;
   };

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 
+import { getWinningTicket} from '../../utils/icp';
+
 // Assuming Player is defined like this
 interface Player {
   id: string;
@@ -36,7 +38,25 @@ const CounterComponent: React.FC = () => {
     }
     setLoading(false);
   };
+  const getWinner= async (
+     
+      context1: any
+    ) => {
+      try {
+        const res =await getWinningTicket(context1);
+        const num=res[0]
+        let extractedNumber = num.toString(); // "842"
+console.log(extractedNumber); 
+        console.log('Lottery added successfully');
+      } catch (error) {
+        console.error('Failed to add lottery:', error);
+      }
+    };
+    const handleSetWinnerDeclared=async()=>{
+      const res=await getWinner("89mHRad4yDG7Ff1VBSWEUx1SYZr43CFEfcsnUiTpxmFu")
+      console.log(res)
 
+    }
   const incrementCounter = async () => {
     setIncrementing(true);
     try {
@@ -115,6 +135,13 @@ const CounterComponent: React.FC = () => {
         disabled={loading}
       >
         {loading ? 'Fetching...' : 'Get Lottery'}
+      </button>
+      <button
+        style={{ ...styles.button, background: '#ffc107', color: '#333' }}
+        onClick={handleSetWinnerDeclared}
+        disabled={loading}
+      >
+        Winner
       </button>
       {players.length > 0 && (
         <div style={styles.playersList}>

@@ -88,10 +88,11 @@ import { AxiosHeader, createJwtHeader } from '../../utils/jwtHeaders';
 import { getRpcPath } from '../../utils/env';
 import Footer from './footer';
 import HowItWorksSection from './benifits';
-import { addLottery, setWinnerDeclared } from '../../utils/icp';
+import { addLottery, setWinnerDeclared ,getWinningTicket,getPubKey} from '../../utils/icp';
 import { CreateProposalRequest } from '../../api/clientApi';
 import { ProposalActionType } from '../../api/clientApi';
 import { encryptData, decryptData } from '../../utils/encrypt';
+import { get } from 'http';
 
 export function getConfigAndJwt() {
   const jwtObject: JsonWebToken | null = getJWTObject();
@@ -202,6 +203,36 @@ export default function CryptoLottery() {
     fetchLottery();
     fetchPlayers1();
   }, []);
+   const getWinner= async (
+       
+        context1: any
+      ) => {
+        try {
+          const res =await getWinningTicket(context1);
+          const num=res[0]
+          let extractedNumber = num.toString(); // "842"
+          return extractedNumber;
+  
+          console.log('Lottery added successfully');
+        } catch (error) {
+          console.error('Failed to add lottery:', error);
+        }
+      };
+
+      const getWinnerPublicKey= async (
+           
+            context1: any,
+            ticketId:any,
+          ) => {
+            try {
+              const res =await getPubKey(context1,ticketId);
+              return res
+             
+              console.log('public key of winer retrieved successfully');
+            } catch (error) {
+              console.error('Failed to add lottery:', error);
+            }
+          };
 
   const fetchPlayers1 = async () => {
     try {
@@ -296,6 +327,12 @@ export default function CryptoLottery() {
     const encryptedPubKey = await encryptData(cpubkey);
     // ICP CALL TO GET ENCRYPTED PUPLIC KEY STORED IN SAY X;
     await declareWinner();
+    const response=await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
+    const response2=await getWinnerPublicKey(import.meta.env.VITE_LOTTERY_CONTEXT_ID,Number(response));
+    const response3=await decryptData(response2[0]);
+    console.log("decrypted pub key is",response3)
+
+  
     // let decryptedPubKey= await decryptData(response);
   };
 

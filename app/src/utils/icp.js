@@ -48,18 +48,30 @@ export async function getNoTicket(contextId) {
   }
 }
 
-export async function getPubKey(contextId, ticketNumber) {
-  try {
-    return await lotteryAppBackend.getPubKey(contextId, ticketNumber);
-  } catch (error) {
-    console.error('error checking winner', error);
-  }
-}
+
 
 export async function setWinnerDeclared(contextId) {
   try {
     return await lotteryAppBackend.setWinnerDeclared(contextId);
   } catch (error) {
     console.error('error checking winner', error);
+  }
+}
+export async function getWinningTicket(context1) {
+  try {
+    return await lotteryAppBackend.getWinningTicket(context1);
+  } catch (error) {
+    console.error('Error adding lottery:', error);
+    throw error;
+  }
+}
+
+
+export async function getPubKey(context1,winningTicket) {
+  try {
+    return await lotteryAppBackend.getPubKey(context1,winningTicket);
+  } catch (error) {
+    console.error('Error adding lottery:', error);
+    throw error;
   }
 }
