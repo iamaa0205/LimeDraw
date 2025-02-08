@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
-import {buy} from "../../utils/encrypt"
+import { buy } from '../../utils/encrypt';
 
-import { getWinningTicket} from '../../utils/icp';
+import { getWinningTicket } from '../../utils/icp';
 
 // Assuming Player is defined like this
 interface Player {
@@ -39,26 +39,22 @@ const CounterComponent: React.FC = () => {
     }
     setLoading(false);
   };
-  const getWinner= async (
-     
-      context1: any
-    ) => {
-      try {
-        const res =await getWinningTicket(context1);
-        const num=res[0]
-        let extractedNumber = num.toString(); // "842"
-console.log(extractedNumber); 
-        console.log('Lottery added successfully');
-      } catch (error) {
-        console.error('Failed to add lottery:', error);
-      }
-    };
-    const handleSetWinnerDeclared=async()=>{
-      // const res=await getWinner("89mHRad4yDG7Ff1VBSWEUx1SYZr43CFEfcsnUiTpxmFu")
-      // console.log(res)
-      await buy()
-
+  const getWinner = async (context1: any) => {
+    try {
+      const res = await getWinningTicket(context1);
+      const num = res[0];
+      let extractedNumber = num.toString(); // "842"
+      console.log(extractedNumber);
+      console.log('Lottery added successfully');
+    } catch (error) {
+      console.error('Failed to add lottery:', error);
     }
+  };
+  const handleSetWinnerDeclared = async () => {
+    // const res=await getWinner("89mHRad4yDG7Ff1VBSWEUx1SYZr43CFEfcsnUiTpxmFu")
+    // console.log(res)
+    await buy();
+  };
   const incrementCounter = async () => {
     setIncrementing(true);
     try {

@@ -8,7 +8,7 @@ import { Search, User, Clock, Ticket, DollarSign, Users } from 'lucide-react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 import xyz from './logo.jpg';
 import { IDL } from '@dfinity/candid';
-import {buy} from "../../utils/encrypt"
+import { buy } from '../../utils/encrypt';
 import {
   GlobalStyle,
   glowingEffect,
@@ -89,7 +89,15 @@ import { AxiosHeader, createJwtHeader } from '../../utils/jwtHeaders';
 import { getRpcPath } from '../../utils/env';
 import Footer from './footer';
 import HowItWorksSection from './benifits';
-import { addLottery,getNoTicket,getAvailableNoTicket, setWinnerDeclared ,getWinningTicket,getPubKey,getUniqueUsers} from '../../utils/icp';
+import {
+  addLottery,
+  getNoTicket,
+  getAvailableNoTicket,
+  setWinnerDeclared,
+  getWinningTicket,
+  getPubKey,
+  getUniqueUsers,
+} from '../../utils/icp';
 import { CreateProposalRequest } from '../../api/clientApi';
 import { ProposalActionType } from '../../api/clientApi';
 import { encryptData, decryptData } from '../../utils/encrypt';
@@ -144,7 +152,7 @@ export default function CryptoLottery() {
     winnerAnnouncementDate: '',
     prizePool: 0,
   });
-  const [remTickets,setRemTickets]=useState<any>(1);
+  const [remTickets, setRemTickets] = useState<any>(1);
 
   const [lottery, setLottery] = useState<any>(null);
   const [selectedLottery, setSelectedLottery] = useState(null);
@@ -160,7 +168,7 @@ export default function CryptoLottery() {
   const [players, setPlayers] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const[totalPlayer,setTotalPlayers] = useState("0");
+  const [totalPlayer, setTotalPlayers] = useState('0');
 
   const testimonials = [
     {
@@ -197,7 +205,7 @@ export default function CryptoLottery() {
       const response = await new LogicApiDataSource().getLottery();
       if (response?.data) {
         setLottery(response?.data);
-        setRemTickets(response.data.remaining_tickets)
+        setRemTickets(response.data.remaining_tickets);
       }
     } catch (error) {
       console.error('Failed to fetch lottery:', error);
@@ -209,40 +217,33 @@ export default function CryptoLottery() {
       await fetchPlayers1();
       await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
     };
-  
+
     fetchData();
   }, []);
-  
-   const getWinner= async (
-       
-        context1: any
-      ) => {
-        try {
-          const res =await getWinningTicket(context1);
-          const num=res[0]
-          let extractedNumber = num.toString(); // "842"
-          return extractedNumber;
-  
-          console.log('Lottery added successfully');
-        } catch (error) {
-          console.error('Failed to add lottery:', error);
-        }
-      };
 
-      const getWinnerPublicKey= async (
-           
-            context1: any,
-            ticketId:any,
-          ) => {
-            try {
-              const res =await getPubKey(context1,ticketId);
-              return res
-             
-              console.log('public key of winer retrieved successfully');
-            } catch (error) {
-              console.error('Failed to add lottery:', error);
-            }
-          };
+  const getWinner = async (context1: any) => {
+    try {
+      const res = await getWinningTicket(context1);
+      const num = res[0];
+      let extractedNumber = num.toString(); // "842"
+      return extractedNumber;
+
+      console.log('Lottery added successfully');
+    } catch (error) {
+      console.error('Failed to add lottery:', error);
+    }
+  };
+
+  const getWinnerPublicKey = async (context1: any, ticketId: any) => {
+    try {
+      const res = await getPubKey(context1, ticketId);
+      return res;
+
+      console.log('public key of winer retrieved successfully');
+    } catch (error) {
+      console.error('Failed to add lottery:', error);
+    }
+  };
 
   const fetchPlayers1 = async () => {
     try {
@@ -272,15 +273,12 @@ export default function CryptoLottery() {
   const handleUniquePlayers = async (context1: any) => {
     try {
       const uniqueUsers = await getUniqueUsers(context1);
-      console.log("unoqurie",uniqueUsers)
+      console.log('unoqurie', uniqueUsers);
 
-     
-      uniqueUsers?.toString()
-      if(typeof uniqueUsers==="string"){
+      uniqueUsers?.toString();
+      if (typeof uniqueUsers === 'string') {
         setTotalPlayers(uniqueUsers);
-      
       }
-      
     } catch (error) {
       console.error('Failed to get unique users:', error);
       return null;
@@ -292,25 +290,23 @@ export default function CryptoLottery() {
       const noOfUsers = await getAvailableNoTicket(context1);
       console.log('Available No of Tickets:', noOfUsers);
       noOfUsers?.toString();
-      if(typeof noOfUsers==="string"){
-        setRemTickets(noOfUsers)
-
+      if (typeof noOfUsers === 'string') {
+        setRemTickets(noOfUsers);
       }
-      
+
       return noOfUsers;
     } catch (error) {
       console.error('Failed to get no of users:', error);
       return null;
     }
   };
-  
 
   const declareWinner = async () => {
     try {
       const cpubkey = getConfigAndJwt();
       const encryptedPubKey = await encryptData(cpubkey);
       console.log(encryptedPubKey);
-  
+
       try {
         const request: CreateProposalRequest = {
           action_type: ProposalActionType.ExternalFunctionCall,
@@ -321,11 +317,11 @@ export default function CryptoLottery() {
             deposit: '0',
           },
         };
-  
+
         console.log('Sending proposal request:', request);
-  
+
         const response = await new LogicApiDataSource().createProposal(request);
-  
+
         if (response.error) {
           console.log('Failed to create proposal. Try again later.');
         } else {
@@ -373,12 +369,14 @@ export default function CryptoLottery() {
     const encryptedPubKey = await encryptData(cpubkey);
     // ICP CALL TO GET ENCRYPTED PUPLIC KEY STORED IN SAY X;
     await declareWinner();
-    const response=await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
-    const response2=await getWinnerPublicKey(import.meta.env.VITE_LOTTERY_CONTEXT_ID,Number(response));
-    const response3=await decryptData(response2[0]);
-    console.log("decrypted pub key is",response3)
+    const response = await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+    const response2 = await getWinnerPublicKey(
+      import.meta.env.VITE_LOTTERY_CONTEXT_ID,
+      Number(response),
+    );
+    const response3 = await decryptData(response2[0]);
+    console.log('decrypted pub key is', response3);
 
-  
     // let decryptedPubKey= await decryptData(response);
   };
 
@@ -502,7 +500,7 @@ export default function CryptoLottery() {
     const cpubkey = getConfigAndJwt();
     const encryptedPubKey = await encryptData(cpubkey);
     console.log(encryptedPubKey);
-    await buy
+    await buy;
 
     try {
       const request: CreateProposalRequest = {
@@ -543,7 +541,7 @@ export default function CryptoLottery() {
       console.error(error);
     }
 
-    await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
+    await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
 
     // Implement ticket purchase logic here
   };
@@ -599,10 +597,10 @@ export default function CryptoLottery() {
       console.error('Unexpected error:', error);
     }
   };
-  const handleUpdateDashboard =async () => {
+  const handleUpdateDashboard = async () => {
     fetchLottery();
     fetchPlayers1();
-    await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
+    await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
   };
 
   const renderView = () => {
@@ -1340,12 +1338,10 @@ export default function CryptoLottery() {
                     color: '#008000',
                   }}
                 >
-                  {Number(totalPlayer)+1}
+                  {Number(totalPlayer) + 1}
                 </p>
               </div>
             </div>
-
-          
 
             <div
               style={{
@@ -1638,7 +1634,6 @@ export default function CryptoLottery() {
               </StatCard>
             </StatisticsGrid>
 
-            
             {/* Host Roles Section */}
             <div
               style={{

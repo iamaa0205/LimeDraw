@@ -37,7 +37,7 @@ export async function decryptData(encryptedValue) {
       throw new Error(`Decryption failed! Status: ${response.status}`);
 
     const data = await response.json();
- 
+
     return data.decryptedText;
   } catch (error) {
     console.error('Error decrypting data:', error);
@@ -45,24 +45,21 @@ export async function decryptData(encryptedValue) {
   }
 }
 
-
-
 export async function buy() {
   try {
     const response = await fetch(`${API_URL}/api/buyTicket`, {
-      method: 'GET',  
-      headers: { 'Content-Type': 'application/json' }
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
     });
 
     if (!response.ok)
       throw new Error(`Failed to buy ticket! Status: ${response.status}`);
 
     const data = await response.json();
-    console.log("data",data)
-    return data.decryptedText || data; 
+    console.log('data', data);
+    return data.decryptedText || data;
   } catch (error) {
     console.error('Error buying ticket:', error);
     return null;
   }
 }
-
