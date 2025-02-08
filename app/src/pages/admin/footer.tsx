@@ -1,6 +1,5 @@
 'use client';
 import type React from 'react';
-// import 'font-awesome/css/font-awesome.min.css';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -81,82 +80,31 @@ const Footer: React.FC = () => {
       <div style={containerStyle}>
         <div style={sectionStyle}>
           <h4 style={headingStyle}>Quick Links</h4>
-          <a href="#about" style={linkStyle}>
-            About Us
-          </a>
-          <a href="#how-it-works" style={linkStyle}>
-            How It Works
-          </a>
-          <a href="#faq" style={linkStyle}>
-            FAQ
-          </a>
-          <a href="#terms" style={linkStyle}>
-            Terms & Conditions
-          </a>
-          <a href="#privacy" style={linkStyle}>
-            Privacy Policy
-          </a>
+          <a href="#about" style={linkStyle}>About Us</a>
+          <a href="#how-it-works" style={linkStyle}>How It Works</a>
+          <a href="#faq" style={linkStyle}>FAQ</a>
+          <a href="#terms" style={linkStyle}>Terms & Conditions</a>
+          <a href="#privacy" style={linkStyle}>Privacy Policy</a>
         </div>
 
         <div style={sectionStyle}>
           <h4 style={headingStyle}>Contact</h4>
-          <a href="mailto:omaren0248@gmail.com" style={linkStyle}>
-            omaren0248@gmail.com
-          </a>
-          <a href="tel:+919878987655" style={linkStyle}>
-            +(91) 9878987655
-          </a>
+          <a href="mailto:omaren0248@gmail.com" style={linkStyle}>omaren0248@gmail.com</a>
+          <a href="tel:+919878987655" style={linkStyle}>+(91) 9878987655</a>
         </div>
 
         <div style={sectionStyle}>
           <h4 style={headingStyle}>Follow Us</h4>
           <div style={{ display: 'flex', gap: '20px' }}>
-            <a
-              href="https://twitter.com/0xcyanide"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={linkStyle}
-            >
-              <i
-                className="fab fa-twitter"
-                style={{ fontSize: '24px', color: '#1DA1F2' }}
-              ></i>{' '}
-              Twitter
-            </a>
-            <a
-              href="https://www.facebook.com/om.aren.3517/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={linkStyle}
-            >
-              <i
-                className="fab fa-facebook-f"
-                style={{ fontSize: '24px', color: '#1877F2' }}
-              ></i>{' '}
-              Facebook
-            </a>
-            <a
-              href="https://www.instagram.com/_aaditya_aren/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={linkStyle}
-            >
-              <i
-                className="fab fa-instagram"
-                style={{ fontSize: '24px', color: '#C13584' }}
-              ></i>{' '}
-              Instagram
-            </a>
+            <a href="https://twitter.com/0xcyanide" target="_blank" rel="noopener noreferrer" style={linkStyle}>Twitter</a>
+            <a href="https://www.facebook.com/om.aren.3517/" target="_blank" rel="noopener noreferrer" style={linkStyle}>Facebook</a>
+            <a href="https://www.instagram.com/_aaditya_aren/" target="_blank" rel="noopener noreferrer" style={linkStyle}>Instagram</a>
           </div>
         </div>
 
         <div style={sectionStyle}>
           <h4 style={headingStyle}>Newsletter</h4>
-          <p
-            style={{ fontSize: '14px', marginBottom: '10px', color: '#00FF00' }}
-          >
-            Stay updated with our latest news and offers!
-          </p>
+          <p style={{ fontSize: '14px', marginBottom: '10px', color: '#00FF00' }}>Stay updated with our latest news and offers!</p>
           <input type="email" placeholder="Your email" style={inputStyle} />
           <button style={buttonStyle}>Subscribe</button>
         </div>
@@ -166,29 +114,7 @@ const Footer: React.FC = () => {
         <p>&copy; {currentYear} LimeDraw. All rights reserved.</p>
       </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          width: '100%',
-          height: '3px',
-          background:
-            'linear-gradient(90deg, transparent, #00FF00, transparent)',
-          animation: 'glowMove 2s linear infinite',
-        }}
-      />
-
       <style jsx>{`
-        @keyframes glowMove {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
-        }
-
         a:hover {
           color: #00ff99 !important;
           text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);

@@ -173,25 +173,7 @@ const TestimonialsSection = () => {
       >
         Note: These are demo testimonials for display purposes only.
       </motion.p>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        style={{
-          marginTop: '30px',
-          padding: '15px 30px',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          color: '#000',
-          backgroundColor: '#00FF00',
-          border: 'none',
-          borderRadius: '30px',
-          cursor: 'pointer',
-          boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
-          transition: 'all 0.3s ease-in-out',
-        }}
-      >
-        Join Our Winners Circle
-      </motion.button>
+      
     </motion.div>
   );
 };

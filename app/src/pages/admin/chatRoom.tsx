@@ -1,4 +1,5 @@
 'use client';
+import xyz from './logo.jpg';
 
 import type React from 'react';
 import { useState, useEffect, useRef } from 'react';
@@ -18,6 +19,33 @@ const GlobalStyle = createGlobalStyle`
     color: #ffffff;
   }
 `;
+const Logo = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`;
+
+const LogoImg = styled.img`
+  width: 60px;
+  height: 60px;
+  margin-right: 1rem;
+  border-radius: 50%;
+  box-shadow: 0px 0px 10px rgba(0, 255, 153, 0.5);
+`;
+const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1.5rem 3rem;
+  background-color: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0px 4px 10px rgba(0, 255, 153, 0.2);
+`;
+
 
 const ChatContainer = styled.div`
   max-width: 800px;
@@ -88,6 +116,15 @@ const InputArea = styled.form`
   display: flex;
   padding: 1rem;
   background-color: rgba(26, 26, 46, 0.9);
+`;
+const AppName = styled.h1`
+  font-size: 2rem;
+  margin: 0;
+  background: linear-gradient(45deg, #00ff99, #39ff14);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 255, 153, 0.8);
 `;
 
 const Input = styled.input`
@@ -206,6 +243,13 @@ const ChatRoom: React.FC = () => {
   return (
     <>
       <GlobalStyle />
+      <Header>
+          <Logo>
+            <LogoImg src={xyz} alt="Lottery Chat Logo" />
+            <AppName>LimeDraw</AppName>
+          </Logo>
+        </Header>
+      
       <ChatContainer>
         <UpdateButton
           onClick={handleUpdate}

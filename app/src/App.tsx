@@ -29,7 +29,7 @@ export default function App() {
           <Route path="/" element={<SetupPage />} />
           <Route path="/auth" element={<Authenticate />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/navigate" element={<HomePage />} />
+          <Route path="/navigate" element={<CryptoLottery />} />
           <Route path="/counter" element={<CounterComponent />} />
           <Route path="/winner" element={<Winner />} />
           <Route path="/check" element={<Check />} />

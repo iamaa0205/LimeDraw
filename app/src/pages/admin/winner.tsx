@@ -109,26 +109,27 @@ const Message = styled(motion.p)`
 `;
 
 const Button = styled(motion.button)`
-  background: linear-gradient(45deg, #39ff14, #00ff88);
+  background: linear-gradient(45deg, #FFD700, #FFA500); /* Shiny golden gradient */
   color: #000;
-  border: none;
-  padding: 0.8rem 1.2rem;
-  font-size: 1.1rem;
+  border: 2px solid #DAA520; /* Gold border */
+  padding: 1rem 1.5rem; /* Increased padding */
+  font-size: 1.2rem;
   font-weight: bold;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0px 0px 10px rgba(57, 255, 20, 0.7);
+  box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.7); /* Initial glow effect */
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0px 0px 15px rgba(57, 255, 20, 1);
+    box-shadow: 0px 0px 25px rgba(255, 215, 0, 1), 0px 0px 50px rgba(255, 165, 0, 0.8); /* Strong aura effect */
   }
 
   &:active {
     transform: scale(0.95);
   }
 `;
+
 
 /* ======= Claim Prize Popup Form ======= */
 const FormPopup = styled(motion.div)`
@@ -217,11 +218,39 @@ const Winner: React.FC = () => {
             <LogoImg src={xyz} alt="Winfinity Logo" />
             <AppName>LimeDraw</AppName>
           </Logo>
-          <NavLinks>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/history">History</a>
-            <a href="/profile">Profile</a>
-          </NavLinks>
+          <Button
+  onClick={() => {
+    window.location.href='./navigate'
+    
+  }}
+  style={{
+    background: 'linear-gradient(45deg, #00FF00, #32CD32, #39FF14)', // Different shades of green
+    color: '#000', // Dark text for contrast
+    padding: '12px 24px', // Balanced padding
+    borderRadius: '10px', // Rounded edges
+    border: '2px solid #00FF00', // Bright green border
+    fontWeight: 'bold',
+    fontSize: '16px',
+    cursor: 'pointer',
+    boxShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)', // Green glow effect
+    transition: '0.3s ease-in-out',
+    display: 'inline-block', 
+    textAlign: 'center',
+  }}
+  onMouseEnter={(e) =>
+    (e.currentTarget.style.boxShadow =
+      '0px 0px 25px rgba(0, 255, 0, 1)') // Stronger glow on hover
+  }
+  onMouseLeave={(e) =>
+    (e.currentTarget.style.boxShadow =
+      '0px 0px 15px rgba(0, 255, 0, 0.8)') // Subtle glow when idle
+  }
+
+
+>
+  Dashboard
+</Button>
+
         </Header>
 
         <MainContent>

@@ -448,6 +448,7 @@ export default function CryptoLottery() {
     '1',
     import.meta.env.VITE_LOTTERY_CONTEXT_ID2,
   );
+  
 
   const handleCreateLottery = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -466,7 +467,7 @@ export default function CryptoLottery() {
       description: createLotteryForm.description,
       ticket_price: createLotteryForm.ticketPrice,
       ticket_count: createLotteryForm.totalTickets,
-      prize_pool: createLotteryForm.prizePool,
+      prize_pool: 100,// Just for test purpose so that we can implement this feature in future
     };
     setLottery(request);
 
@@ -606,6 +607,7 @@ export default function CryptoLottery() {
   const renderView = () => {
     switch (currentView) {
       case 'landing':
+    
         return (
           <motion.div
             initial="hidden"
@@ -690,9 +692,9 @@ export default function CryptoLottery() {
                   description: 'Receive winnings immediately',
                 },
                 {
-                  icon: '💸',
-                  title: 'Low Fees',
-                  description: 'Minimal transaction costs',
+                  icon: '💬',
+                  title: 'Chat Feature',
+                  description: 'Seamless communication between hosts',
                 },
                 {
                   icon: '🕵️',
@@ -787,31 +789,33 @@ export default function CryptoLottery() {
                   setIsGetStartedPopupOpen(true);
                 }}
                 style={{
-                  background: 'rgba(0, 255, 0, 0.2)',
-                  color: '#00FF00',
-                  border: '2px solid #00FF00',
-                  padding: '15px 30px',
-                  fontSize: '16px',
+                  background:
+                    'linear-gradient(90deg, #FFD700, #FFC300, #FFD700)', // Shiny gold gradient
+                  color: '#000', // Black text for contrast
+                  border: '3px solid #FFD700', // Gold border
+                  padding: '18px 50px', // Adjusted padding for a larger feel
+                  fontSize: '18px',
                   fontWeight: 'bold',
-                  borderRadius: '10px',
+                  borderRadius: '12px',
                   cursor: 'pointer',
-                  boxShadow: '0px 0px 10px rgba(0, 255, 0, 0.7)',
-                  transition: '0.3s',
+                  boxShadow: '0px 0px 15px rgba(255, 215, 0, 0.8)', // Initial glow
+                  transition: '0.3s ease-in-out',
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    '0px 0px 20px rgba(0, 255, 0, 1)')
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    '0px 0px 10px rgba(0, 255, 0, 0.7)')
-                }
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    '0px 0px 30px rgba(255, 215, 0, 1), 0px 0px 50px rgba(255, 215, 0, 0.8)'; // Static aura effect
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    '0px 0px 15px rgba(255, 215, 0, 0.8)'; // Normal glow when not hovered
+                }}
               >
                 Get Started
               </Button>
             </ButtonContainer>
           </motion.div>
         );
+
       case 'dashboard':
         return (
           <motion.div
@@ -827,7 +831,7 @@ export default function CryptoLottery() {
               boxShadow: '0px 20px 50px rgba(0, 255, 0, 0.6)',
               backdropFilter: 'blur(12px)',
               color: '#00FF00',
-              maxWidth: '1400px',
+              // maxWidth: '1400px',
               margin: '0 auto',
               textAlign: 'center',
               display: 'flex',
@@ -860,8 +864,39 @@ export default function CryptoLottery() {
               whileHover={{ scale: 1.01 }}
             >
               Welcome to your LimeDraw dashboard. Create or join a lottery for a
-              chance to **win big**. Blockchain ensures **transparency and
-              fairness** in every draw.
+              chance to{' '}
+              <motion.strong
+                style={{
+                  fontWeight: 'bold',
+                  color: '#FFD700',
+                  textShadow: '0px 0px 10px rgba(255, 215, 0, 0.8)',
+                }}
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{
+                  duration: 0.8,
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                }}
+              >
+                win big
+              </motion.strong>
+              . Blockchain ensures{' '}
+              <motion.strong
+                style={{
+                  fontWeight: 'bold',
+                  color: '#FFD700',
+                  textShadow: '0px 0px 10px rgba(255, 215, 0, 0.8)',
+                }}
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{
+                  duration: 0.8,
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                }}
+              >
+                transparency and fairness
+              </motion.strong>{' '}
+              in every draw.
             </motion.p>
 
             {/* Lottery Stats Section */}
@@ -1002,7 +1037,7 @@ export default function CryptoLottery() {
             transition={pageTransition}
             style={{
               padding: '3rem 2rem',
-              maxWidth: '700px', // Making the form wider
+              width: '1000px',
               margin: 'auto',
               background: 'linear-gradient(145deg, #f0f9f0, #e0f9e0)',
               borderRadius: '12px',
@@ -1015,23 +1050,15 @@ export default function CryptoLottery() {
                 fontSize: '2.2rem',
                 fontWeight: 'bold',
                 textAlign: 'center',
-                color: '#2a7f34', // Consistent green theme
+                color: '#2a7f34',
                 marginBottom: '1.8rem',
               }}
             >
               Create a New Lottery
             </h2>
-            <p
-              style={{
-                fontSize: '1rem',
-                color: '#666',
-                textAlign: 'center',
-                marginBottom: '2rem',
-              }}
-            >
-              Help make the lottery system fair and transparent. Create a new
-              lottery for players to participate in!
-            </p>
+
+            
+
             <form
               onSubmit={handleCreateLottery}
               style={{
@@ -1057,14 +1084,6 @@ export default function CryptoLottery() {
                   transition: '0.3s all ease',
                   backgroundColor: '#f9fff5',
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = 'none';
-                }}
               />
 
               {/* Description */}
@@ -1079,17 +1098,8 @@ export default function CryptoLottery() {
                   borderRadius: '10px',
                   fontSize: '1rem',
                   outline: 'none',
-                  transition: '0.3s all ease',
                   backgroundColor: '#f9fff5',
                   resize: 'vertical',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = 'none';
                 }}
               />
 
@@ -1098,7 +1108,7 @@ export default function CryptoLottery() {
                 type="number"
                 name="ticketPrice"
                 placeholder="Ticket Price"
-                value={createLotteryForm.ticketPrice}
+                value={createLotteryForm.ticketPrice === 0 ? '' : createLotteryForm.ticketPrice}
                 onChange={handleInputChange}
                 required
                 style={{
@@ -1107,17 +1117,9 @@ export default function CryptoLottery() {
                   borderRadius: '10px',
                   fontSize: '1.1rem',
                   outline: 'none',
-                  transition: '0.3s all ease',
                   backgroundColor: '#f9fff5',
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = 'none';
-                }}
+                onWheel={(e) => e.currentTarget.blur()} // Disable number scroll
               />
 
               {/* Total Tickets */}
@@ -1125,7 +1127,7 @@ export default function CryptoLottery() {
                 type="number"
                 name="totalTickets"
                 placeholder="Total Number of Tickets"
-                value={createLotteryForm.totalTickets}
+                value={createLotteryForm.totalTickets === 0 ? '' : createLotteryForm.totalTickets}
                 onChange={handleInputChange}
                 required
                 style={{
@@ -1134,17 +1136,9 @@ export default function CryptoLottery() {
                   borderRadius: '10px',
                   fontSize: '1.1rem',
                   outline: 'none',
-                  transition: '0.3s all ease',
                   backgroundColor: '#f9fff5',
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = 'none';
-                }}
+                onWheel={(e) => e.currentTarget.blur()} // Disable number scroll
               />
 
               {/* Winner Announcement Date */}
@@ -1161,45 +1155,12 @@ export default function CryptoLottery() {
                   borderRadius: '10px',
                   fontSize: '1.1rem',
                   outline: 'none',
-                  transition: '0.3s all ease',
                   backgroundColor: '#f9fff5',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = 'none';
                 }}
               />
 
               {/* Prize Pool */}
-              <input
-                type="number"
-                name="prizePool"
-                placeholder="Prize Pool Amount"
-                value={createLotteryForm.prizePool}
-                onChange={handleInputChange}
-                required
-                style={{
-                  padding: '1rem 1.5rem',
-                  border: '1px solid #00FF00',
-                  borderRadius: '10px',
-                  fontSize: '1.1rem',
-                  outline: 'none',
-                  transition: '0.3s all ease',
-                  backgroundColor: '#f9fff5',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = '0 0 8px rgba(0, 255, 0, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#00FF00';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
+             
 
               {/* Submit Button */}
               <motion.button
@@ -1210,10 +1171,14 @@ export default function CryptoLottery() {
                   border: 'none',
                   padding: '1rem 2rem',
                   fontSize: '1.2rem',
+                  width: '500px',
+                  margin: 'auto',
                   borderRadius: '10px',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   fontWeight: 'bold',
+                  display: 'block',
+                  textAlign: 'center',
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -1474,50 +1439,56 @@ export default function CryptoLottery() {
               style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}
             >
               <Button
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#00FF00',
-                  border: '2px solid #00FF00',
-                  borderRadius: '12px',
-                  fontWeight: 'bold',
-                  padding: '14px 28px',
-                  boxShadow: '0px 6px 18px rgba(0, 255, 0, 0.6)',
-                  transition: '0.3s',
-                  flex: '1',
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleUpdateDashboard}
-              >
-                Update Dashboard
-              </Button>
-              <Button
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#00FF00',
-                  border: '2px solid #00FF00',
-                  borderRadius: '12px',
-                  fontWeight: 'bold',
-                  padding: '14px 28px',
-                  boxShadow: '0px 6px 18px rgba(0, 255, 0, 0.6)',
-                  transition: '0.3s',
-                  flex: '1',
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                // onClick={() => {
-                //   const winner =
-                //     players[Math.floor(Math.random() * players.length)];
-                //   if (winner) {
-                //     alert(`The winner is: ${winner.name}`);
-                //   } else {
-                //     alert('No players available to declare a winner');
-                //   }
-                // }}
-                onClick={handleWinner}
-              >
-                Declare Winner
-              </Button>
+  style={{
+    background: 'linear-gradient(45deg, #00FF00, #00CC00)',
+    color: '#000',
+    border: '2px solid #00FF00',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    padding: '16px 32px',
+    fontSize: '16px',
+    boxShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)',
+    transition: 'all 0.3s ease-in-out',
+    flex: '1',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    cursor: 'pointer',
+  }}
+  whileHover={{
+    scale: 1.05,
+    boxShadow: '0px 0px 25px rgba(0, 255, 0, 1)',
+  }}
+  whileTap={{ scale: 0.95 }}
+  onClick={handleUpdateDashboard}
+>
+  Update Dashboard
+</Button>
+<Button
+  style={{
+    background: 'linear-gradient(45deg, #FFD700, #FFA500)', // Shiny golden gradient
+    color: '#000', // Dark text for contrast
+    border: '2px solid #DAA520', // Gold border
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    padding: '16px 32px',
+    fontSize: '16px',
+    boxShadow: '0px 0px 15px rgba(255, 215, 0, 0.8)', // Glow effect
+    transition: '0.3s ease-in-out',
+    flex: '1',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    cursor: 'pointer',
+  }}
+  whileHover={{
+    scale: 1.05,
+    boxShadow: '0px 0px 25px rgba(255, 215, 0, 1)',
+  }}
+  whileTap={{ scale: 0.95 }}
+  onClick={handleWinner}
+>
+  Declare Winner
+</Button>
+
             </div>
 
             {lottery && (
@@ -1657,27 +1628,28 @@ export default function CryptoLottery() {
                 Host Roles
               </h3>
               <p
-                style={{
-                  color: '#fff',
-                  fontSize: '16px',
-                  textAlign: 'center',
-                  marginBottom: '10px',
-                }}
-              >
-                1. **Manage Lottery Details**: Ensure lottery information is
-                accurate and updated.
-              </p>
-              <p
-                style={{
-                  color: '#fff',
-                  fontSize: '16px',
-                  textAlign: 'center',
-                  marginBottom: '10px',
-                }}
-              >
-                2. **Declare Winners**: Randomly select winners when the lottery
-                is complete.
-              </p>
+  style={{
+    color: '#fff',
+    fontSize: '16px',
+    textAlign: 'center',
+    marginBottom: '10px',
+  }}
+>
+  <strong>1. Manage Lottery Details:</strong> Ensure lottery information is
+  accurate and updated.
+</p>
+<p
+  style={{
+    color: '#fff',
+    fontSize: '16px',
+    textAlign: 'center',
+    marginBottom: '10px',
+  }}
+>
+  <strong>2. Declare Winners:</strong> Randomly select winners when the lottery
+  is complete.
+</p>
+
             </div>
           </HostDashboardContainer>
         );
@@ -1908,174 +1880,11 @@ export default function CryptoLottery() {
     `}
           </style>
         </motion.div>
+        {currentView === 'landing' && <HowItWorksSection></HowItWorksSection>}
 
-        <HowItWorksSection></HowItWorksSection>
-        <div>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={fadeInUp}
-            transition={pageTransition}
-            style={{
-              background: 'linear-gradient(135deg, #020617, #0a0f1e)',
-              padding: '80px 30px',
-              textAlign: 'center',
-              color: '#00FF00',
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-          >
-            <motion.div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background:
-                  "url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300FF00' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
-                opacity: 0.1,
-                zIndex: 1,
-              }}
-            />
-            <motion.h2
-              variants={fadeInUp}
-              style={{
-                fontSize: '42px',
-                fontWeight: 'bold',
-                letterSpacing: '3px',
-                marginBottom: '60px',
-                textShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)',
-                position: 'relative',
-                zIndex: 2,
-              }}
-            >
-              Voices of Our Winners
-            </motion.h2>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '40px',
-                flexWrap: 'wrap',
-                position: 'relative',
-                zIndex: 2,
-              }}
-            >
-              {testimonials.map((testimonial, index) => (
-                <motion.div
-                  key={index}
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeInUp}
-                  transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
-                  style={{
-                    background: `rgba(0, 255, 0, ${hoveredIndex === index ? 0.15 : 0.1})`,
-                    border: '2px solid #00FF00',
-                    padding: '30px',
-                    borderRadius: '15px',
-                    boxShadow: `0 8px 32px rgba(0, 255, 0, ${hoveredIndex === index ? 0.4 : 0.2})`,
-                    width: '300px',
-                    transition: 'all 0.3s ease-in-out',
-                    transform:
-                      hoveredIndex === index ? 'translateY(-10px)' : 'none',
-                  }}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                >
-                  <div
-                    style={{
-                      fontSize: '48px',
-                      marginBottom: '20px',
-                    }}
-                  >
-                    {testimonial.avatar}
-                  </div>
-                  <p
-                    style={{
-                      fontStyle: 'italic',
-                      fontSize: '16px',
-                      color: '#00FF00',
-                      marginBottom: '20px',
-                      lineHeight: '1.6',
-                    }}
-                  >
-                    "{testimonial.feedback}"
-                  </p>
-                  <h4
-                    style={{
-                      fontWeight: 'bold',
-                      color: '#00FF00',
-                      fontSize: '18px',
-                      marginBottom: '10px',
-                    }}
-                  >
-                    {testimonial.name}
-                  </h4>
-                  <p
-                    style={{
-                      color: '#00FFFF',
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Won {testimonial.winAmount}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-            <motion.p
-              variants={fadeInUp}
-              style={{
-                fontSize: '14px',
-                color: 'rgba(0, 255, 0, 0.7)',
-                marginTop: '30px',
-                fontStyle: 'italic',
-              }}
-            >
-              Note: These are demo testimonials for display purposes only.
-            </motion.p>
-            <ButtonContainer
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginTop: '40px',
-              }}
-            >
-              <Button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  console.log('Button clicked! Opening popup...');
-                  setIsGetStartedPopupOpen(true);
-                }}
-                style={{
-                  background: 'rgba(0, 255, 0, 0.2)',
-                  color: '#00FF00',
-                  border: '2px solid #00FF00',
-                  padding: '15px 30px',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  boxShadow: '0px 0px 10px rgba(0, 255, 0, 0.7)',
-                  transition: '0.3s',
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    '0px 0px 20px rgba(0, 255, 0, 1)')
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    '0px 0px 10px rgba(0, 255, 0, 0.7)')
-                }
-              >
-                Join our Amazing Team Of Winers
-              </Button>
-            </ButtonContainer>
-          </motion.div>
-        </div>
+        {currentView === 'landing' && (
+          <TestimonialsSection></TestimonialsSection>
+        )}
 
         <Footer></Footer>
 
