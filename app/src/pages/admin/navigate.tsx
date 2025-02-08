@@ -8,6 +8,7 @@ import { Search, User, Clock, Ticket, DollarSign, Users } from 'lucide-react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 import xyz from './logo.jpg';
 import { IDL } from '@dfinity/candid';
+import {buy} from "../../utils/encrypt"
 import {
   GlobalStyle,
   glowingEffect,
@@ -88,7 +89,7 @@ import { AxiosHeader, createJwtHeader } from '../../utils/jwtHeaders';
 import { getRpcPath } from '../../utils/env';
 import Footer from './footer';
 import HowItWorksSection from './benifits';
-import { addLottery, setWinnerDeclared ,getWinningTicket,getPubKey} from '../../utils/icp';
+import { addLottery,getNoTicket,getAvailableNoTicket, setWinnerDeclared ,getWinningTicket,getPubKey,getUniqueUsers} from '../../utils/icp';
 import { CreateProposalRequest } from '../../api/clientApi';
 import { ProposalActionType } from '../../api/clientApi';
 import { encryptData, decryptData } from '../../utils/encrypt';
@@ -143,6 +144,7 @@ export default function CryptoLottery() {
     winnerAnnouncementDate: '',
     prizePool: 0,
   });
+  const [remTickets,setRemTickets]=useState<any>(1);
 
   const [lottery, setLottery] = useState<any>(null);
   const [selectedLottery, setSelectedLottery] = useState(null);
@@ -158,6 +160,7 @@ export default function CryptoLottery() {
   const [players, setPlayers] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const[totalPlayer,setTotalPlayers] = useState("0");
 
   const testimonials = [
     {
@@ -194,15 +197,22 @@ export default function CryptoLottery() {
       const response = await new LogicApiDataSource().getLottery();
       if (response?.data) {
         setLottery(response?.data);
+        setRemTickets(response.data.remaining_tickets)
       }
     } catch (error) {
       console.error('Failed to fetch lottery:', error);
     }
   };
   useEffect(() => {
-    fetchLottery();
-    fetchPlayers1();
+    const fetchData = async () => {
+      await fetchLottery();
+      await fetchPlayers1();
+      await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+    };
+  
+    fetchData();
   }, []);
+  
    const getWinner= async (
        
         context1: any
@@ -258,6 +268,42 @@ export default function CryptoLottery() {
       console.error('Failed to add lottery:', error);
     }
   };
+
+  const handleUniquePlayers = async (context1: any) => {
+    try {
+      const uniqueUsers = await getUniqueUsers(context1);
+      console.log("unoqurie",uniqueUsers)
+
+     
+      uniqueUsers?.toString()
+      if(typeof uniqueUsers==="string"){
+        setTotalPlayers(uniqueUsers);
+      
+      }
+      
+    } catch (error) {
+      console.error('Failed to get unique users:', error);
+      return null;
+    }
+  };
+
+  const handleAvailableNoOfPlayers = async (context1: any) => {
+    try {
+      const noOfUsers = await getAvailableNoTicket(context1);
+      console.log('Available No of Tickets:', noOfUsers);
+      noOfUsers?.toString();
+      if(typeof noOfUsers==="string"){
+        setRemTickets(noOfUsers)
+
+      }
+      
+      return noOfUsers;
+    } catch (error) {
+      console.error('Failed to get no of users:', error);
+      return null;
+    }
+  };
+  
 
   const declareWinner = async () => {
     try {
@@ -456,6 +502,7 @@ export default function CryptoLottery() {
     const cpubkey = getConfigAndJwt();
     const encryptedPubKey = await encryptData(cpubkey);
     console.log(encryptedPubKey);
+    await buy
 
     try {
       const request: CreateProposalRequest = {
@@ -495,6 +542,8 @@ export default function CryptoLottery() {
     } catch (error) {
       console.error(error);
     }
+
+    await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
 
     // Implement ticket purchase logic here
   };
@@ -550,9 +599,10 @@ export default function CryptoLottery() {
       console.error('Unexpected error:', error);
     }
   };
-  const handleUpdateDashboard = () => {
+  const handleUpdateDashboard =async () => {
     fetchLottery();
     fetchPlayers1();
+    await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
   };
 
   const renderView = () => {
@@ -1290,58 +1340,12 @@ export default function CryptoLottery() {
                     color: '#008000',
                   }}
                 >
-                  {players.length}
+                  {Number(totalPlayer)+1}
                 </p>
               </div>
             </div>
 
-            <h3
-              style={{
-                fontSize: '1.8rem',
-                fontWeight: 'bold',
-                color: '#2a7f34',
-                marginBottom: '1rem',
-              }}
-            >
-              Members
-            </h3>
-            <div
-              style={{
-                background: '#f5fff0',
-                padding: '1.5rem',
-                borderRadius: '10px',
-                boxShadow: '0 5px 15px rgba(0, 255, 0, 0.2)',
-                marginBottom: '2rem',
-              }}
-            >
-              {players.length > 0 ? (
-                <ul
-                  style={{
-                    listStyle: 'none',
-                    padding: 0,
-                    margin: 0,
-                  }}
-                >
-                  {players.map((player, index) => (
-                    <li
-                      key={index}
-                      style={{
-                        fontSize: '1.1rem',
-                        color: '#2a7f34',
-                        padding: '0.5rem 0',
-                        borderBottom: '1px solid rgba(0, 128, 0, 0.2)',
-                      }}
-                    >
-                      {player.name}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p style={{ fontSize: '1rem', color: '#666' }}>
-                  No members yet.
-                </p>
-              )}
-            </div>
+          
 
             <div
               style={{
@@ -1634,52 +1638,7 @@ export default function CryptoLottery() {
               </StatCard>
             </StatisticsGrid>
 
-            <h3
-              style={{
-                fontSize: '24px',
-                color: '#00FF00',
-                textAlign: 'center',
-                letterSpacing: '1.2px',
-                marginTop: '3rem',
-                textShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)',
-              }}
-            >
-              Members
-            </h3>
-
-            <MembersList
-              style={{
-                listStyle: 'none',
-                padding: '0',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '15px',
-                marginTop: '10px',
-                animation: 'fadeIn 0.8s ease-in-out',
-              }}
-            >
-              {players.map((player, index) => (
-                <MemberItem
-                  key={index}
-                  style={{
-                    backgroundColor: 'rgba(0, 255, 0, 0.1)',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    color: '#00FF00',
-                    fontSize: '16px',
-                    textAlign: 'center',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 255, 0, 0.2)',
-                      transform: 'scale(1.03)',
-                    },
-                  }}
-                >
-                  {player.name}
-                </MemberItem>
-              ))}
-            </MembersList>
-
+            
             {/* Host Roles Section */}
             <div
               style={{

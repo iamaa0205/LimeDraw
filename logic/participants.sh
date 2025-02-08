@@ -14,8 +14,8 @@ source node_vars.env
 
 for i in $(seq 1 $((NUM_NODES))); do
     NEW_NODE_NAME="user$i"
-    NEW_SERVER_PORT=$((4030 + i))
-    NEW_SWARM_PORT=$((4130 + i))
+    NEW_SERVER_PORT=$((4500 + i))
+    NEW_SWARM_PORT=$((4600 + i))
 
     # Remove existing node directory if it exists
     if [ -d "$HOME/.calimero/$NEW_NODE_NAME" ]; then

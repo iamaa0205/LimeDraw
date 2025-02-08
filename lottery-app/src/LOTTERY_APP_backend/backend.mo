@@ -11,7 +11,8 @@ import Random "mo:base/Random";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 // import Prelude "mo:base/Prelude";
-// import Int "mo:base/Int";
+// import Set "mo:base/HashSet";
+// import map "mo:base/HashMap";
 import Blob "mo:base/Blob";
 // import Canister "mo:basec/Canister";
 
@@ -374,8 +375,11 @@ actor LotteryContract {
   };
 
   // Get the Number of Tickets corresponding to a Context Id
-  public query func getNoTicket(k : Text) : async ?Nat {
-    return noTicket.get(k);
+  public query func getNoTicket(k : Text) : async Nat {
+    return switch (noTicket.get(k)) {
+      case (null) { 0 };
+      case (?val) { val };
+    };
   };
 
   // Get the winning ticket corresponding to a contextId
@@ -392,6 +396,38 @@ actor LotteryContract {
 
   public query func getPrincipal(key : Text) : async ?Principal {
     contextToPrincipalMap.get(key);
+  };
+
+  public query func getAvailableNoTicket(key : Text) : async Nat {
+    return switch (availableNoTicket.get(key)) {
+      case (null) { 0 };
+      case (?val) { val };
+    };
+  };
+
+  // Get the number of unique players in the lottery
+  public func getUniqueUsers(contextId : Text) : async Nat {
+    switch (outerMap.get(contextId)) {
+      case (?innerMap) {
+        var uniqueUsers : [Text] = [];
+
+        // Get max ticket index to iterate properly
+        let maxTicketIndex = (await getNoTicket(contextId));
+
+        for (ticketIndex in Iter.range(1, maxTicketIndex)) {
+          switch (innerMap.get(ticketIndex)) {
+            case (?userId) {
+              if (Array.find<Text>(uniqueUsers, func(u) { u == userId }) == null) {
+                uniqueUsers := Array.append<Text>(uniqueUsers, [userId]);
+              };
+            };
+            case null {}; // Ignore missing ticket numbers
+          };
+        };
+        return Array.size(uniqueUsers);
+      };
+      case (null) { return 0 };
+    };
   };
 
   // testing func

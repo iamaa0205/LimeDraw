@@ -2,8 +2,8 @@
 set -e
 
 NODE_NAME="host"
-SERVER_PORT=2427
-SWARM_PORT=2527
+SERVER_PORT=2500
+SWARM_PORT=2600
 
 # Kill any existing merod processes
 if pgrep -f merod > /dev/null; then
@@ -129,12 +129,11 @@ echo "PROXY_CONTRACT_ID2=$PROXY_CONTRACT2" >> node_vars.env
 chmod +x ./update_env.sh
 ./update_env.sh
 
+# moving the did file to the correct path
+cp -f ../lottery-app/.dfx/local/canisters/LOTTERY_APP_backend/service.did.js ../app/src/utils/service.did.js
 
-
-
-
-# MIDfBihzRCJQM9WFJq0IY1xxZTzLmgdfGuBAkyspS0u3buByb8NU089K18tbo0CmPIwuvA3FCu69tNWotUx5NZM9ieVhD5eVluhfF/MUWE+0c2iZp0Y5unryXukDMsJFvNSR/Ox48taTJjzGDaPWT346WbpnPmGfNWAt7HN4G/jmxiEx2YjbwKiOLux+TEvf1y5xLYbxx/0I+9G29T5y/UCz/Yt22MKIrJCAmRM9YdzptOa4BonFAFvHsTBzOP4X3BZ5dXimM1E2fHb7W9NUAlkGgcCPMqKziRveK8Gz3I49g2d6zxpwwMpMV7HyeqhlM2v7R6+7163rwE5JD77O5w==
-# 5Qu9R2eez78tA5iHxcjsUp51ZHGDkr6KNrjYPDiXYrMC
-
-# 354
-# 44
+# fabricate cycles to proxy contract
+# dfx identity use initial
+# WALLET_ID=$(dfx identity get-wallet)
+# dfx ledger fabricate-cycles --canister $WALLET_ID --amount 200000
+# dfx canister deposit-cycles 1000000000 $PROXY_CONTRACT1

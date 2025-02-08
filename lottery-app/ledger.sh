@@ -135,7 +135,7 @@ CONTEXT_ID=$(dfx canister id context_contract)
 # Get the wallet ID and seed it
 WALLET_ID=$(dfx identity get-wallet)
 
-# abricate cycles for the wallet
+# Fabricate cycles for the wallet
 dfx ledger fabricate-cycles --canister $WALLET_ID --amount 200000
 
 # Transfer cycles from wallet to context contract

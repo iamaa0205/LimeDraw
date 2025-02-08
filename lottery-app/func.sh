@@ -16,7 +16,7 @@ balance() {
         owner = principal "'"$princ"'";
         subaccount = null;
       }
-    )' | awk -F'"' '{print $2}' | tr -d '()')
+    )' | grep -o '[0-9_]*' | tr -d '_')
 
     echo "$bal"
 }
@@ -50,17 +50,17 @@ fund_princ() {
       }
     )'
 
-    # # Get final balance
-    # final_balance=$(balance "$princ")
-    # echo "Final balance of $princ: $final_balance"
+    # Get final balance
+    final_balance=$(balance "$princ")
+    echo "Final balance of $princ: $final_balance"
 
-    # # Check if transfer was successful
-    # expected_balance=$((initial_balance + amt))
-    # if [ "$final_balance" -eq "$expected_balance" ]; then
-    #     echo "Successfully funded $princ with amount $amt"
-    # else
-    #     echo "Funding may have failed. Expected: $expected_balance, Got: $final_balance"
-    # fi
+    # Check if transfer was successful
+    expected_balance=$((initial_balance + amt))
+    if [ "$final_balance" -eq "$expected_balance" ]; then
+        echo "Successfully funded $princ with amount $amt"
+    else
+        echo "Funding may have failed. Expected: $expected_balance, Got: $final_balance"
+    fi
 }
 
 get_proxy_contract() {
@@ -68,7 +68,7 @@ get_proxy_contract() {
     local result
 
     # Make the first request
-    result=$(curl -s -X GET "http://localhost:2427/admin-api/contexts/${context_id}/proxy-contract" | jq -r '.data')
+    result=$(curl -s -X GET "http://localhost:2500/admin-api/contexts/${context_id}/proxy-contract" | jq -r '.data')
 
     # Check if result is null or empty
     if [ "$result" == "null" ] || [ -z "$result" ]; then

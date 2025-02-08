@@ -7,7 +7,7 @@ get_proxy_contract() {
     local result
 
     # Make the first request
-    result=$(curl -s -X GET "http://localhost:2427/admin-api/contexts/${context_id}/proxy-contract" | jq -r '.data')
+    result=$(curl -s -X GET "http://localhost:2500/admin-api/contexts/${context_id}/proxy-contract" | jq -r '.data')
 
     # Check if result is null or empty
     if [ "$result" == "null" ] || [ -z "$result" ]; then

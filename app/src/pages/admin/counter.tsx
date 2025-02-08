@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
+import {buy} from "../../utils/encrypt"
 
 import { getWinningTicket} from '../../utils/icp';
 
@@ -53,8 +54,9 @@ console.log(extractedNumber);
       }
     };
     const handleSetWinnerDeclared=async()=>{
-      const res=await getWinner("89mHRad4yDG7Ff1VBSWEUx1SYZr43CFEfcsnUiTpxmFu")
-      console.log(res)
+      // const res=await getWinner("89mHRad4yDG7Ff1VBSWEUx1SYZr43CFEfcsnUiTpxmFu")
+      // console.log(res)
+      await buy()
 
     }
   const incrementCounter = async () => {
