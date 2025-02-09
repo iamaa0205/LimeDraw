@@ -5,6 +5,10 @@ NODE_NAME="host"
 SERVER_PORT=2500
 SWARM_PORT=2600
 
+ADMIN_NODE="admin"
+ADMIN_SERVER_PORT=3000
+ADMIN_SWARM_PORT=3100
+
 # Kill any existing merod and dfx processes
 if pgrep -f merod > /dev/null || pgrep -f dfx > /dev/null; then
     echo "Killing existing merod and dfx processes..."
@@ -96,6 +100,26 @@ HOST_PUBLIC_KEY2=$(echo "$LOTTERY_CONTEXT_OUTPUT2" | grep "member_public_key:" |
 sleep 5
 
 
+echo "Initializing admin node..."
+merod --node-name $ADMIN_NODE init --server-port $ADMIN_SERVER_PORT --swarm-port $ADMIN_SWARM_PORT >/dev/null 2>&1 &
+sleep 1
+
+echo "Starting node..."
+merod --node-name $ADMIN_NODE run >/dev/null 2>&1 &
+sleep 2
+
+if [ -z "$LOTTERY_APP_ID" ]; then
+    echo "Failed to get application ID"
+    exit 1
+fi
+
+# # Create context and capture both ID and public key
+echo "Creating context..."
+ADMIN_CONTEXT_OUTPUT=$(meroctl --node-name $ADMIN_NODE context create --application-id $LOTTERY_APP_ID --protocol icp)
+ADMIN_CONTEXT_ID=$(echo "$ADMIN_CONTEXT_OUTPUT" | grep "id:" | awk '{print $2}')
+ADMIN_PUBLIC_KEY=$(echo "$ADMIN_CONTEXT_OUTPUT" | grep "member_public_key:" | awk '{print $2}')
+sleep 5
+
 if [ -z "$LOTTERY_CONTEXT_ID" ]; then
     echo "Failed to get context ID"
     exit 1
@@ -110,6 +134,11 @@ echo "LOTTERY_CONTEXT_ID=$LOTTERY_CONTEXT_ID" >> node_vars.env
 echo "HOST_PUBLIC_KEY=$HOST_PUBLIC_KEY" >> node_vars.env
 echo "LOTTERY_CONTEXT_ID2=$LOTTERY_CONTEXT_ID2" >> node_vars.env
 echo "HOST_PUBLIC_KEY2=$HOST_PUBLIC_KEY2" >> node_vars.env
+
+echo "ADMIN_NAME=$ADMIN_NODE" >> node_vars.env
+echo "ADMIN_SERVER_PORT=$ADMIN_SERVER_PORT" >> node_vars.env
+echo "ADMIN_SWARM_PORT=$ADMIN_SWARM_PORT" >> node_vars.env
+echo "ADMIN_CONTEXT_ID=$ADMIN_CONTEXT_ID" >> node_vars.env
 # echo "LOTTERY_APP_ID=$LOTTERY_APP_ID" >> node_vars.env
 
 
