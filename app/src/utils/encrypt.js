@@ -63,3 +63,23 @@ export async function buy() {
     return null;
   }
 }
+
+
+export async function getBalance() {
+  try {
+    const response = await fetch(`${API_URL}/api/balance`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok)
+      throw new Error(`Failed to buy ticket! Status: ${response.status}`);
+
+    const data = await response.json();
+    console.log('data', data);
+    return data.decryptedText || data;
+  } catch (error) {
+    console.error('Error buying ticket:', error);
+    return null;
+  }
+}

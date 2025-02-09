@@ -1,12 +1,13 @@
 'use client';
 
 import type React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
 import { CreateProposalRequest } from '../../api/clientApi';
 import xyz from './logo.jpg';
+import { getBalance } from '../../utils/encrypt';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -187,6 +188,21 @@ const Footer = styled.footer`
 const Winner: React.FC = () => {
   const [icpPublicKey, setIcpPublicKey] = useState('');
   const [showInput, setShowInput] = useState(false);
+  const [amount,setAmount]=useState(0);
+  useEffect(() => {
+    const fetchBal = async () => {
+      try {
+        const res = await getBalance();
+        setAmount(res.amount);
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+      }
+    };
+  
+    fetchBal();
+  }, []);
+  
+  
 
   const handleClaimPrize = () => setShowInput(true);
 
@@ -202,9 +218,10 @@ const Winner: React.FC = () => {
       action_type: 'Transfer',
       params: {
         receiver_id: icpPublicKey,
-        amount: '1000',
+        amount: (amount * 0.8).toString(), 
       },
     };
+    
 
     try {
       const response = await new LogicApiDataSource().createProposal(request);

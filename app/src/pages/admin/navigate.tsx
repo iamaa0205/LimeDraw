@@ -128,12 +128,7 @@ export function getConfigAndJwt() {
 }
 
 
-useEffect(()=>{
-  const id= getConfigAndJwtContextId();
-  if(id===import.meta.env.VITE_LOTTERY_CONTEXT_ID2){
-    window.location.href='./winner'
-  }
-})
+
 
 
 export function getConfigAndJwtContextId() {
@@ -184,6 +179,16 @@ export default function CryptoLottery() {
     winnerAnnouncementDate: '',
     prizePool: 0,
   });
+
+  useEffect(()=>{
+    const id= getConfigAndJwtContextId();
+    if(id===import.meta.env.VITE_LOTTERY_CONTEXT_ID2){
+      window.location.href='./winner'
+    }
+  },[])
+
+
+
   const [remTickets, setRemTickets] = useState<any>(1);
 
   const [lottery, setLottery] = useState<any>(null);
@@ -254,6 +259,7 @@ export default function CryptoLottery() {
     };
 
     fetchData();
+    
     if(isWinner){
       toast("Congratulations you are declared as winner!")
     }
