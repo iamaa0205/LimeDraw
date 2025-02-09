@@ -5,10 +5,12 @@ NODE_NAME="host"
 SERVER_PORT=2500
 SWARM_PORT=2600
 
-# Kill any existing merod processes
-if pgrep -f merod > /dev/null; then
-    echo "Killing existing merod processes..."
+# Kill any existing merod and dfx processes
+if pgrep -f merod > /dev/null || pgrep -f dfx > /dev/null; then
+    echo "Killing existing merod and dfx processes..."
     pkill -f merod
+    pkill -f dfx
+    cargo clean
     sleep 1
 fi
 
@@ -50,7 +52,7 @@ if command -v wasm-opt >/dev/null; then
     wasm-opt -Oz ./res/$sanitized_name.wasm -o ./res/$sanitized_name.wasm
 fi
 
-WASM_PATH="/Users/aadityaaren01/Desktop/Winfinity/logic/res/proxy_contract_demo.wasm"
+WASM_PATH="./res/proxy_contract_demo.wasm"
 
 echo "WASM build complete!"
 

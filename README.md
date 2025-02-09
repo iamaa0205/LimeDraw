@@ -38,7 +38,7 @@ chmod +x ./participants.sh
 ./participants.sh 3
 ```
 
-All the data corresponding to the canisters, pub-pvt key pairs of the nodes and application id get stored to `./demo-blockchain-integrations/logic/node_vars.env` .
+All the data corresponding to the canisters, pub-pvt key pairs of the nodes and application id get stored to `./logic/node_vars.env` .
 
 ## **Features**
 - Encrypted Prize Pools

@@ -206,7 +206,7 @@ export default function CryptoLottery() {
       const response = await new LogicApiDataSource().getLottery();
       if (response?.data) {
         setLottery(response?.data);
-        setRemTickets(response.data.remaining_tickets);
+        // setRemTickets(response.data.remaining_tickets);
       }
     } catch (error) {
       console.error('Failed to fetch lottery:', error);
@@ -727,6 +727,23 @@ export default function CryptoLottery() {
               >
                 Get Started
               </Button>
+              <button
+          onClick={() => window.location.href = '/chatland'}
+          style={{
+            background: 'linear-gradient(90deg, #FFD700, #FFC300, #FFD700)',
+            color: '#000',
+            border: '3px solid #FFD700',
+            padding: '18px 50px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            boxShadow: '0px 0px 15px rgba(255, 215, 0, 0.8)',
+            transition: '0.3s ease-in-out',
+          }}
+        >
+          Chat Room
+        </button>
             </ButtonContainer>
             <FeaturesList
               style={{
@@ -1004,7 +1021,7 @@ export default function CryptoLottery() {
 
             {/* Action Buttons */}
             <div style={{ marginTop: '30px' }}>
-              {lottery && lottery.name === '' ? (
+              {lottery.name === '' ? (
                 <motion.button
                   style={{
                     backgroundColor: '#00FF00',

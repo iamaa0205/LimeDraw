@@ -1,14 +1,10 @@
 'use client';
 import xyz from './logo.jpg';
-
 import type React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { motion } from 'framer-motion';
-// import { LogicApiDataSource } from "../api/dataSource/LogicApiDataSource"
-// import { CreateMessageRoomRequest } from "../api/clientApi"
 import { LogicApiDataSource } from '../../api/dataSource/LogicApiDataSource';
-import { CreateMessageRoomResponse } from '../../api/clientApi';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -19,6 +15,7 @@ const GlobalStyle = createGlobalStyle`
     color: #ffffff;
   }
 `;
+
 const Logo = styled.div`
   display: flex;
   align-items: center;
@@ -32,6 +29,7 @@ const LogoImg = styled.img`
   border-radius: 50%;
   box-shadow: 0px 0px 10px rgba(0, 255, 153, 0.5);
 `;
+
 const Header = styled.header`
   display: flex;
   justify-content: space-between;
@@ -102,11 +100,6 @@ const MessageSender = styled.span`
   color: #2ecc71;
 `;
 
-const MessageTime = styled.span`
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
-`;
-
 const MessageContent = styled.p`
   margin: 0.5rem 0 0;
 `;
@@ -116,6 +109,7 @@ const InputArea = styled.form`
   padding: 1rem;
   background-color: rgba(26, 26, 46, 0.9);
 `;
+
 const AppName = styled.h1`
   font-size: 2rem;
   margin: 0;
@@ -162,15 +156,15 @@ const SendButton = styled(motion.button)`
 
 interface Message {
   id: string;
-  sender: string;
-  content: string;
-  timestamp: Date;
+  name: string;
+  text: string;
 }
 
 const ChatRoom: React.FC = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const messageListRef = useRef<HTMLDivElement>(null);
+
   const fetchMessages = async () => {
     try {
       const response = await new LogicApiDataSource().getAllMessageRooms();
@@ -178,17 +172,22 @@ const ChatRoom: React.FC = () => {
         console.error('Error fetching messages:', response.error);
       } else {
         console.log(response, 'messages');
-        const fetchedMessages = response.data;
-        setMessages(fetchedMessages);
+        setMessages(response.data);
       }
     } catch (err) {
       console.error('Unexpected error fetching messages:', err);
     }
   };
 
-  // Fetch messages from API
+  // Fetch messages every 5 seconds
   useEffect(() => {
-    fetchMessages();
+    fetchMessages(); // Initial fetch
+
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 2000); // Fetch every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
 
   // Scroll to bottom when messages update
@@ -198,7 +197,6 @@ const ChatRoom: React.FC = () => {
     }
   }, [messages]);
 
-  // Handle sending messages
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -206,7 +204,6 @@ const ChatRoom: React.FC = () => {
       const request = {
         id: `${Date.now()}`,
         name: sessionStorage.getItem('name') || 'admin',
-
         text: newMessage.trim(),
       };
 
@@ -216,27 +213,13 @@ const ChatRoom: React.FC = () => {
         if (response.error) {
           console.error('Error sending message:', response.error);
         } else {
-          console.log('Message sent successfully:', response.data);
-
-          // Add new message to the UI
-          const newMsg = {
-            id: request.id,
-            name: sessionStorage.getItem('name'),
-            text: request.text,
-          };
-
-          setMessages((prevMessages) => [...prevMessages, newMsg]);
-          setNewMessage(''); // Clear input
+          setMessages((prevMessages) => [...prevMessages, request]);
+          setNewMessage('');
         }
       } catch (err) {
         console.error('Unexpected error sending message:', err);
       }
     }
-  };
-
-  // Handle Update button click
-  const handleUpdate = () => {
-    fetchMessages();
   };
 
   return (
@@ -250,42 +233,17 @@ const ChatRoom: React.FC = () => {
       </Header>
 
       <ChatContainer>
-        <UpdateButton
-          onClick={handleUpdate}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Update
-        </UpdateButton>
         <ChatHeader>Lottery Chat Room</ChatHeader>
         <MessageList ref={messageListRef}>
           {messages.map((msg) => (
-            <MessageItem
-              key={msg.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <MessageSender>{msg.name}</MessageSender>
-
-              <MessageContent>{msg.text}</MessageContent>
+            <MessageItem key={msg.id}>
+              <MessageSender>{msg.name}:</MessageSender> {msg.text}
             </MessageItem>
           ))}
         </MessageList>
         <InputArea onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-          />
-          <SendButton
-            type="submit"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Send
-          </SendButton>
+          <Input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type your message..." />
+          <SendButton type="submit">Send</SendButton>
         </InputArea>
       </ChatContainer>
     </>
