@@ -15,6 +15,7 @@ export default defineConfig({
         404: resolve(__dirname, 'public/404.html'),
       },
     },
+    minify: 'esbuild'
   },
   resolve: {
     alias: {
@@ -22,4 +23,10 @@ export default defineConfig({
     },
   },
   plugins: [nodePolyfills({ buffer: true }), react()],
+  esbuild: {
+    logLevel: 'silent',
+  },
+  eslintrc: {
+    enabled: false
+  }
 });
