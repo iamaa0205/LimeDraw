@@ -98,6 +98,7 @@ import {
   getWinningTicket,
   getPubKey,
   getUniqueUsers,
+  checkWinnerDeclared,
 } from '../../utils/icp';
 import { CreateProposalRequest } from '../../api/clientApi';
 import { ProposalActionType } from '../../api/clientApi';
@@ -122,7 +123,38 @@ export function getConfigAndJwt() {
       error: { message: 'Failed to get executor public key', code: 500 },
     };
   }
+  
   return jwtObject.executor_public_key;
+}
+
+
+useEffect(()=>{
+  const id= getConfigAndJwtContextId();
+  if(id===import.meta.env.VITE_LOTTERY_CONTEXT_ID2){
+    window.location.href='./winner'
+  }
+})
+
+
+export function getConfigAndJwtContextId() {
+  const jwtObject: JsonWebToken | null = getJWTObject();
+  const headers: AxiosHeader | null = createJwtHeader();
+  if (!headers) {
+    return {
+      error: { message: 'Failed to create auth headers', code: 500 },
+    };
+  }
+  if (!jwtObject) {
+    return {
+      error: { message: 'Failed to get JWT token', code: 500 },
+    };
+  }
+  if (jwtObject.executor_public_key === null) {
+    return {
+      error: { message: 'Failed to get executor public key', code: 500 },
+    };
+  }
+  return jwtObject.context_id;
 }
 
 interface WalletStatusProps {
@@ -139,8 +171,7 @@ const WalletStatus: React.FC<WalletStatusProps> = ({ connected }) => {
 };
 
 export default function CryptoLottery() {
-  console.log('value is ', import.meta.env.VITE_LOTTERY_APP_CONTEXT_ID);
-  console.log('value is ', import.meta.env.VITE_LOTTERY_CONTEXT_ID2);
+  
   const [currentView, setCurrentView] = useState(() => {
     return sessionStorage.getItem('currentView') || 'landing'; // Get from sessionStorage or set default
   });
@@ -170,6 +201,7 @@ export default function CryptoLottery() {
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [totalPlayer, setTotalPlayers] = useState(1);
+  const [isWinner, setIsWinner] = useState(false);
 
   const testimonials = [
     {
@@ -216,12 +248,25 @@ export default function CryptoLottery() {
     const fetchData = async () => {
       await fetchLottery();
       await fetchPlayers1();
+      await isWinnerDeclared(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
       await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
       await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
     };
 
     fetchData();
+    if(isWinner){
+      toast("Congratulations you are declared as winner!")
+    }
   }, []);
+
+
+  useEffect(() => {
+    if (isWinner) {
+      toast("Congratulations! You are declared as the winner!");
+    }
+    console.log("is w",isWinner)
+  }, [isWinner]); // Runs whenever isWinner changes
+  
 
   const getWinner = async (context1: any) => {
     try {
@@ -246,6 +291,50 @@ export default function CryptoLottery() {
       console.error('Failed to add lottery:', error);
     }
   };
+
+
+
+  const isWinnerDeclared = async (context1: any) => {
+    try {
+      const res = await checkWinnerDeclared(context1);
+      console.log("winner declared",typeof res[0])
+      if (res[0] == true) {
+        try {
+          const cpubkey = getConfigAndJwt();
+          const encryptedPubKey = await encryptData(cpubkey);
+  
+          await declareWinner();
+  
+          const response = await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+          const response2 = await getWinnerPublicKey(
+            import.meta.env.VITE_LOTTERY_CONTEXT_ID,
+            Number(response)
+          );
+  
+          const decryptedPubKey = await decryptData(response2[0]);
+  
+          // Success toast with winner's public key
+          if (decryptedPubKey === cpubkey) {
+            setIsWinner(true);
+          }
+  
+          console.log('Public key of winner retrieved successfully');
+        } catch (error) {
+          console.error('Error in handleWinner:', error);
+        }
+      }
+      return res;
+    } catch (error) {
+      console.error('Failed to check winner declaration:', error);
+      return false; // Ensure function always returns something
+    }
+  };
+
+  
+
+
+
+
 
   const fetchPlayers1 = async () => {
     try {
@@ -381,7 +470,6 @@ export default function CryptoLottery() {
       );
   
       const decryptedPubKey = await decryptData(response2[0]);
-      console.log('Decrypted pub key is', decryptedPubKey);
   
       // Success toast with winner's public key
       toast.success(`Winner declared! Public Key: ${decryptedPubKey}`, { id: toastId });

@@ -168,14 +168,22 @@ const ChatLand: React.FC = () => {
 
     try {
       const response = await new LogicApiDataSource().addHost(request);
-      sessionStorage.setItem('name', userName);
-      if (response.error) {
-        alert('Please enter a correct username');
-      } else {
-        console.log('Host added successfully:', response.data);
+      if(sessionStorage.getItem('name')){
         setShowPopup(false);
         window.location.href = './chatroom';
+
       }
+      else{
+        sessionStorage.setItem('name', userName);
+        if (response.error) {
+          alert('Please enter a correct username');
+        } else {
+          console.log('Host added successfully:', response.data);
+          setShowPopup(false);
+          window.location.href = './chatroom';
+        }
+      }
+    
     } catch (err) {
       console.error('Error during addHost:', err);
       setError('Failed to add host. Please try again.');
@@ -195,8 +203,7 @@ const ChatLand: React.FC = () => {
         <MainContent>
           <Title>Welcome to the LimeDraw Chat</Title>
           <Message>
-            As a host, you have the privilege to discuss crypto and lotteries
-            anonymously.
+          Anyone in the same context can chat privately within that context and discuss lotteries. All their chat will remain within that context only.
           </Message>
           <Button onClick={handleEnterChat}>Enter Chat</Button>
         </MainContent>

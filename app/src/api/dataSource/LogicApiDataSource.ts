@@ -85,6 +85,7 @@ export function getConfigAndJwt() {
     headers: headers,
     timeout: 10000,
   };
+ 
 
   return { jwtObject, config };
 }
