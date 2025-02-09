@@ -188,19 +188,21 @@ const Footer = styled.footer`
 const Winner: React.FC = () => {
   const [icpPublicKey, setIcpPublicKey] = useState('');
   const [showInput, setShowInput] = useState(false);
-  const [amount,setAmount]=useState(0);
+  const [amount,setAmount]=useState("");
   useEffect(() => {
     const fetchBal = async () => {
       try {
         const res = await getBalance();
-        setAmount(res.amount);
+       
+        setAmount(res.balance);
       } catch (error) {
         console.error("Error fetching balance:", error);
       }
     };
   
     fetchBal();
-  }, []);
+    console.log("amount is",amount)
+  }, [amount]);
   
   
 
@@ -218,14 +220,15 @@ const Winner: React.FC = () => {
       action_type: 'Transfer',
       params: {
         receiver_id: icpPublicKey,
-        amount: (amount * 0.8).toString(), 
-      },
+        amount: (parseFloat(amount) * 0.8).toString(),
+    }
     };
     
 
     try {
       const response = await new LogicApiDataSource().createProposal(request);
-      console.log('Proposal successfully created:', response.data?.proposal_id);
+      console.log(response)
+      console.log('Proposal successfully created:');
     } catch (error) {
       console.error('Unexpected error:', error);
     }

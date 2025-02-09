@@ -431,31 +431,31 @@ actor LotteryContract {
   };
 
   // testing func
-  public func gf() : async () {
-    callNumber := callNumber + 1;
-  };
-  public func gf1(input : Blob) : async () {
-    let (first, second) = await extractStrings(input);
-    test1 := first;
-    test2 := second;
-  };
-  public func gf2(input : Blob) : async () {
-    blo := input;
-  };
-  public func printgf2() : async Blob {
-    return blo;
-  };
-  public query func test() : async Nat {
-    return callNumber;
-  };
-  public query func test12() : async Text {
-    return test1;
-  };
-  public query func test13() : async Text {
-    return test2;
-  };
-  public query func test14() : async Principal {
-    return test3;
-  };
+  // public func gf() : async () {
+  //   callNumber := callNumber + 1;
+  // };
+  // public func gf1(input : Blob) : async () {
+  //   let (first, second) = await extractStrings(input);
+  //   test1 := first;
+  //   test2 := second;
+  // };
+  // public func gf2(input : Blob) : async () {
+  //   blo := input;
+  // };
+  // public func printgf2() : async Blob {
+  //   return blo;
+  // };
+  // public query func test() : async Nat {
+  //   return callNumber;
+  // };
+  // public query func test12() : async Text {
+  //   return test1;
+  // };
+  // public query func test13() : async Text {
+  //   return test2;
+  // };
+  // public query func test14() : async Principal {
+  //   return test3;
+  // };
 
 };

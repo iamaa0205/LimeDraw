@@ -46,6 +46,7 @@ export async function decryptData(encryptedValue) {
 }
 
 export async function buy() {
+  console.log("reached here")
   try {
     const response = await fetch(`${API_URL}/api/buyTicket`, {
       method: 'GET',

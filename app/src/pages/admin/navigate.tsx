@@ -123,13 +123,9 @@ export function getConfigAndJwt() {
       error: { message: 'Failed to get executor public key', code: 500 },
     };
   }
-  
+
   return jwtObject.executor_public_key;
 }
-
-
-
-
 
 export function getConfigAndJwtContextId() {
   const jwtObject: JsonWebToken | null = getJWTObject();
@@ -166,11 +162,10 @@ const WalletStatus: React.FC<WalletStatusProps> = ({ connected }) => {
 };
 
 export default function CryptoLottery() {
-  
   const [currentView, setCurrentView] = useState(() => {
     return sessionStorage.getItem('currentView') || 'landing'; // Get from sessionStorage or set default
   });
-  const [walletConnected, setWalletConnected] = useState(true);
+  const [walletConnected, setWalletConnected] = useState(false);
   const [createLotteryForm, setCreateLotteryForm] = useState({
     name: '',
     description: '',
@@ -180,14 +175,12 @@ export default function CryptoLottery() {
     prizePool: 0,
   });
 
-  useEffect(()=>{
-    const id= getConfigAndJwtContextId();
-    if(id===import.meta.env.VITE_LOTTERY_CONTEXT_ID2){
-      window.location.href='./winner'
+  useEffect(() => {
+    const id = getConfigAndJwtContextId();
+    if (id === import.meta.env.VITE_LOTTERY_CONTEXT_ID2) {
+      window.location.href = './winner';
     }
-  },[])
-
-
+  }, []);
 
   const [remTickets, setRemTickets] = useState<any>(1);
 
@@ -253,26 +246,24 @@ export default function CryptoLottery() {
     const fetchData = async () => {
       await fetchLottery();
       await fetchPlayers1();
-      await isWinnerDeclared(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
+      await isWinnerDeclared(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
       await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
-      await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
+      await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
     };
 
     fetchData();
-    
-    if(isWinner){
-      toast("Congratulations you are declared as winner!")
+
+    if (isWinner) {
+      toast('Congratulations you are declared as winner!');
     }
   }, []);
 
-
   useEffect(() => {
     if (isWinner) {
-      toast("Congratulations! You are declared as the winner!");
+      toast('Congratulations! You are declared as the winner!');
     }
-    console.log("is w",isWinner)
+    console.log('is w', isWinner);
   }, [isWinner]); // Runs whenever isWinner changes
-  
 
   const getWinner = async (context1: any) => {
     try {
@@ -298,32 +289,32 @@ export default function CryptoLottery() {
     }
   };
 
-
-
   const isWinnerDeclared = async (context1: any) => {
     try {
       const res = await checkWinnerDeclared(context1);
-      console.log("winner declared",typeof res[0])
+      console.log('winner declared', typeof res[0]);
       if (res[0] == true) {
         try {
           const cpubkey = getConfigAndJwt();
           const encryptedPubKey = await encryptData(cpubkey);
-  
+
           await declareWinner();
-  
-          const response = await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+
+          const response = await getWinner(
+            import.meta.env.VITE_LOTTERY_CONTEXT_ID,
+          );
           const response2 = await getWinnerPublicKey(
             import.meta.env.VITE_LOTTERY_CONTEXT_ID,
-            Number(response)
+            Number(response),
           );
-  
+
           const decryptedPubKey = await decryptData(response2[0]);
-  
+
           // Success toast with winner's public key
           if (decryptedPubKey === cpubkey) {
             setIsWinner(true);
           }
-  
+
           console.log('Public key of winner retrieved successfully');
         } catch (error) {
           console.error('Error in handleWinner:', error);
@@ -335,12 +326,6 @@ export default function CryptoLottery() {
       return false; // Ensure function always returns something
     }
   };
-
-  
-
-
-
-
 
   const fetchPlayers1 = async () => {
     try {
@@ -370,10 +355,8 @@ export default function CryptoLottery() {
   const handleUniquePlayers = async (context1: any) => {
     try {
       const uniqueUsers = await getUniqueUsers(context1);
-     
-      
+
       setTotalPlayers(Number(uniqueUsers));
-      
     } catch (error) {
       console.error('Failed to get unique users:', error);
       return null;
@@ -384,8 +367,7 @@ export default function CryptoLottery() {
     try {
       const noOfUsers = await getAvailableNoTicket(context1);
       console.log('Available No of Tickets:', noOfUsers);
-      setRemTickets(Number(noOfUsers))
-     
+      setRemTickets(Number(noOfUsers));
 
       return noOfUsers;
     } catch (error) {
@@ -458,32 +440,35 @@ export default function CryptoLottery() {
     }
   }, [currentView]);
 
-
   const handleWinner = async () => {
     // Show loading toast
     const toastId = toast.loading('Declaring winner...');
-  
+
     try {
       const cpubkey = getConfigAndJwt();
       const encryptedPubKey = await encryptData(cpubkey);
-  
+
       await declareWinner();
-  
+
       const response = await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
       const response2 = await getWinnerPublicKey(
         import.meta.env.VITE_LOTTERY_CONTEXT_ID,
         Number(response),
       );
-  
+
       const decryptedPubKey = await decryptData(response2[0]);
-  
+
       // Success toast with winner's public key
-      toast.success(`Winner declared! Public Key: ${decryptedPubKey}`, { id: toastId });
+      toast.success(`Winner declared! Public Key: ${decryptedPubKey}`, {
+        id: toastId,
+      });
     } catch (error) {
       console.error('Error in handleWinner:', error);
-      
+
       // Error toast
-      toast.error('Failed to declare winner. Please try again.', { id: toastId });
+      toast.error('Failed to declare winner. Please try again.', {
+        id: toastId,
+      });
     }
   };
 
@@ -538,6 +523,7 @@ export default function CryptoLottery() {
           const el = {
             target: document.getElementById('connect-wallet-button'),
           };
+
           await onButtonPress(el);
         } catch (error) {
           console.error('Error connecting to Plug wallet:', error);
@@ -600,18 +586,16 @@ export default function CryptoLottery() {
     setCreateLotteryForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  
-
   const handleBuyTickets = async (e: React.FormEvent) => {
     e.preventDefault();
     const cpubkey = getConfigAndJwt();
     const encryptedPubKey = await encryptData(cpubkey);
     console.log(encryptedPubKey);
-    await buy;
-  
+    await buy();
+
     // Show loading toast
     const toastId = toast.loading('Purchasing ticket...');
-  
+
     try {
       const request: CreateProposalRequest = {
         action_type: ProposalActionType.ExternalFunctionCall,
@@ -622,27 +606,32 @@ export default function CryptoLottery() {
           deposit: '0',
         },
       };
-  
+
       console.log('Sending proposal request:', request);
-  
+
       const response = await new LogicApiDataSource().createProposal(request);
-  
+
       if (response.error) {
         console.log('Failed to create proposal. Try again later.');
-        toast.error('Failed to create ticket purchase proposal.', { id: toastId });
+        toast.error('Failed to create ticket purchase proposal.', {
+          id: toastId,
+        });
       } else {
         console.log('Proposal created successfully:', response.data);
         toast.success('Ticket purchased successfully!', { id: toastId });
       }
     } catch (error) {
       console.error('Error in handleBuyTickets:', error);
-      toast.error('An error occurred while purchasing the ticket.', { id: toastId });
+      toast.error('An error occurred while purchasing the ticket.', {
+        id: toastId,
+      });
     }
-  
+
     try {
       // Call the API to decrement remaining tickets
-      const response = await new LogicApiDataSource().decrementRemainingTickets();
-  
+      const response =
+        await new LogicApiDataSource().decrementRemainingTickets();
+
       if (response.error) {
         console.log('Failed to decrement tickets. Try again later.');
         toast.error('Failed to update remaining tickets.');
@@ -654,13 +643,10 @@ export default function CryptoLottery() {
       console.error(error);
       toast.error('Error while updating remaining tickets.');
     }
-  
+
     await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
     await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
   };
-
-
-
 
   const handleGetStartedSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -709,16 +695,20 @@ export default function CryptoLottery() {
   };
   const handleUpdateDashboard = async () => {
     toast.loading('Updating dashboard...', { id: 'updateDashboard' });
-  
+
     try {
       fetchLottery();
       fetchPlayers1();
       await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
       await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
-  
-      toast.success('Dashboard updated successfully!', { id: 'updateDashboard' });
+
+      toast.success('Dashboard updated successfully!', {
+        id: 'updateDashboard',
+      });
     } catch (error) {
-      toast.error('Failed to update dashboard. Please try again.', { id: 'updateDashboard' });
+      toast.error('Failed to update dashboard. Please try again.', {
+        id: 'updateDashboard',
+      });
       console.error('Error updating dashboard:', error);
     }
   };
@@ -726,7 +716,6 @@ export default function CryptoLottery() {
     switch (currentView) {
       case 'landing':
         return (
-          
           <motion.div
             initial="hidden"
             animate="visible"
@@ -822,22 +811,23 @@ export default function CryptoLottery() {
                 Get Started
               </Button>
               <button
-          onClick={() => window.location.href = '/chatland'}
-          style={{
-            background: 'linear-gradient(90deg, #FFD700, #FFC300, #FFD700)',
-            color: '#000',
-            border: '3px solid #FFD700',
-            padding: '18px 50px',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            borderRadius: '12px',
-            cursor: 'pointer',
-            boxShadow: '0px 0px 15px rgba(255, 215, 0, 0.8)',
-            transition: '0.3s ease-in-out',
-          }}
-        >
-          Chat Room
-        </button>
+                onClick={() => (window.location.href = '/chatland')}
+                style={{
+                  background:
+                    'linear-gradient(90deg, #FFD700, #FFC300, #FFD700)',
+                  color: '#000',
+                  border: '3px solid #FFD700',
+                  padding: '18px 50px',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  boxShadow: '0px 0px 15px rgba(255, 215, 0, 0.8)',
+                  transition: '0.3s ease-in-out',
+                }}
+              >
+                Chat Room
+              </button>
             </ButtonContainer>
             <FeaturesList
               style={{
@@ -947,8 +937,6 @@ export default function CryptoLottery() {
                 </FeatureCard>
               ))}
             </FeaturesList>
-
-            
           </motion.div>
         );
 
@@ -1034,7 +1022,6 @@ export default function CryptoLottery() {
               </motion.strong>{' '}
               in every draw.
             </motion.p>
-            
 
             {/* Lottery Stats Section */}
             <div
@@ -1360,7 +1347,7 @@ export default function CryptoLottery() {
               Lottery Dashboard
             </h2>
 
-            {lottery.owner && (
+            {lottery && lottery.owner && (
               <div
                 style={{
                   padding: '1.5rem',
@@ -1741,7 +1728,7 @@ export default function CryptoLottery() {
                     fontWeight: 'bold',
                   }}
                 >
-                 {Number(totalPlayer) + 1}
+                  {Number(totalPlayer) + 1}
                 </p>
               </StatCard>
             </StatisticsGrid>
@@ -2033,7 +2020,7 @@ export default function CryptoLottery() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsWalletPopupOpen(false)}
+            onClick={() => setIsWalletPopupOpen(true)}
           >
             <PopupContent
               onClick={(e) => e.stopPropagation()}
@@ -2045,6 +2032,7 @@ export default function CryptoLottery() {
               <WalletList>
                 {['Plug'].map((wallet) => (
                   <WalletButton
+                    id="connect-wallet-button"
                     key={wallet}
                     onClick={() => handleConnectWallet(wallet)}
                     whileHover={{ scale: 1.05 }}
