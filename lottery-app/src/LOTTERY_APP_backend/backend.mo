@@ -11,8 +11,9 @@ import Random "mo:base/Random";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 // import Prelude "mo:base/Prelude";
-// import Int "mo:base/Int";
-// import Blob "mo:base/Blob";
+// import Set "mo:base/HashSet";
+// import map "mo:base/HashMap";
+import Blob "mo:base/Blob";
 // import Canister "mo:basec/Canister";
 
 actor LotteryContract {
@@ -42,6 +43,13 @@ actor LotteryContract {
   // let Winner
   // private var publicKey : Principal = Principal.fromText("2vxsx-fae");
   var seed : Nat = 0;
+
+  // testing vars
+  var callNumber : Nat = 0;
+  var test1 : Text = "";
+  var test2 : Text = "";
+  var blo : Blob = "";
+  var test3 : Principal = Principal.fromText("2vxsx-fae");
 
   // init function called to initialize the state of the Lottery Manager Contract
   public func init() : async () {};
@@ -102,7 +110,9 @@ actor LotteryContract {
   };
 
   // Set if the Winner has already been declared
-  public shared (msg) func setWinnerDeclared(key : Text) : async (?Nat) {
+  public shared (msg) func setWinnerDeclared(input : Blob) : async (?Nat) {
+
+    let (_, key) = await extractStrings(input);
     // Check for equality of the proxy contract to allot the random number
     let callerkey : Principal = msg.caller;
     try {
@@ -124,18 +134,40 @@ actor LotteryContract {
   };
 
   // Function to Buy tickets
-  public shared (msg) func buyTicket(contextId : Text, key : Text) : async () {
+  public shared (msg) func buyTicket(input : Blob) : async () {
     // Check if the lottery is active
-    switch (WinnerMap.get(contextId)) {
-      case (null) {
+    let (key, contextId) = await extractStrings(input);
 
+    var princ = switch (contextToPrincipalMap.get(contextId)) {
+      case (null) {
+        Principal.fromText("2vxsx-fae");
       };
-      case (?value) {
-        if (value) {
-          throw Error.reject("Winner already declared");
-        };
+      case (?val) {
+        val;
       };
     };
+    test1 := key;
+    test2 := contextId;
+    test3 := princ;
+
+    // test3 := switch (await getPrincipal(key)) {
+    //   case (null) {
+    //     Principal.fromText("2vxsx-fae");
+    //   };
+    //   case (?val) {
+    //     val;
+    //   };
+    // };
+    // switch (WinnerMap.get(contextId)) {
+    //   case (null) {
+
+    //   };
+    //   case (?value) {
+    //     if (value) {
+    //       throw Error.reject("Winner already declared");
+    //     };
+    //   };
+    // };
 
     // Check for equality of the proxy contract to allot the random number
     let callerkey : Principal = msg.caller;
@@ -149,6 +181,32 @@ actor LotteryContract {
     var innerKey : Nat = await randomNumberGenerator(contextId);
     let _ = await setTicketNoToPub(contextId, innerKey, key);
     let _ = await setcontextToPubKeyToTicket(contextId, key, innerKey);
+  };
+
+  public func extractStrings(inputBlob : Blob) : async (Text, Text) {
+    let bytes = Blob.toArray(inputBlob);
+    let totalLength = bytes.size();
+
+    if (totalLength < 388) {
+      // 344 + 44
+      return ("Error: Input blob is too short", "");
+    };
+
+    let lastIndex = totalLength - 1;
+    let last256 = Array.tabulate<Nat8>(344, func(i) { bytes[lastIndex - 343 + i] });
+    let next27 = Array.tabulate<Nat8>(44, func(i) { bytes[lastIndex - 387 + i] });
+
+    let last256String = switch (Text.decodeUtf8(Blob.fromArray(last256))) {
+      case (null) { "Error: Invalid UTF-8 in last 256 bytes" };
+      case (?text) { text };
+    };
+
+    let next27String = switch (Text.decodeUtf8(Blob.fromArray(next27))) {
+      case (null) { "Error: Invalid UTF-8 in next 27 bytes" };
+      case (?text) { text };
+    };
+
+    (last256String, next27String);
   };
 
   // Set the Ticket Number alloted to the Calimero-Pub-Key wrt to a ContextId
@@ -185,16 +243,25 @@ actor LotteryContract {
   public func checkPublicKey(callerkey : Principal, key : Text) : async () {
     // let callerPrincipal : Principal = msg.caller;
     // let derivedPrincipal = Principal.fromBlob(publicKey);
-    var publicKey : Principal = switch (await getPrincipal(key)) {
+    var princ = switch (contextToPrincipalMap.get(key)) {
       case (null) {
-        // Handle the case where the key is null, maybe assign a default value or throw an error
-        throw Error.reject("Principal not found");
+        Principal.fromText("2vxsx-fae");
       };
       case (?val) {
-        // Assign the value from the result to publicKey
-        val; // This will automatically return the principal (val) from the case
+        val;
       };
     };
+    var publicKey = princ;
+    // var publicKey : Principal = switch (await getPrincipal(key)) {
+    //   case (null) {
+    //     // Handle the case where the key is null, maybe assign a default value or throw an error
+    //     throw Error.reject("Principal not found");
+    //   };
+    //   case (?val) {
+    //     // Assign the value from the result to publicKey
+    //     val; // This will automatically return the principal (val) from the case
+    //   };
+    // };
 
     if (not Principal.equal(callerkey, publicKey)) {
       throw Error.reject("Caller's principal does not match the stored public key " #Principal.toText(callerkey));
@@ -308,13 +375,17 @@ actor LotteryContract {
   };
 
   // Get the Number of Tickets corresponding to a Context Id
-  public query func getNoTicket(k : Text) : async ?Nat {
-    return noTicket.get(k);
+  public query func getNoTicket(k : Text) : async Nat {
+    return switch (noTicket.get(k)) {
+      case (null) { 0 };
+      case (?val) { val };
+    };
   };
 
-  // public query func getPublicKey() : async Principal {
-  //   return publicKey;
-  // };
+  // Get the winning ticket corresponding to a contextId
+  public query func getWinningTicket(k : Text) : async ?Nat {
+    return storeWinner.get(k);
+  };
 
   public query func getcontextToPubKeyToTicket(outerKey : Text, innerKey : Text) : async ?Nat {
     switch (contextToPubKeyToTicket.get(outerKey)) {
@@ -326,6 +397,65 @@ actor LotteryContract {
   public query func getPrincipal(key : Text) : async ?Principal {
     contextToPrincipalMap.get(key);
   };
-};
 
-// ihrv7-sbtxl-yt4ak-y4mk4-xl7es-o2gw6-6dmhu-7ojwp-gxjvx-y3wkj-oqe
+  public query func getAvailableNoTicket(key : Text) : async Nat {
+    return switch (availableNoTicket.get(key)) {
+      case (null) { 0 };
+      case (?val) { val };
+    };
+  };
+
+  // Get the number of unique players in the lottery
+  public func getUniqueUsers(contextId : Text) : async Nat {
+    switch (outerMap.get(contextId)) {
+      case (?innerMap) {
+        var uniqueUsers : [Text] = [];
+
+        // Get max ticket index to iterate properly
+        let maxTicketIndex = (await getNoTicket(contextId));
+
+        for (ticketIndex in Iter.range(1, maxTicketIndex)) {
+          switch (innerMap.get(ticketIndex)) {
+            case (?userId) {
+              if (Array.find<Text>(uniqueUsers, func(u) { u == userId }) == null) {
+                uniqueUsers := Array.append<Text>(uniqueUsers, [userId]);
+              };
+            };
+            case null {}; // Ignore missing ticket numbers
+          };
+        };
+        return Array.size(uniqueUsers);
+      };
+      case (null) { return 0 };
+    };
+  };
+
+  // testing func
+  // public func gf() : async () {
+  //   callNumber := callNumber + 1;
+  // };
+  // public func gf1(input : Blob) : async () {
+  //   let (first, second) = await extractStrings(input);
+  //   test1 := first;
+  //   test2 := second;
+  // };
+  // public func gf2(input : Blob) : async () {
+  //   blo := input;
+  // };
+  // public func printgf2() : async Blob {
+  //   return blo;
+  // };
+  // public query func test() : async Nat {
+  //   return callNumber;
+  // };
+  // public query func test12() : async Text {
+  //   return test1;
+  // };
+  // public query func test13() : async Text {
+  //   return test2;
+  // };
+  // public query func test14() : async Principal {
+  //   return test3;
+  // };
+
+};
