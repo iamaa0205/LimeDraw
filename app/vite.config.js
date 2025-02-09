@@ -15,7 +15,8 @@ export default defineConfig({
         404: resolve(__dirname, 'public/404.html'),
       },
     },
-    minify: 'esbuild'
+    minify: 'esbuild',
+    sourcemap: false
   },
   resolve: {
     alias: {
