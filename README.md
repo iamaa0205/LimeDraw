@@ -62,7 +62,7 @@ node server.js
 <img src="app/src/assets/adminflow.png" alt="flow-diagram" />
 
 ## **Video Demo**
-The video demo of the project can be found [here]().
+The video demo of the project can be found [here](https://youtu.be/ISxYTMBmgrc).
 
 ## **Team members**
 This project is made with ❤️ by 
