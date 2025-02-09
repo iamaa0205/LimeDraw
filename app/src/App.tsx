@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import Check from './pages/admin/check';
 import ChatLand from './pages/admin/chatLand';
 import ChatRoom from './pages/admin/chatRoom';
+import { Toaster } from 'react-hot-toast';
 export default function App() {
   useEffect(() => {
     // Check if the URL matches the base path
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/chatroom" element={<ChatRoom />} />
         </Routes>
       </BrowserRouter>
+      <Toaster /> 
     </AccessTokenWrapper>
   );
 }

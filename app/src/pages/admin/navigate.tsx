@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'react-hot-toast';
 
 import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
@@ -168,11 +169,11 @@ export default function CryptoLottery() {
   const [players, setPlayers] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [totalPlayer, setTotalPlayers] = useState('0');
+  const [totalPlayer, setTotalPlayers] = useState(1);
 
   const testimonials = [
     {
-      name: 'John D.',
+      name: 'Dhruv Goel',
       feedback:
         "This is the most exciting lottery I've ever participated in! Fast payouts and an incredible user experience.",
       avatar: '👨‍💼',
@@ -216,6 +217,7 @@ export default function CryptoLottery() {
       await fetchLottery();
       await fetchPlayers1();
       await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+      await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID)
     };
 
     fetchData();
@@ -273,12 +275,10 @@ export default function CryptoLottery() {
   const handleUniquePlayers = async (context1: any) => {
     try {
       const uniqueUsers = await getUniqueUsers(context1);
-      console.log('unoqurie', uniqueUsers);
-
-      uniqueUsers?.toString();
-      if (typeof uniqueUsers === 'string') {
-        setTotalPlayers(uniqueUsers);
-      }
+     
+      
+      setTotalPlayers(Number(uniqueUsers));
+      
     } catch (error) {
       console.error('Failed to get unique users:', error);
       return null;
@@ -289,10 +289,8 @@ export default function CryptoLottery() {
     try {
       const noOfUsers = await getAvailableNoTicket(context1);
       console.log('Available No of Tickets:', noOfUsers);
-      noOfUsers?.toString();
-      if (typeof noOfUsers === 'string') {
-        setRemTickets(noOfUsers);
-      }
+      setRemTickets(Number(noOfUsers))
+     
 
       return noOfUsers;
     } catch (error) {
@@ -364,20 +362,35 @@ export default function CryptoLottery() {
       fetchPlayers();
     }
   }, [currentView]);
-  const handleWinner = async () => {
-    const cpubkey = getConfigAndJwt();
-    const encryptedPubKey = await encryptData(cpubkey);
-    // ICP CALL TO GET ENCRYPTED PUPLIC KEY STORED IN SAY X;
-    await declareWinner();
-    const response = await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
-    const response2 = await getWinnerPublicKey(
-      import.meta.env.VITE_LOTTERY_CONTEXT_ID,
-      Number(response),
-    );
-    const response3 = await decryptData(response2[0]);
-    console.log('decrypted pub key is', response3);
 
-    // let decryptedPubKey= await decryptData(response);
+
+  const handleWinner = async () => {
+    // Show loading toast
+    const toastId = toast.loading('Declaring winner...');
+  
+    try {
+      const cpubkey = getConfigAndJwt();
+      const encryptedPubKey = await encryptData(cpubkey);
+  
+      await declareWinner();
+  
+      const response = await getWinner(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+      const response2 = await getWinnerPublicKey(
+        import.meta.env.VITE_LOTTERY_CONTEXT_ID,
+        Number(response),
+      );
+  
+      const decryptedPubKey = await decryptData(response2[0]);
+      console.log('Decrypted pub key is', decryptedPubKey);
+  
+      // Success toast with winner's public key
+      toast.success(`Winner declared! Public Key: ${decryptedPubKey}`, { id: toastId });
+    } catch (error) {
+      console.error('Error in handleWinner:', error);
+      
+      // Error toast
+      toast.error('Failed to declare winner. Please try again.', { id: toastId });
+    }
   };
 
   useEffect(() => {
@@ -493,7 +506,7 @@ export default function CryptoLottery() {
     setCreateLotteryForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleJoinLottery = (lotteryId: string) => {};
+  
 
   const handleBuyTickets = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -501,7 +514,10 @@ export default function CryptoLottery() {
     const encryptedPubKey = await encryptData(cpubkey);
     console.log(encryptedPubKey);
     await buy;
-
+  
+    // Show loading toast
+    const toastId = toast.loading('Purchasing ticket...');
+  
     try {
       const request: CreateProposalRequest = {
         action_type: ProposalActionType.ExternalFunctionCall,
@@ -512,45 +528,45 @@ export default function CryptoLottery() {
           deposit: '0',
         },
       };
-
+  
       console.log('Sending proposal request:', request);
-
+  
       const response = await new LogicApiDataSource().createProposal(request);
-
+  
       if (response.error) {
         console.log('Failed to create proposal. Try again later.');
+        toast.error('Failed to create ticket purchase proposal.', { id: toastId });
       } else {
         console.log('Proposal created successfully:', response.data);
+        toast.success('Ticket purchased successfully!', { id: toastId });
       }
     } catch (error) {
       console.error('Error in handleBuyTickets:', error);
+      toast.error('An error occurred while purchasing the ticket.', { id: toastId });
     }
-
+  
     try {
       // Call the API to decrement remaining tickets
-      const response =
-        await new LogicApiDataSource().decrementRemainingTickets();
-
+      const response = await new LogicApiDataSource().decrementRemainingTickets();
+  
       if (response.error) {
         console.log('Failed to decrement tickets. Try again later.');
+        toast.error('Failed to update remaining tickets.');
       } else {
-        // Handle successful response
         console.log('Remaining tickets after decrement:');
+        toast.success('Remaining tickets updated.');
       }
     } catch (error) {
       console.error(error);
+      toast.error('Error while updating remaining tickets.');
     }
-
+  
     await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
-
-    // Implement ticket purchase logic here
+    await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Searching for:', searchTerm);
-    // Implement search logic here
-  };
+
+
 
   const handleGetStartedSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -598,15 +614,25 @@ export default function CryptoLottery() {
     }
   };
   const handleUpdateDashboard = async () => {
-    fetchLottery();
-    fetchPlayers1();
-    await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+    toast.loading('Updating dashboard...', { id: 'updateDashboard' });
+  
+    try {
+      fetchLottery();
+      fetchPlayers1();
+      await handleUniquePlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+      await handleAvailableNoOfPlayers(import.meta.env.VITE_LOTTERY_CONTEXT_ID);
+  
+      toast.success('Dashboard updated successfully!', { id: 'updateDashboard' });
+    } catch (error) {
+      toast.error('Failed to update dashboard. Please try again.', { id: 'updateDashboard' });
+      console.error('Error updating dashboard:', error);
+    }
   };
-
   const renderView = () => {
     switch (currentView) {
       case 'landing':
         return (
+          
           <motion.div
             initial="hidden"
             animate="visible"
@@ -663,6 +689,45 @@ export default function CryptoLottery() {
                 win big awaits!
               </p>
             </Description>
+            <ButtonContainer
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '40px',
+              }}
+            >
+              <Button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  console.log('Button clicked! Opening popup...');
+                  setIsGetStartedPopupOpen(true);
+                }}
+                style={{
+                  background:
+                    'linear-gradient(90deg, #FFD700, #FFC300, #FFD700)', // Shiny gold gradient
+                  color: '#000', // Black text for contrast
+                  border: '3px solid #FFD700', // Gold border
+                  padding: '18px 50px', // Adjusted padding for a larger feel
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  boxShadow: '0px 0px 15px rgba(255, 215, 0, 0.8)', // Initial glow
+                  transition: '0.3s ease-in-out',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    '0px 0px 30px rgba(255, 215, 0, 1), 0px 0px 50px rgba(255, 215, 0, 0.8)'; // Static aura effect
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    '0px 0px 15px rgba(255, 215, 0, 0.8)'; // Normal glow when not hovered
+                }}
+              >
+                Get Started
+              </Button>
+            </ButtonContainer>
             <FeaturesList
               style={{
                 display: 'grid',
@@ -772,45 +837,7 @@ export default function CryptoLottery() {
               ))}
             </FeaturesList>
 
-            <ButtonContainer
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginTop: '40px',
-              }}
-            >
-              <Button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  console.log('Button clicked! Opening popup...');
-                  setIsGetStartedPopupOpen(true);
-                }}
-                style={{
-                  background:
-                    'linear-gradient(90deg, #FFD700, #FFC300, #FFD700)', // Shiny gold gradient
-                  color: '#000', // Black text for contrast
-                  border: '3px solid #FFD700', // Gold border
-                  padding: '18px 50px', // Adjusted padding for a larger feel
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  boxShadow: '0px 0px 15px rgba(255, 215, 0, 0.8)', // Initial glow
-                  transition: '0.3s ease-in-out',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0px 0px 30px rgba(255, 215, 0, 1), 0px 0px 50px rgba(255, 215, 0, 0.8)'; // Static aura effect
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0px 0px 15px rgba(255, 215, 0, 0.8)'; // Normal glow when not hovered
-                }}
-              >
-                Get Started
-              </Button>
-            </ButtonContainer>
+            
           </motion.div>
         );
 
@@ -896,6 +923,7 @@ export default function CryptoLottery() {
               </motion.strong>{' '}
               in every draw.
             </motion.p>
+            
 
             {/* Lottery Stats Section */}
             <div
@@ -1274,7 +1302,7 @@ export default function CryptoLottery() {
                     color: '#d9534f',
                   }}
                 >
-                  Tickets Remaining: {lottery.remaining_tickets}
+                  Tickets Remaining: {remTickets}
                 </p>
               </div>
             )}
@@ -1560,7 +1588,7 @@ export default function CryptoLottery() {
                       animation: 'fadeIn 1s ease-in-out',
                     }}
                   >
-                    Tickets Remaining: {lottery.remaining_tickets}
+                    Tickets Remaining: {remTickets}
                   </InfoItem>
                 </div>
               </LotteryInfo>
@@ -1602,7 +1630,7 @@ export default function CryptoLottery() {
                     fontWeight: 'bold',
                   }}
                 >
-                  {players.length}
+                 {Number(totalPlayer) + 1}
                 </p>
               </StatCard>
             </StatisticsGrid>
