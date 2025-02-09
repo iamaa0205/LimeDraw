@@ -173,7 +173,6 @@ const TestimonialsSection = () => {
       >
         Note: These are demo testimonials for display purposes only.
       </motion.p>
-      
     </motion.div>
   );
 };

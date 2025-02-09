@@ -46,7 +46,6 @@ const Header = styled.header`
   box-shadow: 0px 4px 10px rgba(0, 255, 153, 0.2);
 `;
 
-
 const ChatContainer = styled.div`
   max-width: 800px;
   margin: 2rem auto;
@@ -244,12 +243,12 @@ const ChatRoom: React.FC = () => {
     <>
       <GlobalStyle />
       <Header>
-          <Logo>
-            <LogoImg src={xyz} alt="Lottery Chat Logo" />
-            <AppName>LimeDraw</AppName>
-          </Logo>
-        </Header>
-      
+        <Logo>
+          <LogoImg src={xyz} alt="Lottery Chat Logo" />
+          <AppName>LimeDraw</AppName>
+        </Logo>
+      </Header>
+
       <ChatContainer>
         <UpdateButton
           onClick={handleUpdate}

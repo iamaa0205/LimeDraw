@@ -109,9 +109,13 @@ const Message = styled(motion.p)`
 `;
 
 const Button = styled(motion.button)`
-  background: linear-gradient(45deg, #FFD700, #FFA500); /* Shiny golden gradient */
+  background: linear-gradient(
+    45deg,
+    #ffd700,
+    #ffa500
+  ); /* Shiny golden gradient */
   color: #000;
-  border: 2px solid #DAA520; /* Gold border */
+  border: 2px solid #daa520; /* Gold border */
   padding: 1rem 1.5rem; /* Increased padding */
   font-size: 1.2rem;
   font-weight: bold;
@@ -122,14 +126,15 @@ const Button = styled(motion.button)`
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: 0px 0px 25px rgba(255, 215, 0, 1), 0px 0px 50px rgba(255, 165, 0, 0.8); /* Strong aura effect */
+    box-shadow:
+      0px 0px 25px rgba(255, 215, 0, 1),
+      0px 0px 50px rgba(255, 165, 0, 0.8); /* Strong aura effect */
   }
 
   &:active {
     transform: scale(0.95);
   }
 `;
-
 
 /* ======= Claim Prize Popup Form ======= */
 const FormPopup = styled(motion.div)`
@@ -219,38 +224,36 @@ const Winner: React.FC = () => {
             <AppName>LimeDraw</AppName>
           </Logo>
           <Button
-  onClick={() => {
-    window.location.href='./navigate'
-    
-  }}
-  style={{
-    background: 'linear-gradient(45deg, #00FF00, #32CD32, #39FF14)', // Different shades of green
-    color: '#000', // Dark text for contrast
-    padding: '12px 24px', // Balanced padding
-    borderRadius: '10px', // Rounded edges
-    border: '2px solid #00FF00', // Bright green border
-    fontWeight: 'bold',
-    fontSize: '16px',
-    cursor: 'pointer',
-    boxShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)', // Green glow effect
-    transition: '0.3s ease-in-out',
-    display: 'inline-block', 
-    textAlign: 'center',
-  }}
-  onMouseEnter={(e) =>
-    (e.currentTarget.style.boxShadow =
-      '0px 0px 25px rgba(0, 255, 0, 1)') // Stronger glow on hover
-  }
-  onMouseLeave={(e) =>
-    (e.currentTarget.style.boxShadow =
-      '0px 0px 15px rgba(0, 255, 0, 0.8)') // Subtle glow when idle
-  }
-
-
->
-  Dashboard
-</Button>
-
+            onClick={() => {
+              window.location.href = './navigate';
+            }}
+            style={{
+              background: 'linear-gradient(45deg, #00FF00, #32CD32, #39FF14)', // Different shades of green
+              color: '#000', // Dark text for contrast
+              padding: '12px 24px', // Balanced padding
+              borderRadius: '10px', // Rounded edges
+              border: '2px solid #00FF00', // Bright green border
+              fontWeight: 'bold',
+              fontSize: '16px',
+              cursor: 'pointer',
+              boxShadow: '0px 0px 15px rgba(0, 255, 0, 0.8)', // Green glow effect
+              transition: '0.3s ease-in-out',
+              display: 'inline-block',
+              textAlign: 'center',
+            }}
+            onMouseEnter={
+              (e) =>
+                (e.currentTarget.style.boxShadow =
+                  '0px 0px 25px rgba(0, 255, 0, 1)') // Stronger glow on hover
+            }
+            onMouseLeave={
+              (e) =>
+                (e.currentTarget.style.boxShadow =
+                  '0px 0px 15px rgba(0, 255, 0, 0.8)') // Subtle glow when idle
+            }
+          >
+            Dashboard
+          </Button>
         </Header>
 
         <MainContent>
